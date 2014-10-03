@@ -140,6 +140,7 @@ int vt_draw_frame(int width, int height, char attr, int r, int c) {
 	 	 }
 	 return 0;
 }
+// oi professor tudo bem?
 
 /*
  * THIS FUNCTION IS FINALIZED, do NOT touch it
