@@ -25,9 +25,19 @@ void timer_int_handler() {
 }
 
 int timer_get_conf(unsigned long timer, unsigned char *st) {
-	
-	return 1;
+	if (timer != 0 | timer != 1 | timer != 2) return 1;
+
+	unsigned long arg = TIMER_RB_CMD | TIMER_RB_SEL(timer)
+	unsigned long t = TIMER_0 + timer;
+	unsigned long var;
+	else {
+		sys_outb(TIMER_CTRL, arg);
+		sys_inb(t, &var);
+		*st = char(var);
+		return 0;
+	}
 }
+
 
 int timer_display_conf(unsigned char conf) {
 	
