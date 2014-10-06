@@ -1,9 +1,9 @@
 #include <minix/syslib.h>
 #include <minix/drivers.h>
+#include "i8254.h"
+#include "timer.h"
 
-int main(){
 
-}
 
 int timer_set_square(unsigned long timer, unsigned long freq) {
 
@@ -26,14 +26,15 @@ void timer_int_handler() {
 
 int timer_get_conf(unsigned long timer, unsigned char *st) {
 	if (timer != 0 | timer != 1 | timer != 2) return 1;
+	else {
 
-	unsigned long arg = TIMER_RB_CMD | TIMER_RB_SEL(timer);
+	unsigned long arg = TIMER_RB_CMD | TIMER_RB_SEL(timer)|TIMER_RB_COUNT_;
 	unsigned long t = TIMER_0 + timer;
 	unsigned long var;
-	else {
+
 		sys_outb(TIMER_CTRL, arg);
 		sys_inb(t, &var);
-		*st = char(var);
+		*st = var;
 		return 0;
 	}
 }
@@ -76,9 +77,30 @@ int timer_display_conf(unsigned char conf) {
 		else{
 			printf("null_counter = 0\n");
 		}
+	if(prog_mode == 0)
+		printf("INTERRUPT ON TERMINAL COUNT\n");
+	else if(prog_mode == 1)
+		printf("HARDWARE RETRIGGERABLE ONE-SHOT\n");
+	else if(prog_mode == 2)
+		printf("RATE GENERATOR\n");
+	else if(prog_mode == 3)
+		printf("SQUARE WAVE MODE\n");
+	else if(prog_mode == 4)
+		printf("SOFTWARE TRIGGERED STROBE\n");
+	else if(prog_mode == 5)
+		printf("HARDWARE TRIGGERED STROBE (RETRIGGERABLE)\n");
 
+	if(output == 0)
+		printf("OUTPUT = 0\n");
+	else printf("OUTPUT = 1\n");
 
-	return 1;
+	if(type_access == 0)
+		printf("LSB\n");
+	else if(type_access == 1)
+		printf("MSB\n");
+	else printf("LSB FOLLOWED BY MSB\n");
+
+	return 0;
 }
 
 int timer_test_square(unsigned long freq) {
@@ -92,6 +114,9 @@ int timer_test_int(unsigned long time) {
 }
 
 int timer_test_config(unsigned long timer) {
-	if (timer_get_config() && timer_display_config() == 0) return 0;
-	return 1;
+
+	unsigned char test;
+	timer_get_conf(timer,&test);
+	timer_display_conf(test);
+	return 0;
 }

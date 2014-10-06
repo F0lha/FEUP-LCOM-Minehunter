@@ -94,6 +94,5 @@ int timer_test_int(unsigned long time);
 int timer_test_config(unsigned long timer);
 
 
-int sys_inb(port_t port, unsigned long *byte);
-int sys_outb(port_t port, unsigned long byte);
+
 #endif /* __TIMER_H */
