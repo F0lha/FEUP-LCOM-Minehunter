@@ -27,7 +27,7 @@ void timer_int_handler() {
 int timer_get_conf(unsigned long timer, unsigned char *st) {
 	if (timer != 0 | timer != 1 | timer != 2) return 1;
 
-	unsigned long arg = TIMER_RB_CMD | TIMER_RB_SEL(timer)
+	unsigned long arg = TIMER_RB_CMD | TIMER_RB_SEL(timer);
 	unsigned long t = TIMER_0 + timer;
 	unsigned long var;
 	else {
@@ -53,7 +53,7 @@ int timer_display_conf(unsigned char conf) {
 	temp_conf = conf;
 	temp_conf >> 4;
 	temp_conf &= 0x11;
-	prog_mode=temp_conf;
+	type_access=temp_conf;
 	temp_conf = conf;
 	temp_conf >> 6;
 	temp_conf &= 0x01;
@@ -92,6 +92,6 @@ int timer_test_int(unsigned long time) {
 }
 
 int timer_test_config(unsigned long timer) {
-	
+	if (timer_get_config() && timer_display_config() == 0) return 0;
 	return 1;
 }
