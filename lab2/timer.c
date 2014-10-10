@@ -5,7 +5,11 @@
 
 
 
+
+
 int timer_set_square(unsigned long timer, unsigned long freq) {
+
+
 
 	return 1;
 }
@@ -105,7 +109,14 @@ int timer_display_conf(unsigned char conf) {
 
 int timer_test_square(unsigned long freq) {
 	
-	return 1;
+	unsigned long arg = TIMER_SEL0|TIMER_SQR_WAVE|TIMER_LSB|TIMER_BIN;
+	sys_outb(TIMER_CTRL, arg);
+
+
+	int new_freq = freq;
+	sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &new_freq);
+	sys_irqenable(&new_freq);
+	return 0;
 }
 
 int timer_test_int(unsigned long time) {
@@ -114,6 +125,8 @@ int timer_test_int(unsigned long time) {
 }
 
 int timer_test_config(unsigned long timer) {
+
+
 
 	unsigned char test;
 	timer_get_conf(timer,&test);
