@@ -45,7 +45,7 @@ printf("Timer:wrong no of arguments for test of timer_test_config() \n");
 return 1;
 }
 printf("timer_test_config()\n"); /* Actually, it was already invoked */
-unsigned timer = parse_ulong(argv[2], 16);
+unsigned long timer = parse_ulong(argv[2], 10);
 timer_test_config(timer);
 return 0;
 }
@@ -54,9 +54,9 @@ if( argc != 3 ) {
 printf("Timer:wrong no of arguments for test of timer_get_config() \n");
 return 1;
 }
-unsigned long  freq = *argv[2];
+unsigned long freq = parse_ulong(argv[2], 10);
+printf("RAN  %lu\n",freq);
 timer_test_square(freq);
-printf("RAN\n");
 return 0;
 }
 else if (strncmp(argv[1], "2 aula", strlen("timer_display_conf")) == 0) {
