@@ -45,8 +45,8 @@ printf("Timer:wrong no of arguments for test of timer_test_config() \n");
 return 1;
 }
 printf("timer_test_config()\n"); /* Actually, it was already invoked */
-unsigned long  time = *argv[2];
-timer_test_config(time);
+unsigned timer = parse_ulong(argv[2], 16);
+timer_test_config(timer);
 return 0;
 }
 else if (strncmp(argv[1], "timer_test_square", strlen("timer_test_square")) == 0) {
@@ -69,4 +69,25 @@ else {
 printf("Timer:non valid function \"%s\" to test\n", argv[1]);
 return 1;
 }
+}
+
+static unsigned long parse_ulong(char *str, int base) {
+  char *endptr;
+  unsigned long val;
+
+  val = strtoul(str, &endptr, base);
+
+  if ((errno == ERANGE && val == ULONG_MAX )
+	  || (errno != 0 && val == 0)) {
+	  perror("strtol");
+	  return ULONG_MAX;
+  }
+
+  if (endptr == str) {
+	  printf("video_txt: parse_ulong: no digits were found in %s \n", str);
+	  return ULONG_MAX;
+  }
+
+  /* Successful conversion */
+  return val;
 }

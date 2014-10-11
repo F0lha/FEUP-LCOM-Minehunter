@@ -29,8 +29,8 @@ void timer_int_handler() {
 }
 
 int timer_get_conf(unsigned long timer, unsigned char *st) {
-	if (timer != 0 | timer != 1 | timer != 2) return 1;
-	else {
+
+
 
 	unsigned long arg = TIMER_RB_CMD | TIMER_RB_SEL(timer)|TIMER_RB_COUNT_;
 	unsigned long t = TIMER_0 + timer;
@@ -40,7 +40,7 @@ int timer_get_conf(unsigned long timer, unsigned char *st) {
 		sys_inb(t, &var);
 		*st = var;
 		return 0;
-	}
+
 }
 
 
