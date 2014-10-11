@@ -5,27 +5,56 @@
 
 
 
-
+int global_counter,hook_id;
 
 int timer_set_square(unsigned long timer, unsigned long freq) {
 
+	unsigned long div;
+	unsigned char arg = 0;
+
+	printf("%lu \n",freq);
+
+	div = TIMER_FREQ/freq;
+	unsigned long freq_lsb = div;
+	unsigned long freq_msb = (div >> 8);
 
 
-	return 1;
+	if (timer == 0) arg |= TIMER_SEL0;
+	else if (timer == 1) arg |= TIMER_SEL1;
+	else if (timer == 2) arg |= TIMER_SEL2;
+	else return 1;
+
+	arg |= TIMER_LSB_MSB;
+	arg |= TIMER_SQR_WAVE;
+	arg |= TIMER_BIN;
+
+	printf("%lu   %lu\n",freq_lsb,freq_msb);
+
+	sys_outb(TIMER_CTRL, arg);
+	sys_outb(TIMER_0 + timer, freq_lsb);
+	sys_outb(TIMER_0 + timer, freq_msb);
+
+	return 0;
+
 }
 
 int timer_subscribe_int(void ) {
 
-	return 1;
+
+
+	sys_irqsetpolicy(TIMER0_IRQ,IRQ_REENABLE,&hook_id);
+	sys_irqenable(&hook_id);
+
+	return ;
 }
 
 int timer_unsubscribe_int() {
 
-	return 1;
+	return sys_irqrmpolicy(&hook_id);
 }
 
 void timer_int_handler() {
-
+global_counter++;
 }
 
 int timer_get_conf(unsigned long timer, unsigned char *st) {
@@ -49,23 +78,23 @@ int timer_display_conf(unsigned char conf) {
 	int bcd,prog_mode,type_access,null_counter,output;
 	int temp_conf;
 	temp_conf=conf;
-	temp_conf &= 0x01;
+	temp_conf &= 1;
 	bcd=temp_conf;
 	temp_conf = conf;
 	temp_conf >> 1;
-	temp_conf &= 0x111;
+	temp_conf &= 7;
 	prog_mode=temp_conf;
 	temp_conf = conf;
 	temp_conf >> 4;
-	temp_conf &= 0x11;
+	temp_conf &= 3;
 	type_access=temp_conf;
 	temp_conf = conf;
 	temp_conf >> 6;
-	temp_conf &= 0x01;
+	temp_conf &= 1;
 	null_counter=temp_conf;
 	temp_conf = conf;
 	temp_conf >> 7;
-	temp_conf &= 0x01;
+	temp_conf &= 1;
 	output=temp_conf;
 
 	if(bcd == 1){
@@ -93,6 +122,7 @@ int timer_display_conf(unsigned char conf) {
 		printf("SOFTWARE TRIGGERED STROBE\n");
 	else if(prog_mode == 5)
 		printf("HARDWARE TRIGGERED STROBE (RETRIGGERABLE)\n");
+	else printf("cenas %d\n", prog_mode);
 
 	if(output == 0)
 		printf("OUTPUT = 0\n");
@@ -109,14 +139,14 @@ int timer_display_conf(unsigned char conf) {
 
 int timer_test_square(unsigned long freq) {
 	
-	unsigned long arg = TIMER_SEL0|TIMER_SQR_WAVE|TIMER_LSB|TIMER_BIN;
-	sys_outb(TIMER_CTRL, arg);
+	if(freq==0){
+			return 1;
+		}
+	else{
 
-
-	int new_freq = freq;
-	sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &new_freq);
-	sys_irqenable(&new_freq);
-	return 0;
+	int res = timer_set_square(0,freq);
+	return res;
+}
 }
 
 int timer_test_int(unsigned long time) {
@@ -126,9 +156,11 @@ int timer_test_int(unsigned long time) {
 
 int timer_test_config(unsigned long timer) {
 
+	if (timer>2){
+		return 1;
+	}
 
-
-	unsigned char test;
+	char test;
 	timer_get_conf(timer,&test);
 	timer_display_conf(test);
 	return 0;
