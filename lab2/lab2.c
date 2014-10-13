@@ -16,8 +16,8 @@ int main(int argc, char **argv){
 sef_startup();
 
 printf("lab2: Contador e Altifalante do PC \n");
-
-if ( argc == 1 ) {
+b aerhasrhdsdshsdg
+if ( argc == 1) {
 print_usage(argv);
 return 0;
 } else {
