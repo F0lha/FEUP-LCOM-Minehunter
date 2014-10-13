@@ -30,7 +30,7 @@ static void print_usage(char *argv[]) {
 printf("Usage: one of the following:\n"
 "\t service run %s -args \"timer_test_config <unsigned long>\" \n"
 "\t service run %s -args \"timer_test_square <unsigned long>\n"
-"\t service run %s -args \"timer_display_conf <unsigned char>\" \n"
+"\t service run %s -args \"timer_test_int <unsigned long>\" \n"
 ,argv[0], argv[0], argv[0]);
 }
 
@@ -46,6 +46,7 @@ return 1;
 }
 printf("timer_test_config()\n"); /* Actually, it was already invoked */
 unsigned long timer = parse_ulong(argv[2], 10);
+printf("timer %d \n",timer);
 timer_test_config(timer);
 return 0;
 }
@@ -59,11 +60,14 @@ printf("RAN  %lu\n",freq);
 timer_test_square(freq);
 return 0;
 }
-else if (strncmp(argv[1], "2 aula", strlen("timer_display_conf")) == 0) {
+else if (strncmp(argv[1], "timer_test_int", strlen("timer_test_int")) == 0) {
 if( argc != 3 ) {
-printf("Timer:wrong no of arguments for test of timer_display_conf() \n");
+printf("Timer:wrong no of arguments for test of timer_test_int() \n");
 return 1;
 }
+unsigned long time = parse_ulong(argv[2], 10);
+timer_test_int(time);
+return 0;
 }
 else {
 printf("Timer:non valid function \"%s\" to test\n", argv[1]);

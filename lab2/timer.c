@@ -39,13 +39,11 @@ int timer_set_square(unsigned long timer, unsigned long freq) {
 }
 
 int timer_subscribe_int(void ) {
-
-
-
+	hook_id = 0;
+	hook_id = 1;
 	sys_irqsetpolicy(TIMER0_IRQ,IRQ_REENABLE,&hook_id);
 	sys_irqenable(&hook_id);
-
-	return ;
+	return BIT(1);
 }
 
 int timer_unsubscribe_int() {
@@ -58,81 +56,62 @@ global_counter++;
 }
 
 int timer_get_conf(unsigned long timer, unsigned char *st) {
+	unsigned long timer_selector=TIMER_0+timer;
+	unsigned long temp;
+	unsigned long arg;
+	arg = TIMER_RB_CMD | TIMER_RB_SEL(timer) |TIMER_RB_COUNT_;
+	sys_outb(TIMER_CTRL,arg);
+	sys_inb(timer_selector,&temp);
+	*st = temp;
 
 
-
-	unsigned long arg = TIMER_RB_CMD | TIMER_RB_SEL(timer)|TIMER_RB_COUNT_;
-	unsigned long t = TIMER_0 + timer;
-	unsigned long var;
-
-		sys_outb(TIMER_CTRL, arg);
-		sys_inb(t, &var);
-		*st = var;
-		return 0;
-
+return 0;
 }
 
 
 int timer_display_conf(unsigned char conf) {
-	
-	int bcd,prog_mode,type_access,null_counter,output;
-	int temp_conf;
-	temp_conf=conf;
-	temp_conf &= 1;
-	bcd=temp_conf;
-	temp_conf = conf;
-	temp_conf >> 1;
-	temp_conf &= 7;
-	prog_mode=temp_conf;
-	temp_conf = conf;
-	temp_conf >> 4;
-	temp_conf &= 3;
-	type_access=temp_conf;
-	temp_conf = conf;
-	temp_conf >> 6;
-	temp_conf &= 1;
-	null_counter=temp_conf;
-	temp_conf = conf;
-	temp_conf >> 7;
-	temp_conf &= 1;
-	output=temp_conf;
 
-	if(bcd == 1){
-		printf("bcd\n");
+
+	if((conf&BIT(0))){
+		printf("BCD\n");
 	}
 	else{
 		printf("binary\n");
 	}
 
-	if(null_counter == 1){
+	if((conf&BIT(6))== BIT(6)){
 			printf("null_counter = 1\n");
 		}
-		else{
+	else if((conf&BIT(6))== 0){
 			printf("null_counter = 0\n");
 		}
-	if(prog_mode == 0)
+	if((conf&(BIT(1)|BIT(2)|BIT(3))) == 0)
 		printf("INTERRUPT ON TERMINAL COUNT\n");
-	else if(prog_mode == 1)
+	else if((conf&(BIT(1)|BIT(2)|BIT(3))) == BIT(1))
 		printf("HARDWARE RETRIGGERABLE ONE-SHOT\n");
-	else if(prog_mode == 2)
+	else if((conf&(BIT(1)|BIT(2)|BIT(3))) == BIT(2))
 		printf("RATE GENERATOR\n");
-	else if(prog_mode == 3)
+	else if((conf&(BIT(1)|BIT(2)|BIT(3)))== (BIT(1)|BIT(2)))
 		printf("SQUARE WAVE MODE\n");
-	else if(prog_mode == 4)
+	else if(conf&(BIT(1)|BIT(2)|BIT(3)) == BIT(3))
 		printf("SOFTWARE TRIGGERED STROBE\n");
-	else if(prog_mode == 5)
+	else if (((conf & (BIT(1) | BIT(2) | BIT(3)))) == (BIT(3) | BIT(1)))
 		printf("HARDWARE TRIGGERED STROBE (RETRIGGERABLE)\n");
-	else printf("cenas %d\n", prog_mode);
+	else  printf("ERRO\n");
 
-	if(output == 0)
+	if((conf&(BIT(7))) == 0)
 		printf("OUTPUT = 0\n");
-	else printf("OUTPUT = 1\n");
+	else
+		printf("OUTPUT = 1\n");
 
-	if(type_access == 0)
+	if((conf&(BIT(4)|BIT(5))) == BIT(4))
 		printf("LSB\n");
-	else if(type_access == 1)
+	else if((conf&(BIT(4)|BIT(5))) == BIT(5))
 		printf("MSB\n");
-	else printf("LSB FOLLOWED BY MSB\n");
+	else if((conf&(BIT(4)|BIT(5)))==BIT(4)|BIT(5))
+		printf("LSB FOLLOWED BY MSB\n");
+
+	printf("%d\n",conf);
 
 	return 0;
 }
@@ -151,16 +130,49 @@ int timer_test_square(unsigned long freq) {
 
 int timer_test_int(unsigned long time) {
 	
-	return 1;
+	global_counter = 0;
+	int ipc_status,loops=0;
+	message msg;
+	int irq_set = timer_subscribe_int();
+
+	 while( loops!=time ) {
+
+		 /* You may want to use a different condition */
+	     /* Get a request message. */
+	    if ( driver_receive(ANY, &msg, &ipc_status) != 0 ) {
+	        printf("driver_receive failed with: %d");
+	        continue;
+	    }
+	    if (is_ipc_notify(ipc_status)) {
+
+	    	/* received notification */
+	        switch (_ENDPOINT_P(msg.m_source)) {
+	            case HARDWARE: /* hardware interrupt notification */
+	            	printf("case hardware\n");
+	                if (msg.NOTIFY_ARG & irq_set) {
+	                	timer_int_handler();
+
+	                	if(global_counter==60){
+	                		loops++;
+	                		global_counter=0;
+	                		printf("message\n");
+	                	}
+	                }
+	                break;
+	            default:
+	            	break; /* no other notifications expected: do nothing */
+	        }
+	    } else { /* received a standard message, not a notification */
+	        /* no standard messages expected: do nothing */
+	    }
+	 }
+
+	return timer_unsubscribe_int();
 }
 
 int timer_test_config(unsigned long timer) {
 
-	if (timer>2){
-		return 1;
-	}
-
-	char test;
+	unsigned char test;
 	timer_get_conf(timer,&test);
 	timer_display_conf(test);
 	return 0;
