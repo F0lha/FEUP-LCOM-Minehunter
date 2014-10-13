@@ -148,8 +148,7 @@ int timer_test_int(unsigned long time) {
 	    	/* received notification */
 	        switch (_ENDPOINT_P(msg.m_source)) {
 	            case HARDWARE: /* hardware interrupt notification */
-	            	printf("case hardware\n");
-	                if (msg.NOTIFY_ARG & irq_set) {
+	                if (msg.NOTIFY_ARG & irq_set)  {
 	                	timer_int_handler();
 
 	                	if(global_counter==60){
