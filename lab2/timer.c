@@ -164,11 +164,11 @@ int timer_test_int(unsigned long time) {
 }
 
 int timer_test_config(unsigned long timer) {
-
 	if (timer > 2 || timer < 0)
+	{
 		printf("Timer invalid\n");
 		return 1;
-
+	}
 	unsigned char test;
 	timer_get_conf(timer, &test);
 	timer_display_conf(test);
