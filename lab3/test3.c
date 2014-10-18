@@ -1,5 +1,18 @@
+#include <minix/syslib.h>
+#include <minix/drivers.h>
+
+#include "test3.h"
+
 #define OUT_BUF 0x60
 unsigned int kbd_hook_id = 0;
+
+
+int main (){
+	sef_startup();
+
+	return 0;
+
+}
 
 
 int kbd_subscribe_int(void) {
@@ -19,14 +32,14 @@ void kbd_int_handler(){
 
 int kbd_test_scan(unsigned short ass); {
 	/* To be completed */
-	int ipc_status, i = 0, r;
+	int ipc_status, i = 1, r;
 	message msg;
 
 		kbd_subscribe_int();
 
 		int irq_set = BIT(kbd_subscribe_int());
 
-		while( i!= 0x81 ) {
+		while(i) {
 			/* Get a request message. */
 			if ( (r=driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
 				printf("driver_receive failed with: %d", r);
@@ -40,7 +53,7 @@ int kbd_test_scan(unsigned short ass); {
 
 						/* process it */
 						if (ass==0){ //C code
-
+							// kbd_int_handler();
 						}
 						else { //Assembly code
 
