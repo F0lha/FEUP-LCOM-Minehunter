@@ -23,6 +23,9 @@ void kbd_int_handler(){
 }
 
 void kbd_command_leds(short led){
-	sys_outb(OUT_BUF,0xED);
+	unsigned long cenas;
+	sys_outb(IN_BUF,0xED);
+	sys_inb(OUT_BUF,&cenas);
 	sys_outb(IN_BUF,led);
+	sys_inb(OUT_BUF,&cenas);
 }
