@@ -30,7 +30,7 @@ int main(int argc, char **argv){
 static void print_usage(char *argv[]) {
 	printf("Usage: one of the following:\n"
 			"\t service run %s -args \"kbd_test_scan<unsigned short asm>\" \n"
-			"\t service run %s -args \"timer_test_square <unsigned long>\n"
+			"\t service run %s -args \"kbd_test_leds<unsigned short *toggle> \n"
 			"\t service run %s -args \"timer_test_int <unsigned long>\" \n"
 			,argv[0], argv[0], argv[0]);
 }
@@ -46,6 +46,21 @@ static int proc_args(int argc, char *argv[]) {
 		}
 		unsigned long ass = parse_ulong(argv[2], 10);
 		kbd_test_scan(ass);
+		return 0;
+	}
+	else if (strncmp(argv[1], "kbd_test_leds<unsigned short *toggle> ", strlen("kbd_test_leds")) == 0) {
+		if( argc < 3 ) {
+			printf("Timer:wrong no of arguments for test of timer_test_config() \n");
+			return 1;
+		}
+		int x = sizeof(unsigned short);
+		unsigned short *cenas =  malloc((argc-2)*x);
+		unsigned short *cenas_temp = cenas;
+		int i = 0;
+		for(i;i<argc-2;i++){
+			*cenas_temp = parse_ulong(argv[3+i], 10);
+		}
+		kbd_test_leds(argc-2,cenas);
 		return 0;
 	}
 	else {

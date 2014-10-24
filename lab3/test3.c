@@ -4,6 +4,7 @@
 #include "test3.h"
 #include "keyboard.h"
 #include "i8254.h"
+#include "timer.h"
 
 
 
@@ -60,7 +61,13 @@ int kbd_test_scan(unsigned short ass) {
 
 
 int kbd_test_leds(unsigned short n, unsigned short *leds) {
-    /* To be completed */
+	int i = 0;
+	for(i;i<n;i++)
+	{
+		kbd_command_leds(*leds);
+		timer_test_int(1);
+		leds += 2;
+	}
 }
 int kbd_test_timed_scan(unsigned short n) {
     /* To be completed */
