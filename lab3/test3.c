@@ -61,14 +61,61 @@ int kbd_test_scan(unsigned short ass) {
 
 
 int kbd_test_leds(unsigned short n, unsigned short *leds) {
+	int ipc_status;
+	message msg;
 	int i = 0;
-	for(i;i<n;i++)
-	{
-		kbd_command_leds(*leds);
-		timer_test_int(1);
-		leds += 2;
+	unsigned long irq_set = timer_subscribe_int();
+	int led_0 = 0, led_1 = 0, led_2 = 0;
+
+
+	for (i; i < n ; i++){
+		switch (leds[i]) {
+		case 0:
+			if (led_0 == 0){
+				printf("Scroll Lock Led On");
+				led_0 = BIT(0);
+			}
+			else
+			{
+				led_0 = 0;
+				printf("Scroll Lock Led Off");
+			}
+			break;
+		case 1:
+			if (led_1 == 0)
+			{
+				led_1 = BIT(1);
+				printf("Num Lock Led On");
+			}
+			else
+			{
+				led_1 = 0;
+				printf("Num Lock Led Off");
+			}
+			break;
+		case 2:
+			if (led_2 == 0)
+			{
+				led_2 = BIT(2);
+				printf("Caps Lock Led On");
+			}
+			else
+			{
+				led_2 = 0;
+				printf("Caps Lock Led Off");
+			}
+			break;
+		default:
+			printf("No such position found %d", i);
+			break;
+		}
+
 	}
+
 }
+
+
+
 int kbd_test_timed_scan(unsigned short n) {
     /* To be completed */
 }
