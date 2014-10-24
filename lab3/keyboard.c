@@ -21,3 +21,8 @@ int kbd_unsubscribe_int() {
 void kbd_int_handler(){
 	sys_inb(OUT_BUF,&scan_code);
 }
+
+void kbd_command_leds(short led){
+	sys_outb(OUT_BUF,0xED);
+	sys_outb(IN_BUF,led);
+}

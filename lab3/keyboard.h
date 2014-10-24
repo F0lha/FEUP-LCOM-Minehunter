@@ -3,6 +3,7 @@
 
 
 #define OUT_BUF 0x60
+#define IN_BUF 0x64
 #define KBD_HOOK_ID   0x00
 #define DELAY_US 20000
 #define TWO_BYTE_CODE 0xE0
@@ -15,7 +16,7 @@ unsigned long scan_code;
 void kbd_int_handler();
 int kbd_unsubscribe_int();
 int kbd_subscribe_int(void);
-
+void kbd_command_leds(short led);
 
 
 
