@@ -48,23 +48,25 @@ static int proc_args(int argc, char *argv[]) {
 		kbd_test_scan(ass);
 		return 0;
 	}
-	else if (strncmp(argv[1], "kbd_test_leds<unsigned short *toggle> ", strlen("kbd_test_leds")) == 0) {
+	else if (strncmp(argv[1], "kbd_test_leds<unsigned short *leds> ", strlen("kbd_test_leds")) == 0) {
 		if( argc < 3 ) {
-			printf("Timer:wrong no of arguments for test of timer_test_config() \n");
+			printf("Keyboard:wrong no of arguments for test of kbd_test_leds() \n");
 			return 1;
 		}
 		int x = sizeof(unsigned short);
 		unsigned short *cenas =  malloc((argc-2)*x);
-		unsigned short *cenas_temp = cenas;
+		//unsigned short *cenas_temp = cenas;
 		int i = 0;
 		for(i;i<argc-2;i++){
-			*cenas_temp = parse_ulong(argv[3+i], 10);
+
+			unsigned short valor = parse_ulong(argv[2+i], 10);
+			cenas[i] = valor;
 		}
 		kbd_test_leds(argc-2,cenas);
 		return 0;
 	}
 	else {
-		printf("Timer:non valid function \"%s\" to test\n", argv[1]);
+		printf("Keyboard:non valid function \"%s\" to test\n", argv[1]);
 		return 1;
 	}
 }
@@ -82,7 +84,7 @@ static unsigned long parse_ulong(char *str, int base) {
 	}
 
 	if (endptr == str) {
-		printf("video_txt: parse_ulong: no digits were found in %s \n", str);
+		printf("Keyboard: parse_ulong: no digits were found in %s \n", str);
 		return ULONG_MAX;
 	}
 
