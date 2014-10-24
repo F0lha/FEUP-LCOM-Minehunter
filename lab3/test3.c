@@ -64,51 +64,84 @@ int kbd_test_leds(unsigned short n, unsigned short *leds) {
 	int ipc_status;
 	message msg;
 	int i = 0;
-	unsigned long irq_set = timer_subscribe_int();
 	int led_0 = 0, led_1 = 0, led_2 = 0;
+	int counter = 0;
+	int irq_set = BIT(timer_subscribe_int());
 
-
-	for (i; i < n ; i++){
-		switch (leds[i]) {
-		case 0:
-			if (led_0 == 0){
-				printf("Scroll Lock Led On");
-				led_0 = BIT(0);
-			}
-			else
-			{
-				led_0 = 0;
-				printf("Scroll Lock Led Off");
-			}
-			break;
-		case 1:
-			if (led_1 == 0)
-			{
-				led_1 = BIT(1);
-				printf("Num Lock Led On");
-			}
-			else
-			{
-				led_1 = 0;
-				printf("Num Lock Led Off");
-			}
-			break;
-		case 2:
-			if (led_2 == 0)
-			{
-				led_2 = BIT(2);
-				printf("Caps Lock Led On");
-			}
-			else
-			{
-				led_2 = 0;
-				printf("Caps Lock Led Off");
-			}
-			break;
-		default:
-			printf("No such position found %d", i);
-			break;
+	while (i < n)
+	{
+		/* Get a request message. */
+		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+			printf("driver_receive failed with: %d");
+			continue;
 		}
+		if (is_ipc_notify(ipc_status)) {
+
+			/* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_set) {
+					counter++;
+					if (counter >= 60) {
+						counter = 0;
+						printf("LED: %d\n",leds[i]);
+						switch (leds[i]) {
+						case 0:
+							if (led_0 == 0){
+								printf("Scroll Lock Led On\n");
+								led_0 = BIT(0);
+							}
+							else
+							{
+								led_0 = 0;
+								printf("Scroll Lock Led Off\n");
+							}
+							break;
+						case 1:
+							if (led_1 == 0)
+							{
+								led_1 = BIT(1);
+								printf("Num Lock Led On\n");
+							}
+							else
+							{
+								led_1 = 0;
+								printf("Num Lock Led Off\n");
+							}
+							break;
+						case 2:
+							if (led_2 == 0)
+							{
+								led_2 = BIT(2);
+								printf("Caps Lock Led On\n");
+							}
+							else
+							{
+								led_2 = 0;
+								printf("Caps Lock Led Off\n");
+							}
+							break;
+						default:
+							printf("Invalid Led %d\n", i);
+							continue;
+						}
+
+						int leds = led_0 | led_1 | led_2;
+
+						kbd_command_leds(leds);
+						i++;
+					}
+				}
+				break;
+			default:
+				break; /* no other notifications expected: do nothing */
+			}
+		} else { /* received a standard message, not a notification */
+			/* no standard messages expected: do nothing */
+		}
+
+
+
 
 	}
 
@@ -117,5 +150,5 @@ int kbd_test_leds(unsigned short n, unsigned short *leds) {
 
 
 int kbd_test_timed_scan(unsigned short n) {
-    /* To be completed */
+	/* To be completed */
 }

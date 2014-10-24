@@ -45,10 +45,10 @@ int timer_set_square(unsigned long timer, unsigned long freq) {
 }
 
 int timer_subscribe_int(void ) {
-
+	hook_id = 0;
 	sys_irqsetpolicy(TIMER0_IRQ,IRQ_REENABLE,&hook_id);
 	sys_irqenable(&hook_id);
-	return hook_id;
+	return 0;
 }
 
 int timer_unsubscribe_int() {

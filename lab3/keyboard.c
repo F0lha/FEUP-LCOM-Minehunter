@@ -19,13 +19,13 @@ int kbd_unsubscribe_int() {
 }
 
 void kbd_int_handler(){
-	sys_inb(OUT_BUF,&scan_code);
+	sys_inb(IN_BUF,&scan_code);
 }
 
-void kbd_command_leds(short led){
+void kbd_command_leds(short leds){
 	unsigned long cenas;
-	sys_outb(IN_BUF,0xED);
-	sys_inb(OUT_BUF,&cenas);
-	sys_outb(IN_BUF,led);
-	sys_inb(OUT_BUF,&cenas);
+	sys_outb(OUT_BUF,0xED);
+	sys_inb(IN_BUF,&cenas);
+	sys_outb(OUT_BUF,leds);
+	sys_inb(IN_BUF,&cenas);
 }
