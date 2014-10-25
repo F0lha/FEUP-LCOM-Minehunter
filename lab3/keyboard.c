@@ -4,7 +4,14 @@
 #include "i8254.h"
 #include "keyboard.h"
 
+#define PAR_ERR 	BIT(7)
+#define TO_ERR 		BIT(6)
+#define IBF 		BIT(1)
+#define OBF 		BIT(0)
+#define RESEND 		0xFE
+#define ERROR 		0xFC
 
+unsigned long data;
 
 int kbd_subscribe_int(void) {
 	int value = KBD_HOOK_ID;
@@ -23,9 +30,68 @@ void kbd_int_handler(){
 }
 
 void kbd_command_leds(short leds){
-	unsigned long cenas;
-	sys_outb(OUT_BUF,0xED);
-	sys_inb(IN_BUF,&cenas);
-	sys_outb(OUT_BUF,leds);
-	sys_inb(IN_BUF,&cenas);
+
+        unsigned long cenas;
+
+        sys_outb(OUT_BUF,0xED);
+
+        sys_inb(IN_BUF,&cenas);
+
+        sys_outb(OUT_BUF,leds);
+
+        sys_inb(IN_BUF,&cenas);
+
 }
+
+
+int receive_kbd(){
+	unsigned long stat;
+	while( 1 ) {
+			sys_inb(STAT_REG, &stat); /* assuming it returns OK */
+			/* loop while 8042 output buffer is empty */
+			if( stat & OBF ) {
+				sys_inb(OUT_BUF, &data); /* assuming it returns OK */
+				if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
+					return data;
+				else
+					return -1;
+			}
+			tickdelay(micros_to_ticks(DELAY_US));
+		}
+}
+
+int send_kbd(short cmd){
+	unsigned long stat;
+	while( 1 ) {
+		sys_inb(STAT_REG, &stat);
+		if(stat != OK)
+			continue;
+		if( (stat & IBF) == 0 ) {
+			sys_outb(KBC_CMD_REG,cmd); /* no args command */
+			return 0;
+		}
+		tickdelay(micros_to_ticks(DELAY_US));
+	}
+}
+/*
+  	send_kbd(0xED);
+	cenas = receive_kbd();
+	while(1){
+		if(cenas==ERROR)
+			kbd_command_leds(leds);
+		else if (cenas == RESEND)
+			send_kbd(0xED);
+		else break;
+		cenas = receive_kbd();
+	}
+	send_kbd(leds);
+	while(1){
+			if(cenas==ERROR)
+				kbd_command_leds(leds);
+			else if (cenas == RESEND)
+				send_kbd(leds);
+			else break;
+			cenas = receive_kbd();
+		}
+		*/
+
