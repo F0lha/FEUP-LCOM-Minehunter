@@ -31,7 +31,7 @@ static void print_usage(char *argv[]) {
 	printf("Usage: one of the following:\n"
 			"\t service run %s -args \"kbd_test_scan<unsigned short asm>\" \n"
 			"\t service run %s -args \"kbd_test_leds<unsigned short *toggle> \n"
-			"\t service run %s -args \"timer_test_int <unsigned long>\" \n"
+			"\t service run %s -args \"kbd_test_timed_scan<unsigned short n>\" \n"
 			,argv[0], argv[0], argv[0]);
 }
 
@@ -65,6 +65,15 @@ static int proc_args(int argc, char *argv[]) {
 		kbd_test_leds(argc-2,cenas);
 		return 0;
 	}
+	else if (strncmp(argv[1], "kbd_test_timed_scan<unsigned short n>", strlen("kbd_test_timed_scan")) == 0) {
+			if( argc != 3 ) {
+				printf("Timer:wrong no of arguments for test of timer_test_config() \n");
+				return 1;
+			}
+			unsigned long n = parse_ulong(argv[2], 10);
+			kbd_test_timed_scan(n);
+			return 0;
+		}
 	else {
 		printf("Keyboard:non valid function \"%s\" to test\n", argv[1]);
 		return 1;
