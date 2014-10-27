@@ -8,6 +8,8 @@
 
 int breaker = 1;
 
+long scan_key;
+
 
 int kbd_test_scan(unsigned short ass) {
 	breaker = 1;
@@ -32,7 +34,7 @@ int kbd_test_scan(unsigned short ass) {
 						kbd_int_handler();
 						if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
 						else if(scan_code>>7){
-							if(two_bytes) printf("BREAKCODE : 0xE0%x\n",scan_code & 0xff);
+							if(two_bytes) printf("BREAKCODE : 0xe0%x\n",scan_code & 0xff);
 							else printf("BREAKCODE : 0x%x\n",scan_code & 0xff);
 							if (scan_code==BREAK_CODE_ESC)
 								breaker = 0;
@@ -40,28 +42,28 @@ int kbd_test_scan(unsigned short ass) {
 						else
 						{
 							if (two_bytes){
-								printf("MAKCODE : 0xE0%x\n",scan_code & 0xff);
+								printf("MAKCODE : 0xe0%x\n",scan_code & 0xff);
 								two_bytes=0;
 							}
 							else printf("MAKECODE : 0x%x\n",scan_code & 0xff);
 						}
 					}
 					else { //Assembly code
-						scan_code = kbd_handler_ass();
-						if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
-						else if(scan_code>>7){
-							if(two_bytes) printf("BREAKCODE : 0xE0%x\n",scan_code & 0xff);
-							else printf("BREAKCODE : 0x%x\n",scan_code & 0xff);
-							if (scan_code==BREAK_CODE_ESC)
+						kbd_handler_ass();
+						if(scan_key==TWO_BYTE_CODE){two_bytes = 1;}
+						else if(scan_key>>7){
+							if(two_bytes) printf("BREAKCODE : 0xe0%x\n",scan_key & 0xff);
+							else printf("BREAKCODE : 0x%x\n",scan_key & 0xff);
+							if (scan_key==BREAK_CODE_ESC)
 								breaker = 0;
 						}
 						else
 						{
 							if (two_bytes){
-								printf("MAKCODE : 0xE0%x\n",scan_code & 0xff);
+								printf("MAKCODE : 0xe0%x\n",scan_key & 0xff);
 								two_bytes=0;
 							}
-							else printf("MAKECODE : 0x%x\n",scan_code & 0xff);
+							else printf("MAKECODE : 0x%x\n",scan_key & 0xff);
 						}
 					}
 				}
