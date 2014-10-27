@@ -31,26 +31,40 @@ void kbd_int_handler(){
 
 void kbd_command_leds(short leds){
 
-        unsigned long cenas;
+	unsigned long cenas;
+	unsigned passou1 =0,passou2 = 0;
+	while(!passou1){
+		sys_outb(OUT_BUF,0xED);
+		sys_inb(IN_BUF,&cenas);
+		if(cenas == RESEND)
+			continue;
+		else if(cenas == ERROR)
+			kbd_command_leds(leds);
+		else
+			passou1 =1;
+	}
+	while(!passou2){
+		sys_outb(OUT_BUF,leds);
+		sys_inb(IN_BUF,&cenas);
+		if(cenas == RESEND)
+			continue;
+		else if(cenas == ERROR)
+			kbd_command_leds(leds);
+		else
+			passou2 =1;
+	}
 
-        sys_outb(OUT_BUF,0xED);
-
-        sys_inb(IN_BUF,&cenas);
-
-        sys_outb(OUT_BUF,leds);
-
-        sys_inb(IN_BUF,&cenas);
 
 }
 
-
+/*
 int receive_kbd(){
 	unsigned long stat;
 	while( 1 ) {
 			sys_inb(STAT_REG, &stat); /* assuming it returns OK */
-			/* loop while 8042 output buffer is empty */
+			/* loop while 8042 output buffer is empty
 			if( stat & OBF ) {
-				sys_inb(OUT_BUF, &data); /* assuming it returns OK */
+				sys_inb(OUT_BUF, &data); /* assuming it returns OK
 				if ( (stat &(PAR_ERR | TO_ERR)) == 0 )
 					return data;
 				else
@@ -59,6 +73,7 @@ int receive_kbd(){
 			tickdelay(micros_to_ticks(DELAY_US));
 		}
 }
+*/
 
 int send_kbd(short cmd){
 	unsigned long stat;

@@ -15,6 +15,7 @@ static void print_usage(char *argv[]);
 int main(int argc, char **argv){
 	/* Initialize service */
 
+	sys_enable_iop(SELF);
 	sef_startup();
 
 	printf("lab3: The PC's Keyboard  \n");
