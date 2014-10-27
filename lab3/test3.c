@@ -47,7 +47,22 @@ int kbd_test_scan(unsigned short ass) {
 						}
 					}
 					else { //Assembly code
-
+						scan_code = kbd_handler_ass();
+						if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
+						else if(scan_code>>7){
+							if(two_bytes) printf("BREAKCODE : 0xE0%x\n",scan_code & 0xff);
+							else printf("BREAKCODE : 0x%x\n",scan_code & 0xff);
+							if (scan_code==BREAK_CODE_ESC)
+								breaker = 0;
+						}
+						else
+						{
+							if (two_bytes){
+								printf("MAKCODE : 0xE0%x\n",scan_code & 0xff);
+								two_bytes=0;
+							}
+							else printf("MAKECODE : 0x%x\n",scan_code & 0xff);
+						}
 					}
 				}
 				break;
@@ -174,37 +189,37 @@ int kbd_test_timed_scan(unsigned short n) {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.NOTIFY_ARG & irq_set_timer){
-									global_counter++;
-									if(global_counter >= 60)
-									{
-										sec++;
-										printf("passou %d segundo.. \n",sec);
-										if (sec>=n)
-											breaker = 0;
+					global_counter++;
+					if(global_counter >= 60)
+					{
+						sec++;
+						printf("passou %d segundo.. \n",sec);
+						if (sec>=n)
+							breaker = 0;
 
-										global_counter = 0;
-									}
-								}
+						global_counter = 0;
+					}
+				}
 
 				if (msg.NOTIFY_ARG & irq_set_kbd) {//C code
-						kbd_int_handler();
-						if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
-						else if(scan_code>>7){
-							if(two_bytes) printf("BREAKCODE : 0xE0%x\n",scan_code & 0xff);
-							else printf("BREAKCODE : 0x%x\n",scan_code & 0xff);
-							if (scan_code==BREAK_CODE_ESC)
-								breaker = 0;
-						}
-						else
-						{
-							sec = 0;
-							if (two_bytes){
-								printf("MAKCODE : 0xE0%x\n",scan_code & 0xff);
+					kbd_int_handler();
+					if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
+					else if(scan_code>>7){
+						if(two_bytes) printf("BREAKCODE : 0xE0%x\n",scan_code & 0xff);
+						else printf("BREAKCODE : 0x%x\n",scan_code & 0xff);
+						if (scan_code==BREAK_CODE_ESC)
+							breaker = 0;
+					}
+					else
+					{
+						sec = 0;
+						if (two_bytes){
+							printf("MAKCODE : 0xE0%x\n",scan_code & 0xff);
 
-								two_bytes=0;
-							}
-							else printf("MAKECODE : 0x%x\n",scan_code & 0xff);
+							two_bytes=0;
 						}
+						else printf("MAKECODE : 0x%x\n",scan_code & 0xff);
+					}
 				}
 
 				break;
