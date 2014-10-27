@@ -6,12 +6,12 @@
 #include "i8254.h"
 #include "timer.h"
 
-int breaker = 1;
+int breaker = 1; //variable that breaks the cycle
 
-long scan_key;
+long scan_key; //variable used in the Assembly code
 
 
-int kbd_test_scan(unsigned short ass) {
+int kbd_test_scan(unsigned short ass) { //tests if the code is able to read the scancodes from the KBC using an interrupt handler (IH) for C and Assembly
 	breaker = 1;
 	int two_bytes = 0;
 	int ipc_status, r;
@@ -78,7 +78,7 @@ int kbd_test_scan(unsigned short ass) {
 
 
 
-int kbd_test_leds(unsigned short n, unsigned short *leds) {
+int kbd_test_leds(unsigned short n, unsigned short *leds) { //tests if the code changes the state of the keyboard indicator LEDs
 	int ipc_status;
 	message msg;
 	int i = 0;
@@ -170,7 +170,7 @@ int kbd_test_leds(unsigned short n, unsigned short *leds) {
 
 
 
-int kbd_test_timed_scan(unsigned short n) {
+int kbd_test_timed_scan(unsigned short n) { //tests if the program is able to handle interrupts from more than one device
 	breaker = 1;
 	int global_counter = 0,sec = 0;
 	int two_bytes = 0;

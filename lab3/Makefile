@@ -1,4 +1,4 @@
-# Makefile for the lab1 driver (based on that of hello).
+# Makefile for the lab3
 
 COMPILER_TYPE= gnu
 
