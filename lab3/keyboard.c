@@ -13,7 +13,7 @@
 
 unsigned long data;
 
-int kbd_subscribe_int(void) {
+int kbd_subscribe_int(void) { //
 	int value = KBD_HOOK_ID;
 	sys_irqsetpolicy(IRQ1, IRQ_REENABLE | IRQ_EXCLUSIVE, &value);
 	sys_irqenable(&value);
@@ -25,7 +25,7 @@ int kbd_unsubscribe_int() {
 	return (sys_irqrmpolicy(&value)||sys_irqdisable(&value));
 }
 
-void kbd_int_handler(){
+void kbd_int_handler(){ //function that handles the interrupts in C
 	sys_inb(IN_BUF,&scan_code);
 }
 
