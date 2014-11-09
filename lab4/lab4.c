@@ -28,7 +28,7 @@ proc_args(argc, argv);
 
 static void print_usage(char *argv[]) {
 printf("Usage: one of the following:\n"
-"\t service run %s -args \"timer_test_config <unsigned long>\" \n"
+"\t service run %s -args \"test_packet<unsigned short cnt>\" \n"
 "\t service run %s -args \"timer_test_square <unsigned long>\n"
 "\t service run %s -args \"timer_test_int <unsigned long>\" \n"
 ,argv[0], argv[0], argv[0]);
@@ -39,14 +39,14 @@ char *str;
 long num;
 
 /* check the function to test: if the first characters match, accept it */
-if (strncmp(argv[1], "timer_test_config", strlen("timer_test_config")) == 0) {
+if (strncmp(argv[1], "test_packet", strlen("test_packet")) == 0) {
 if( argc != 3 ) {
-printf("Timer:wrong no of arguments for test of timer_test_config() \n");
+printf("Mouse:wrong no of arguments for test of test_packet() \n");
 return 1;
 }
-printf("timer_test_config()\n"); /* Actually, it was already invoked */
-unsigned long timer = parse_ulong(argv[2], 10);
-timer_test_config(timer);
+printf("test_packet\n"); /* Actually, it was already invoked */
+unsigned short cnt = parse_ulong(argv[2], 10);
+test_packet(cnt);
 return 0;
 }
 else if (strncmp(argv[1], "timer_test_square", strlen("timer_test_square")) == 0) {
