@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 static void print_usage(char *argv[]) {
 	printf("Usage: one of the following:\n"
 			"\t service run %s -args \"test_packet<unsigned short cnt>\" \n"
-			"\t service run %s -args \"timer_test_square <unsigned long>\n"
+			"\t service run %s -args \"test_async<unsigned short idle_time>\n"
 			"\t service run %s -args \"timer_test_int <unsigned long>\" \n",
 			argv[0], argv[0], argv[0]);
 }
@@ -53,16 +53,14 @@ static int proc_args(int argc, char *argv[]) {
 		unsigned short cnt = parse_ulong(argv[2], 10);
 		test_packet(cnt);
 		return 0;
-	} else if (strncmp(argv[1], "timer_test_square",
-			strlen("timer_test_square")) == 0) {
+	} else if (strncmp(argv[1], "test_async", strlen("test_async")) == 0) {
 		if (argc != 3) {
 			printf(
-					"Timer:wrong no of arguments for test of timer_get_config() \n");
+					"Mouse:wrong no of arguments for test of test_async() \n");
 			return 1;
 		}
-		unsigned long freq = parse_ulong(argv[2], 10);
-		printf("RAN  %lu\n", freq);
-		timer_test_square(freq);
+		unsigned long time = parse_ulong(argv[2], 10);
+		test_async(time);
 		return 0;
 	} else if (strncmp(argv[1], "timer_test_int", strlen("timer_test_int"))
 			== 0) {
