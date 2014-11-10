@@ -68,4 +68,8 @@ int first_byte(unsigned long mouse_byte);
 
 int test_config(void);
 
+int check_for_gesture(unsigned char* packets);
+
+
+
 #endif

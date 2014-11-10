@@ -35,8 +35,9 @@ static void print_usage(char *argv[]) {
 	printf("Usage: one of the following:\n"
 			"\t service run %s -args \"test_packet<unsigned short cnt>\" \n"
 			"\t service run %s -args \"test_async<unsigned short idle_time>\n"
-			"\t service run %s -args \"test_config<void>\" \n",
-			argv[0], argv[0], argv[0]);
+			"\t service run %s -args \"test_config<void>\" \n"
+			"\t service run %s -args \"test_gesture<short length, unsigned short tolerance>\" \n",
+			argv[0], argv[0], argv[0], argv[0]);
 }
 
 static int proc_args(int argc, char *argv[]) {
@@ -71,7 +72,19 @@ static int proc_args(int argc, char *argv[]) {
 		}
 		test_config();
 		return 0;
-	} else {
+	} else if (strncmp(argv[1], "test_gesture", strlen("test_gesture"))
+			== 0) {
+		if (argc != 4) {
+			printf(
+					"Mouse:wrong no of arguments for test of test_gesture() \n");
+			return 1;
+		}
+		unsigned long length = parse_ulong(argv[2], 10);
+		unsigned long tolerance = parse_ulong(argv[3], 10);
+		test_gesture(length,tolerance);
+		return 0;
+	}
+	else {
 		printf("Timer:non valid function \"%s\" to test\n", argv[1]);
 		return 1;
 	}
