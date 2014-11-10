@@ -7,13 +7,14 @@
 #include <assert.h>
 #include <minix/sysutil.h>
 
-extern unsigned long mouse_byte;
 
 int test_packet(unsigned short cnt) {
+
+	unsigned long mouse_byte;
 	int ipc_status, loops = 0,contador = 0;
 	message msg;
 	unsigned char packets[3];
-	int irq_set = BIT(mouse_subscribe_int());
+	short irq_set = BIT(mouse_subscribe_int());
 	enable_packets();
 	while (loops != cnt) {
 		/* Get a request message. */
@@ -27,24 +28,24 @@ int test_packet(unsigned short cnt) {
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.NOTIFY_ARG & irq_set) {
-					mouse_int_handler();
-					if ((contador == 0) && (mouse_byte & 8 == 8)){
+					mouse_byte = mouse_int_handler();
+					if((contador == 0) && ((mouse_byte & BIT(2))==BIT(2))){
 						packets[0] = mouse_byte;
 						contador++;
 					}
-					else if(contador == 0){
+		 			else if (contador == 0){
 						continue;
 					}
-					else if(contador == 2){
-						contador = 0;
-						packets[2] = mouse_byte;
-					 	printf("B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
-																packets[0], packets[1], packets[2],(packets[0] & BIT(0)),(packets[0] & BIT(2)) >> 2,(packets[0] & BIT(1)) >> 1, (packets[0] & BIT(6)) >> 6, (packets[0] & BIT(7)) >> 7, packets[1], packets[2]);
-						loops++;
-					}
-					else{
+					else if(contador == 1)
+					{
 						packets[1] = mouse_byte;
 						contador++;
+					}
+					else{
+						packets[2] = mouse_byte;
+						contador = 0;
+						printf("B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
+								packets[0], packets[1], packets[2],(packets[0] & BIT(0)),(packets[0] & BIT(2)) >> 2,(packets[0] & BIT(1)) >> 1, (packets[0] & BIT(6)) >> 6, (packets[0] & BIT(7)) >> 7, packets[1], packets[2]);
 					}
 				}
 				break;
@@ -76,3 +77,8 @@ int test_config(void) {
 int test_gesture(short length, unsigned short tolerance) {
 	/* To be completed ... */
 }
+
+/*
+ * printf("B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
+																packets[0], packets[1], packets[2],(packets[0] & BIT(0)),(packets[0] & BIT(2)) >> 2,(packets[0] & BIT(1)) >> 1, (packets[0] & BIT(6)) >> 6, (packets[0] & BIT(7)) >> 7, packets[1], packets[2]);
+						*/
