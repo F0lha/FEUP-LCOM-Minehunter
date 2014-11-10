@@ -43,7 +43,7 @@ int enable_packets() {
 		goto RESEND_TRY;
 }
 
-int check_kbd_inbf(){
+int check_kbd_ibf(){
 	unsigned long ret;
 	sys_inb(STAT_REG,&ret);
 	ret &= IBF;
@@ -57,10 +57,10 @@ int mouse_int_handler() {
 	unsigned long mouse_byte;
 	int testing = 4;
 	while(testing > 0){
-		if(check_kbd_inbf())
+		if(check_kbd_ibf())
 		{
 			printf("ta cheio \n");
-			tickdelay(micros_to_ticks(DELAY_US));
+			 tickdelay(micros_to_ticks(DELAY_US));
 			continue;
 		}
 		testing--;
@@ -103,24 +103,30 @@ int send_kbd(short cmd) {
 }
 
 int get_mouse_status(){
-	unsigned long ret;
+
 	int irq_set = mouse_subscribe_int();
+	unsigned long ret;
 	if (sys_outb(STATUS_PORT, KBC_CMD_MOUSE) != OK) {// manda d4 para 64
 		return 1;
 	}
 	if (sys_outb(OUT_BUF, DSM) != OK) {// manda F5 para 60
 		return 1;
 	}
-	if (sys_outb(OUT_BUF, STATUS_REQUEST) != OK) {// manda F5 para 60
+	if(sys_inb(OUT_BUF, &ret) != OK){
+		return 1;
+	}
+	if(ret!=ACK)
+		get_mouse_status();
+	if (sys_outb(STATUS_PORT, KBC_CMD_MOUSE) != OK) {// manda d4 para 64
+			return 1;
+		}
+	if (sys_outb(OUT_BUF, STATUS_REQUEST) != OK) {
 		return 1;
 	}
 	if(sys_inb(OUT_BUF, &ret) != OK){
 		return 1;
 	}
 	if(ret!=ACK)
-		return 1;
-	else {
 		get_mouse_status();
-		printf("deu coco\n");
-	}
+	return irq_set;
 }
