@@ -66,4 +66,6 @@ void print_packet(unsigned char * packet);
 
 int first_byte(unsigned long mouse_byte);
 
+int test_config(void);
+
 #endif
