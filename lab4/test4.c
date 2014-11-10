@@ -29,24 +29,20 @@ int test_packet(unsigned short cnt) {
 			case HARDWARE: /* hardware interrupt notification */
 				if (msg.NOTIFY_ARG & irq_set) {
 					mouse_byte = mouse_int_handler();
-					if((contador == 0) && ((mouse_byte & BIT(2))==BIT(2))){
-						packets[0] = mouse_byte;
-						contador++;
+					if (contador == 0) {
+						if (!first_byte(mouse_byte)) {
+							contador = 0;
+							continue;
+						}
 					}
-		 			else if (contador == 0){
+					packets[contador] = mouse_byte;
+					if (contador == 2) {
+						contador = 0;
+						print_packet(packets);
+						loops++;
 						continue;
 					}
-					else if(contador == 1)
-					{
-						packets[1] = mouse_byte;
-						contador++;
-					}
-					else{
-						packets[2] = mouse_byte;
-						contador = 0;
-						printf("B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
-								packets[0], packets[1], packets[2],(packets[0] & BIT(0)),(packets[0] & BIT(2)) >> 2,(packets[0] & BIT(1)) >> 1, (packets[0] & BIT(6)) >> 6, (packets[0] & BIT(7)) >> 7, packets[1], packets[2]);
-					}
+					contador++;
 				}
 				break;
 			default:
@@ -64,6 +60,10 @@ int test_packet(unsigned short cnt) {
 void print_packet(unsigned char * packets){
 	printf("B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
 										packets[0], packets[1], packets[2],(packets[0] & BIT(0)),(packets[0] & BIT(2)) >> 2,(packets[0] & BIT(1)) >> 1, (packets[0] & BIT(6)) >> 6, (packets[0] & BIT(7)) >> 7, packets[1], packets[2]);
+}
+
+int first_byte(unsigned long mouse_byte) {
+	return (BIT(3) & mouse_byte & BIT(3));
 }
 
 int test_async(unsigned short idle_time) {

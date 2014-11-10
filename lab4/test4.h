@@ -64,4 +64,6 @@ int test_gesture(short length, unsigned short tolerance);
 
 void print_packet(unsigned char * packet);
 
+int first_byte(unsigned long mouse_byte);
+
 #endif
