@@ -11,7 +11,7 @@ unsigned long mouse_byte;
 
 int mouse_subscribe_int(void) {
 	int value = MOUSE_HOOK_ID;
-	sys_irqsetpolicy(MOUSE_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &value);
+	sys_irqsetpolicy(MOUSE_IRQ, (IRQ_REENABLE | IRQ_EXCLUSIVE), &value);
 	sys_irqenable(&value);
 	return MOUSE_HOOK_ID;
 }
@@ -23,29 +23,53 @@ int mouse_unsubscribe_int() {
 
 int enable_packets() {
 	unsigned long ret;
-	if (sys_outb(STATUS_PORT, ENABLE_MOUSE) != OK) { // manda a8 para 64
+	/*if (sys_outb(STATUS_PORT, ENABLE_MOUSE) != OK) { // manda a8 para 64
 		return 1;
-	}
+	}*/
 	if (sys_outb(STATUS_PORT, KBC_CMD_MOUSE) != OK) {// manda d4 para 64
 		return 1;
 	}
+	RESEND_TRY:
 	if (sys_outb(OUT_BUF, ENABLE_PACKETS) != OK) {//manda f4 para 60
 			return 1;
 		}
 	if (sys_inb(OUT_BUF, &ret) != OK) {
 		return 1;
 	}
-	if (ret != ACK) {
-		printf("deu bosta");
-		return 1;
+	if (ret == ERROR) {
+		enable_packets();
 	}
+	else if(ret == RESEND)
+		goto RESEND_TRY;
 }
 
+int check_kbd_inbf(){
+	unsigned long ret;
+	sys_inb(STAT_REG,&ret);
+	ret &= IBF;
+	return (int) ret;
+}
+
+
 int mouse_int_handler() {
+
+
+	unsigned long mouse_byte;
+	int testing = 4;
+	while(testing > 0){
+		if(check_kbd_inbf())
+		{
+			printf("ta cheio \n");
+			tickdelay(micros_to_ticks(DELAY_US));
+			continue;
+		}
+		testing--;
+	}
+
 	if (sys_inb(OUT_BUF, &mouse_byte) != OK) {
 		return 1;
 	} else
-		return 0;
+		return mouse_byte;
 }
 
 int receive_kbd() {
