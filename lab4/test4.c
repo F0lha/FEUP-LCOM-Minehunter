@@ -1,6 +1,7 @@
 #include "test4.h"
 #include "mouse.h"
 #include "i8254.h"
+#include "timer.h"
 #include <minix/drivers.h>
 #include <minix/syslib.h>
 #include <minix/com.h>
@@ -67,7 +68,63 @@ int first_byte(unsigned long mouse_byte) {
 }
 
 int test_async(unsigned short idle_time) {
-	/* To be completed ... */
+
+	unsigned long mouse_byte;
+	int ipc_status, loops = 0,contador = 0;
+	int global_counter = 0;
+	message msg;
+	unsigned char packets[3];
+	short irq_set_mouse = BIT(mouse_subscribe_int());
+	short irq_set_timer = BIT(timer_subscribe_int());
+	enable_packets();
+	while (loops != idle_time) {
+		/* Get a request message. */
+		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+			printf("driver_receive failed with: %d");
+			continue;
+		}
+		if (is_ipc_notify(ipc_status)) {
+
+			/* received notification */
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE: /* hardware interrupt notification */
+				if (msg.NOTIFY_ARG & irq_set_mouse) {
+					global_counter = 0;
+					loops = 0;
+					mouse_byte = mouse_int_handler();
+					if (contador == 0) {
+						if (!first_byte(mouse_byte)) {
+							contador = 0;
+							continue;
+						}
+					}
+					packets[contador] = mouse_byte;
+					if (contador == 2) {
+						contador = 0;
+						print_packet(packets);
+						continue;
+					}
+					contador++;
+				}
+				else if (msg.NOTIFY_ARG & irq_set_timer){
+					global_counter++;
+					if (global_counter == 60) {
+						loops++;
+						global_counter = 0;
+					}
+				}
+				break;
+			default:
+				break; /* no other notifications expected: do nothing */
+			}
+		}
+		else { /* received a standard message, not a notification */
+			/* no standard messages expected: do nothing */
+		}
+	}
+	printf("Fim do Tempo\n");
+	return (mouse_unsubscribe_int()&&timer_unsubscribe_int());
+
 }
 
 int test_config(void) {
