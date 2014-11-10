@@ -103,15 +103,24 @@ int send_kbd(short cmd) {
 }
 
 int get_mouse_status(){
+	unsigned long ret;
 	int irq_set = mouse_subscribe_int();
-		if (sys_outb(STATUS_PORT, KBC_CMD_MOUSE) != OK) {// manda d4 para 64
-						return 1;
-					}
-		if (sys_outb(OUT_BUF, DSM) != OK) {// manda F5 para 60
-						return 1;
-					}
-		if (sys_outb(OUT_BUF, STATUS_REQUEST) != OK) {// manda F5 para 60
-								return 1;
-							}
-
+	if (sys_outb(STATUS_PORT, KBC_CMD_MOUSE) != OK) {// manda d4 para 64
+		return 1;
+	}
+	if (sys_outb(OUT_BUF, DSM) != OK) {// manda F5 para 60
+		return 1;
+	}
+	if (sys_outb(OUT_BUF, STATUS_REQUEST) != OK) {// manda F5 para 60
+		return 1;
+	}
+	if(sys_inb(OUT_BUF, &ret) != OK){
+		return 1;
+	}
+	if(ret!=ACK)
+		return 1;
+	else {
+		get_mouse_status();
+		printf("deu coco\n");
+	}
 }
