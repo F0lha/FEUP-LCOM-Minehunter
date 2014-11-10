@@ -58,6 +58,7 @@ int test_packet(unsigned short cnt) {
 	return mouse_unsubscribe_int();
 }
 
+
 void print_packet(unsigned char * packets){
 	printf("B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
 										packets[0], packets[1], packets[2],(packets[0] & BIT(0)),(packets[0] & BIT(2)) >> 2,(packets[0] & BIT(1)) >> 1, (packets[0] & BIT(6)) >> 6, (packets[0] & BIT(7)) >> 7, packets[1], packets[2]);
@@ -128,14 +129,22 @@ int test_async(unsigned short idle_time) {
 }
 
 int test_config(void) {
-	/* To be completed ... */
+	unsigned char packets[3];
+	get_mouse_status();
+
+	int n = 0;
+	unsigned long code;
+	while (n < 3 ){
+		if (sys_inb(OUT_BUF, &code));
+		packets[n]=code;
+		n++;
+	}
+
+	printf("Sample rate = %d\n",packets[2]);
+	return mouse_unsubscribe_int();
 }
 
 int test_gesture(short length, unsigned short tolerance) {
 	/* To be completed ... */
 }
 
-/*
- * printf("B1=0x%X\tB2=0x%X\tB3=0x%X\tLB=%d\tMB=%d\tRB=%d\tXOV=%d\tYOV=%d\tX=%d\tY=%d\n\n",
-																packets[0], packets[1], packets[2],(packets[0] & BIT(0)),(packets[0] & BIT(2)) >> 2,(packets[0] & BIT(1)) >> 1, (packets[0] & BIT(6)) >> 6, (packets[0] & BIT(7)) >> 7, packets[1], packets[2]);
-						*/

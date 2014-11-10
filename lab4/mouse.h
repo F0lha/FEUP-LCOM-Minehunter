@@ -12,7 +12,9 @@
 #define KBC_CMD_REG 0x64
 #define KBC_CMD_MOUSE		0xD4
 #define ENABLE_PACKETS	 	0xF4
+#define DSM 				0xF5
 #define ENABLE_MOUSE		0xA8
+#define STATUS_REQUEST		0XE9
 #define ACK					0xFA
 #define PAR_ERR         BIT(7)
 #define TO_ERR                 BIT(6)
@@ -33,5 +35,6 @@ int mouse_int_handler();
 int receive_kbd();
 
 int send_kbd(short cmd);
+int get_mouse_status();
 
 #endif
