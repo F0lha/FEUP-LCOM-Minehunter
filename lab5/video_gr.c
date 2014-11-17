@@ -95,11 +95,57 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 		unsigned short xf, unsigned short yf, unsigned long color){
 	unsigned dx=xf-xi;
 	unsigned dy=yf-yi;
-
 	unsigned d = 2*dy - dx;
 	vg_set_pixel(xi,yi,color);
 	unsigned y=yi;
 	unsigned x;
+	int sinal;
+	if(xi == xf){
+		int i;
+		for(i = 0; i < (dy);i++)
+			vg_set_pixel(xi,yi+i,color);
+	}
+	else if(yi == yf){
+		int i;
+		for(i = 0; i < (dx);i++)
+			vg_set_pixel(xi+i,yi,color);
+	}
+	else{
+		if(dx/dy < 0) sinal = -1;
+		else sinal = 1;
+		if(sinal)
+		{
+			for (x = xi+1; x < xf + 1; x++){
+				if (d > 0){
+					y = y+1;
+					vg_set_pixel(x,y,color);
+					d = d + (2*dy-2*dx);
+				}
+				else{
+					vg_set_pixel(x,y,color);
+					d = d + (2*dy);
+				}
+			}
+		}
+		else{
+			for (x = xi+1; x < xf + 1; x++){
+				if (d > 0){
+					y = y+1;
+					vg_set_pixel(x,y,color);
+					d = d - (2*dy-2*dx);
+				}
+				else{
+					vg_set_pixel(x,y,color);
+					d = d - (2*dy);
+				}
+			}
+		}
+	}
+
+
+
+
+			/*
 	for (x = xi+1; x < xf + 1; x++){
 		if (d > 0){
 			y = y+1;
@@ -111,4 +157,5 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 			d = d + (2*dy);
 		}
 	}
+			 */
 }
