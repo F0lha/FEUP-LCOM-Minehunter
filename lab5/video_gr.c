@@ -102,10 +102,10 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 	if(xi==xf){
 		if(yi > yf){
 			for (yf; yf < yi; yf++)
-				set_pixel(xi, yf,color);
+				vg_set_pixel(xi, yf,color);
 		}else{
 			for (yi; yi < yf; yi++)
-				set_pixel(xi, yi,color);
+				vg_set_pixel(xi, yi,color);
 		}
 
 	}else{
@@ -120,7 +120,7 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 			sinal = -1;
 
 		derror= 2*dy - dx;
-		set_pixel(xi, yi, color);
+		vg_set_pixel(xi, yi, color);
 
 		int y = yi;
 
@@ -129,10 +129,10 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 		for (x = xi+1; x < xf; x++){
 			if(derror > 0){
 				y = y+sinal*1;
-				set_pixel(x,y,color);
+				vg_set_pixel(x,y,color);
 				derror += (2* dy-2*dx);
 			}else{
-				set_pixel(x, y, color);
+				vg_set_pixel(x, y, color);
 				derror += (2*dy);
 			}
 		}
