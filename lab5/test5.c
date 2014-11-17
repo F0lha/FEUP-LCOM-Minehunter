@@ -43,8 +43,9 @@ void *test_init(unsigned short mode, unsigned short delay) {
 	}
 
 	timer_unsubscribe_int();
-	printf ("%d \n",video_mem);
+
 	vg_exit();
+	printf ("%d \n",video_mem);
 }
 
 
