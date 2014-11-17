@@ -99,49 +99,44 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 	vg_set_pixel(xi,yi,color);
 	unsigned y=yi;
 	unsigned x;
-	int sinal;
-	if(xi == xf){
-		int i;
-		for(i = 0; i < (dy);i++)
-			vg_set_pixel(xi,yi+i,color);
-	}
-	else if(yi == yf){
-		int i;
-		for(i = 0; i < (dx);i++)
-			vg_set_pixel(xi+i,yi,color);
-	}
-	else{
-		if(dx/dy < 0) sinal = -1;
-		else sinal = 1;
-		if(sinal)
-		{
-			for (x = xi+1; x < xf + 1; x++){
-				if (d > 0){
-					y = y+1;
-					vg_set_pixel(x,y,color);
-					d = d + (2*dy-2*dx);
-				}
-				else{
-					vg_set_pixel(x,y,color);
-					d = d + (2*dy);
-				}
-			}
+	if(xi==xf){
+		if(yi > yf){
+			for (yf; yf < yi; yf++)
+				set_pixel(xi, yf,color);
+		}else{
+			for (yi; yi < yf; yi++)
+				set_pixel(xi, yi,color);
 		}
-		else{
-			for (x = xi+1; x < xf + 1; x++){
-				if (d > 0){
-					y = y+1;
-					vg_set_pixel(x,y,color);
-					d = d - (2*dy-2*dx);
-				}
-				else{
-					vg_set_pixel(x,y,color);
-					d = d - (2*dy);
-				}
-			}
-		}
-	}
 
+	}else{
+		int dx= xf - xi;
+		int dy= yf -yi;
+
+
+		int derror;
+		int sinal = 1;
+
+		if(dy/dx < 0)
+			sinal = -1;
+
+		derror= 2*dy - dx;
+		set_pixel(xi, yi, color);
+
+		int y = yi;
+
+		int x;
+
+		for (x = xi+1; x < xf; x++){
+			if(derror > 0){
+				y = y+sinal*1;
+				set_pixel(x,y,color);
+				derror += (2* dy-2*dx);
+			}else{
+				set_pixel(x, y, color);
+				derror += (2*dy);
+			}
+		}
+	}
 
 
 
