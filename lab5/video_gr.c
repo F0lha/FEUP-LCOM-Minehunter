@@ -57,6 +57,7 @@ void *vg_init(unsigned short mode){
 	int s;
 	struct mem_range mr;
 
+
 	/* Allow memory mapping */
 	mr.mr_base = (phys_bytes)(VRAM_PHYS_ADDR);
 	mr.mr_limit = mr.mr_base + (V_RES*H_RES*BITS_PER_PIXEL/8);
