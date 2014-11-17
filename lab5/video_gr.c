@@ -72,3 +72,43 @@ void *vg_init(unsigned short mode){
 		panic("video_txt: couldn't map video memory");
 	return video_mem;
 }
+
+
+void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color){
+	char *ptr = video_mem;
+	ptr += x;
+	ptr += H_RES*y;
+	*ptr = color;
+}
+
+void vg_fill(unsigned int x,unsigned int y, unsigned int width, unsigned int height,unsigned long color){
+	int i,j;
+	for(j = 0; j < height;j++){
+		for(i = 0; i < width;i++)
+		{
+			vg_set_pixel(x+i,y+j,color);
+		}
+	}
+}
+
+void vg_set_line(unsigned short xi, unsigned short yi,
+		unsigned short xf, unsigned short yf, unsigned long color){
+	unsigned dx=xf-xi;
+	unsigned dy=yf-yi;
+
+	unsigned d = 2*dy - dx;
+	vg_set_pixel(xi,yi,color);
+	unsigned y=yi;
+	unsigned x;
+	for (x = xi+1; x < xf + 1; x++){
+		if (d > 0){
+			y = y+1;
+			vg_set_pixel(x,y,color);
+			d = d + (2*dy-2*dx);
+		}
+		else{
+			vg_set_pixel(x,y,color);
+			d = d + (2*dy);
+		}
+	}
+}

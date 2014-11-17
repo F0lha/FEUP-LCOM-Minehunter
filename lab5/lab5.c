@@ -38,7 +38,7 @@ static void print_usage(char *argv[]) {
 	printf("Usage: one of the following:\n"
 			"\t service run %s -args \"test_init<unsigned short mode, unsigned short delay>\" \n"
 			"\t service run %s -args \"test_square<unsigned short x, unsigned short y, unsigned short size, unsigned long color>\n"
-			"\t service run %s -args \"test_config<void>\" \n"
+			"\t service run %s -args \"test_line<unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color>\" \n"
 			"\t service run %s -args \"test_gesture<short length, unsigned short tolerance>\" \n",
 			argv[0], argv[0], argv[0], argv[0]);
 }
@@ -54,7 +54,7 @@ static int proc_args(int argc, char *argv[]) {
 			return 1;
 		}
 		printf("test_init\n"); /* Actually, it was already invoked */
-		unsigned short mode = parse_ulong(argv[2], 10);
+		unsigned short mode = parse_ulong(argv[2], 16);
 		unsigned short delay = parse_ulong(argv[3], 10);
 		test_init(mode,delay);
 		return 0;
@@ -72,14 +72,21 @@ static int proc_args(int argc, char *argv[]) {
 		color = parse_ulong(argv[5], 10);
 		test_square(x,y,size,color);
 		return 0;
-	} else if (strncmp(argv[1], "test_config", strlen("test_config"))
+	} else if (strncmp(argv[1], "test_line", strlen("test_line"))
 			== 0) {
-		if (argc != 2) {
+		if (argc != 7) {
 			printf(
-					"Mouse:wrong no of arguments for test of test_config() \n");
+					"Mouse:wrong no of arguments for test of test_line() \n");
 			return 1;
 		}
-		//test_config();
+		unsigned short x,y,xf,yf;
+		unsigned long color;
+		x = parse_ulong(argv[2], 10);
+		y = parse_ulong(argv[3], 10);
+		xf = parse_ulong(argv[4], 10);
+		yf = parse_ulong(argv[5], 10);
+		color = parse_ulong(argv[6], 10);
+		test_line(x,y,xf,yf,color);
 		return 0;
 	} else if (strncmp(argv[1], "test_gesture", strlen("test_gesture"))
 			== 0) {
