@@ -60,13 +60,13 @@ void *vg_init(unsigned short mode){
 
 	/* Allow memory mapping */
 	mr.mr_base = (phys_bytes)(VRAM_PHYS_ADDR);
-	mr.mr_limit = mr.mr_base + (V_RES*H_RES*BITS_PER_PIXEL/8);
+	mr.mr_limit = mr.mr_base + (H_RES*V_RES*BITS_PER_PIXEL/8);
 
 	if( OK != (s = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
 		panic("video_txt: sys_privctl (ADD_MEM) failed: %d\n", s);
 
 	/* Map memory */
-	video_mem = vm_map_phys(SELF, (void *)mr.mr_base, V_RES*H_RES*BITS_PER_PIXEL/8);
+	video_mem = vm_map_phys(SELF, (void *)mr.mr_base, H_RES*V_RES*BITS_PER_PIXEL/8);
 
 	if(video_mem == MAP_FAILED)
 		panic("video_txt: couldn't map video memory");
@@ -93,12 +93,17 @@ void vg_fill(unsigned int x,unsigned int y, unsigned int width, unsigned int hei
 
 void vg_set_line(unsigned short xi, unsigned short yi,
 		unsigned short xf, unsigned short yf, unsigned long color){
-	unsigned dx=xf-xi;
-	unsigned dy=yf-yi;
-	unsigned d = 2*dy - dx;
-	vg_set_pixel(xi,yi,color);
-	unsigned y=yi;
-	unsigned x;
+	float dx=xf-xi;
+	float dy=yf-yi;
+	float d = 2*dy - dx;
+	float y = yi;
+	float x = xi;
+
+
+
+
+
+
 	if(xi==xf){
 		if(yi > yf){
 			for (yf; yf < yi; yf++)
@@ -108,25 +113,78 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 				vg_set_pixel(xi, yi,color);
 		}
 
-	}else{
-		int dx= xf - xi;
-		int dy= yf -yi;
+	}
+	else if(yi==yf){
+		if(xi > xf){
+					for (xf; xf < xi; xf++)
+						vg_set_pixel(xf, yi,color);
+				}else{
+					for (xi; xi < xf; xi++)
+						vg_set_pixel(xi, yi,color);
+				}
+	}
+	else{
+			if(xf < xi)
+			{
+				x = xf;
+				xf = xi;
+				xi = x;
+			}
 
 
-		int derror;
-		int sinal = 1;
+			dx=xf-xi;
+			dy=yf-yi;
+			////
 
-		if(dy/dx < 0)
-			sinal = -1;
 
-		derror= 2*dy - dx;
-		vg_set_pixel(xi, yi, color);
 
-		int y = yi;
+		float erro;
 
-		int x;
+		if(dy > 0)
+			erro= 2*dy - dx;
+		else erro= 2*dx + dy;
+		vg_set_pixel(x,y,color);
 
-		for (x = xi+1; x < xf; x++){
+
+		//
+
+
+		vg_set_pixel(x, y, color);
+		if(dy > 0){
+			while((x <= xf) && (y <= yf)){
+
+				vg_set_pixel(x,y,color);
+				if(erro > 0)
+				{
+					y = y + 1;
+					erro = erro - 2 * dx;
+				}
+				else
+				{
+					x = x + 1;
+					erro = erro + 2 * dy;
+				}
+			}
+		}
+		else{
+			while((x <= xf) && (y >= xi)){
+				vg_set_pixel(x,y,color);
+				if(erro > 0)
+				{
+					y = y - 1;
+					erro = erro - 2 * dx;
+				}
+				else
+				{
+					x = x + 1;
+					erro = erro - 2 * dy;
+				}
+			}
+		}
+
+
+
+		/*for (x = xi+1; x < xf; x++){
 			if(derror > 0){
 				y = y+sinal*1;
 				vg_set_pixel(x,y,color);
@@ -136,11 +194,11 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 				derror += (2*dy);
 			}
 		}
-	}
+		 */
 
 
 
-			/*
+	/*
 	for (x = xi+1; x < xf + 1; x++){
 		if (d > 0){
 			y = y+1;
@@ -152,5 +210,6 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 			d = d + (2*dy);
 		}
 	}
-			 */
+	 */
+	}
 }
