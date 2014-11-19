@@ -5,7 +5,7 @@ COMPILER_TYPE= gnu
 CC=gcc
 
 PROG=	lab5
-SRCS=	lab5.c test5.c timer.c vbe.c video_gr.c keyboard.c
+SRCS=	lab5.c test5.c timer.c vbe.c video_gr.c keyboard.c read_xpm.c pixmap.c
 
 CCFLAGS= -Wall
 
