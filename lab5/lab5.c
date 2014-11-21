@@ -39,8 +39,9 @@ static void print_usage(char *argv[]) {
 			"\t service run %s -args \"test_init<unsigned short mode, unsigned short delay>\" \n"
 			"\t service run %s -args \"test_square<unsigned short x, unsigned short y, unsigned short size, unsigned long color>\n"
 			"\t service run %s -args \"test_line<unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color>\" \n"
-			"\t service run %s -args \"test_gesture<short length, unsigned short tolerance>\" \n",
-			argv[0], argv[0], argv[0], argv[0]);
+			"\t service run %s -args \"test_xpm<unsigned short xi, unsigned short yi, char *xpm[]>\" \n",
+			"\t service run %s -args \"int test_move<unsigned short xi, unsigned short yi, char *xpm[], unsigned short hor, short delta, unsigned short time>\" \n",
+			argv[0], argv[0], argv[0], argv[0], argv[0]);
 }
 
 static int proc_args(int argc, char *argv[]) {
@@ -88,18 +89,35 @@ static int proc_args(int argc, char *argv[]) {
 		color = parse_ulong(argv[6], 10);
 		test_line(x,y,xf,yf,color);
 		return 0;
-	} else if (strncmp(argv[1], "test_gesture", strlen("test_gesture"))
+	} else if (strncmp(argv[1], "test_xpm", strlen("test_xpm"))
 			== 0) {
-		if (argc != 4) {
+		if (argc != 5) {
 			printf(
 					"Mouse:wrong no of arguments for test of test_gesture() \n");
 			return 1;
 		}
-		unsigned long length = parse_ulong(argv[2], 10);
-		unsigned long tolerance = parse_ulong(argv[3], 10);
-		//test_gesture(length,tolerance);
+		unsigned long xi = parse_ulong(argv[2], 10);
+		unsigned long yi = parse_ulong(argv[3], 10);
+		char *cenas = argv[4];
+		test_xpm(xi,yi,retXPM(cenas));
 		return 0;
 	}
+	else if (strncmp(argv[1], "test_move", strlen("test_move"))
+				== 0) {
+			if (argc != 8) {
+				printf(
+						"Mouse:wrong no of arguments for test of test_move() \n");
+				return 1;
+			}
+			unsigned long xi = parse_ulong(argv[2], 10);
+			unsigned long yi = parse_ulong(argv[3], 10);
+			char *cenas = argv[4];
+			unsigned long hor = parse_ulong(argv[5], 10);
+			unsigned long delta = parse_ulong(argv[6], 10);
+			unsigned long time = parse_ulong(argv[7], 10);
+			test_move(xi,yi,retXPM(cenas),hor,delta,time);
+			return 0;
+		}
 	else {
 		printf("Timer:non valid function \"%s\" to test\n", argv[1]);
 		return 1;

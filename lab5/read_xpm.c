@@ -5,12 +5,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "pixmap.h"
 
 #define VRAM_PHYS_ADDR	0xF0000000
 #define HRES             1024
 #define VRES		  768
 #define BITS_PER_PIXEL	  8
 
+
+char** retXPM(char *xpm){
+	if(strncmp(xpm, "pic1", strlen("pic1")) == 00)
+	{
+		return pic1;
+	}
+	else if(strncmp(xpm, "pic2", strlen("pic21")) == 00)
+	{
+		return pic2;
+	}
+	else if(strncmp(xpm, "pic3", strlen("pic3")) == 00)
+	{
+		return pic3;
+	}
+	else if(strncmp(xpm, "cross", strlen("cross")) == 00)
+	{
+		return cross;
+	}
+	else if(strncmp(xpm, "penguin", strlen("penguin")) == 00)
+	{
+		return penguin;
+	}
+}
 
 char *read_xpm(char *map[], int *wd, int *ht)
 {
