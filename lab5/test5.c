@@ -261,7 +261,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	int ipc_status, r;
 	message msg;
 	int breaker = 1;
-	float pixels_per_sec = (float)delta / (float)time*60, x =0,y = 0,x_se = 0,y_se = 0, andado = 0;
+	float pixels_per_sec = (float)delta /((float)time*60), x = 0, y = 0, x_se = 0,y_se = 0, andado = 0;
 	int irq_set_key = kbd_subscribe_int();
 	int irq_set_timer =timer_subscribe_int();
 
@@ -291,17 +291,16 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 						if(x_se>1)
 						{
 							x_se -= 1;
-
 							erase_sprite(sp);
 							sp->x += x;
 							andado += x;
 							draw_sprite(sp);
 							x=0;
 						}
-						/*
+
 						if((sp->x + pixels_per_sec + sp->width) >= H_RES)
 							breaker = 0;
-							*/
+
 					}
 					else{
 						y += pixels_per_sec;
@@ -315,10 +314,10 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 							draw_sprite(sp);
 							y=0;
 						}
-						/*
+
 						if((sp->y + pixels_per_sec + sp->height) >= V_RES)
 							breaker = 0;
-							*/
+
 					}
 					if (global_counter == 60) {
 						loops++;
@@ -353,13 +352,16 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	}
 	kbd_unsubscribe_int();
 	timer_unsubscribe_int();
-
 	//////////////
 	vg_exit();
 	printf("%d",loops);
-
-
-
 }					
+
+
+int test_controller(){
+
+}
+
+
 
 
