@@ -272,7 +272,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	draw_sprite(sp);
 
 
-	while(breaker && loops < time) {
+	while(breaker) {
 
 		/* Get a request message. */
 		if ( (r=driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
@@ -324,8 +324,9 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 						loops++;
 						global_counter = 0;
 					}
-					if(loops == time || andado > delta)
+					if(loops == time || andado > delta){
 						breaker = 0;
+					}
 				}
 				else if (msg.NOTIFY_ARG & irq_set_key) {
 					kbd_int_handler();
@@ -355,6 +356,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 
 	//////////////
 	vg_exit();
+	printf("%d",loops);
 
 
 
