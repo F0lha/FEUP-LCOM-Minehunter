@@ -298,9 +298,12 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 							x=0;
 						}
 
-						if((sp->x + pixels_per_sec + sp->width) >= H_RES)
+						if((sp->x + pixels_per_sec + sp->width) >= H_RES){
 							breaker = 0;
-
+						}
+						if (scan_code==BREAK_CODE_ESC){
+							breaker = 0;
+						}
 					}
 					else{
 						y += pixels_per_sec;
@@ -315,10 +318,14 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 							y=0;
 						}
 
-						if((sp->y + pixels_per_sec + sp->height) >= V_RES)
+						if((sp->y + pixels_per_sec + sp->height) >= V_RES){
 							breaker = 0;
-
+						}
+						if (scan_code==BREAK_CODE_ESC){
+							breaker = 0;
+						}
 					}
+
 					if (global_counter == 60) {
 						loops++;
 						global_counter = 0;
