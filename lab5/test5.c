@@ -291,7 +291,6 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 						if(x_se>1)
 						{
 
-							x_se = x_se - 1;
 							int x_se_int = x_se;
 							x_se = x_se - (float)x_se_int;
 							erase_sprite(sp);
