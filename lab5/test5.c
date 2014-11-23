@@ -261,7 +261,15 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	int ipc_status, r;
 	message msg;
 	int breaker = 1;
+	int negative = 0;
+
 	float pixels_per_sec = (float)delta /((float)time*60), x = 0, y = 0, x_se = 0,y_se = 0, andado = 0;
+	if(delta < 0){
+			negative = 1;
+			delta = -delta;
+			pixels_per_sec = -pixels_per_sec;
+	}
+
 	int irq_set_key = kbd_subscribe_int();
 	int irq_set_timer =timer_subscribe_int();
 
@@ -294,7 +302,10 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 							int x_se_int = x_se;
 							x_se = x_se - (float)x_se_int;
 							erase_sprite(sp);
-							sp->x += x - x_se;
+							if(negative)
+								sp->x -= x - x_se;
+							else
+								sp->x += x - x_se;
 							andado += x - x_se;
 							draw_sprite(sp);
 							x = x_se;
@@ -303,6 +314,8 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 
 						if((sp->x + pixels_per_sec + sp->width) >= H_RES){
 							breaker = 0;
+						}else if((sp->x - pixels_per_sec) < 0){
+							breaker = 0;
 						}
 					}
 					else{
@@ -310,18 +323,21 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 						y_se += pixels_per_sec;
 						if(y_se>1)
 						{
-							y_se -= 1;
+							int y_se_int = y_se;
+							y_se = y_se - (float)y_se_int;
 							erase_sprite(sp);
-							sp->y += y;
-							andado +=y;
+							if(negative)
+								sp->y -= y - y_se;
+							else
+								sp->y += y - y_se;
+							andado +=y - y_se;
 							draw_sprite(sp);
-							y=0;
+							y = y_se;
 						}
 
 						if((sp->y + pixels_per_sec + sp->height) >= V_RES){
 							breaker = 0;
-						}
-						if (scan_code==BREAK_CODE_ESC){
+						}else if((sp->y - pixels_per_sec) < 0){
 							breaker = 0;
 						}
 					}
