@@ -290,18 +290,19 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 						x_se += pixels_per_sec;
 						if(x_se>1)
 						{
-							x_se -= 1;
+
+							x_se = x_se - 1;
+							int x_se_int = x_se;
+							x_se = x_se - (float)x_se_int;
 							erase_sprite(sp);
-							sp->x += x;
-							andado += x;
+							sp->x += x - x_se;
+							andado += x - x_se;
 							draw_sprite(sp);
-							x=0;
+							x = x_se;
+
 						}
 
 						if((sp->x + pixels_per_sec + sp->width) >= H_RES){
-							breaker = 0;
-						}
-						if (scan_code==BREAK_CODE_ESC){
 							breaker = 0;
 						}
 					}
@@ -330,7 +331,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 						loops++;
 						global_counter = 0;
 					}
-					if(loops == time || andado > delta){
+					if(andado > delta){
 						breaker = 0;
 					}
 				}
@@ -361,7 +362,10 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	timer_unsubscribe_int();
 	//////////////
 	vg_exit();
-	printf("%d",loops);
+	printf("%d\n",loops);
+	char result[50];
+	sprintf(result, "%f", andado);
+	 printf("x=%s,",result);
 }					
 
 
