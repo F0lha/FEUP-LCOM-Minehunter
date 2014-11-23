@@ -358,6 +358,10 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 			}
 		}
 	}
+
+	/// para meter para tras basta fazer um if, e depois copy paste com - em vez dos +... funciona como positives se meteres em absoluto
+
+
 	kbd_unsubscribe_int();
 	timer_unsubscribe_int();
 	//////////////
