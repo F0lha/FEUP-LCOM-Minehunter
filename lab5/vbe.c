@@ -11,10 +11,42 @@
 #define PB2OFF(x) ((x) & 0x0FFFF)
 
 int vbe_get_mode_info(unsigned short mode, vbe_mode_info_t *vmi_p) {
-  
-  /* To be completed */
-  
-  return 1;
+
+	mmap_t map;
+	struct reg86u r;
+	if (lm_alloc(sizeof(vbe_mode_info_t), &map) == NULL)
+		return 1;
+	r.u.w.ax = 0x4F01;
+	r.u.w.es = PB2BASE(map.phys);
+	r.u.w.di = PB2OFF(map.phys);
+	r.u.w.cx = mode;
+	r.u.b.intno = 0x10;
+
+	if (sys_int86(&r) != OK) { /* call BIOS */
+		return 1;
+	}
+
+	*vmi_p = *(vbe_mode_info_t *) map.virtual;
+	lm_free(&map);
+	return 0;
 }
 
+int vbe_get_controller_info(VbeInfoBlock *vmi) {
 
+	int virt_mem = lm_init();
+	mmap_t map;
+	struct reg86u r;
+	lm_alloc(sizeof(VbeInfoBlock), &map);
+	r.u.w.ax = 0x4F00;
+	r.u.w.es = PB2BASE(map.phys);
+	r.u.w.di = PB2OFF(map.phys);
+	r.u.b.intno = 0x10;
+
+	if (sys_int86(&r) != OK) { /* call BIOS */
+		return 1;
+	}
+	printf("\n\n0x%X\n\n", r.u.w.ax);
+	*vmi = *(VbeInfoBlock *) map.virtual;
+	lm_free(&map);
+	return virt_mem;
+}

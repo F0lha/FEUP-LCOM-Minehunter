@@ -390,15 +390,25 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 	timer_unsubscribe_int();
 	//////////////
 	vg_exit();
-	printf("%d\n",loops);
-	char result[50];
-	sprintf(result, "%f", andado);
-	 printf("x=%s,",result);
+
 }					
 
 
 int test_controller(){
-
+	VbeInfoBlock estrutura;
+	vbe_get_controller_info(&estrutura);
+	printf("Capabilities : \n");
+	if(estrutura.Capabilities[0] && BIT(0))
+		printf("DAC is fixed width, with 6 bits per primary color\n");
+	else printf("AC width is switchable to 8 bits per primary color\n");
+	if(estrutura.Capabilities[0] && BIT(1))
+			printf("Controller is not VGA compatible\n");
+		else printf("Controller is VGA compatible\n");
+	if(estrutura.Capabilities[0] && BIT(2))
+			printf("When programming large blocks of information to the RAMDAC,use the blank bit in Function 09h.\n");
+		else printf("Normal RAMDAC operation\n");
+	printf("Size Of VRam Memory: %d KB\n" ,estrutura.TotalMemory*64);
+	printf("VideoModePtr : 0x%08x",estrutura.VideoModePtr);
 }
 
 
