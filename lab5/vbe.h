@@ -14,7 +14,19 @@
  *
  * Packed VBE Mode Info Block 
  */ 
- 
+
+typedef struct
+{
+ char VESASignature[4]; /* 'VESA' 4 byte signature */
+ short VESAVersion; /* VBE version number */
+ char far *OEMStringPtr; /* Pointer to OEM string */
+ long Capabilities; /* Capabilities of video card */
+ unsigned far *VideoModePtr; /* Pointer to supported modes */
+ short TotalMemory; /* Number of 64kb memory blocks */
+ char reserved[236]; /* Pad to 256 byte block size */
+} VbeInfoBlock;
+
+
 typedef struct {
   /*  Mandatory information for all VBE revisions */
   uint16_t ModeAttributes; 	/**< @brief mode attributes */
