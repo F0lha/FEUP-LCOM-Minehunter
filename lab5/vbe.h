@@ -15,21 +15,7 @@
  * Packed VBE Mode Info Block 
  */ 
 
-typedef struct
-{
- char VESASignature[4]; /* 'VESA' 4 byte signature */
- short VESAVersion; /* VBE version number */
- phys_bytes *OEMStringPtr; /* Pointer to OEM string */
- long Capabilities; /* Capabilities of video card */
- char *VideoModePtr; /* Pointer to supported modes */
- short TotalMemory; /* Number of 64kb memory blocks */
- short OemSoftwareRev; //VBE implementation Software revision
- short OemVendorNamePtr; //Pointer to Vendor Name String
- short OemProductNamePtr; //Pointer to Product Name String
- short OemProductRevPtr; //Pointer to Product Revision String
- char reserved[236]; /* Pad to 256 byte block size */
- short OemData;  // Data Area for OEM Strings
-} VbeInfoBlock;
+
 
 
 typedef struct
@@ -46,7 +32,7 @@ phys_bytes OemProductNamePtr; //Pointer to Product Name String
 phys_bytes OemProductRevPtr; //Pointer to Product Revision String
 char reserved[236]; /* Pad to 256 byte block size */
 char OemData[256]; // Data Area for OEM Strings
-} VbeInfoBlock;
+} __attribute__((packed)) VbeInfoBlock;
 
 typedef struct {
   /*  Mandatory information for all VBE revisions */
@@ -122,11 +108,8 @@ typedef struct {
  * @return 0 on success, non-zero otherwise
  */
 int vbe_get_mode_info(unsigned short mode, vbe_mode_info_t *vmi_p);
-<<<<<<< .mine
 int vbe_get_controller_info(VbeInfoBlock *vmi_p);
-=======
-int vbe_get_controller_info(vbe_mode_info_t *vmi_p);
->>>>>>> .r83
+
 
  /** @} end of vbe */
 
