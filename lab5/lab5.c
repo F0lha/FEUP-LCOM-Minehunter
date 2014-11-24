@@ -39,8 +39,8 @@ static void print_usage(char *argv[]) {
 			"\t service run %s -args \"test_init<unsigned short mode, unsigned short delay>\" \n"
 			"\t service run %s -args \"test_square<unsigned short x, unsigned short y, unsigned short size, unsigned long color>\n"
 			"\t service run %s -args \"test_line<unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color>\" \n"
-			"\t service run %s -args \"test_xpm<unsigned short xi, unsigned short yi, char *xpm[]>\" \n",
-			"\t service run %s -args \"test_move<unsigned short xi, unsigned short yi, char *xpm[], unsigned short hor, short delta, unsigned short time>\" \n",
+			"\t service run %s -args \"test_xpm<unsigned short xi, unsigned short yi, char *xpm[]>\" \n"
+			"\t service run %s -args \"test_move<unsigned short xi, unsigned short yi, char *xpm[], unsigned short hor, short delta, unsigned short time>\" \n"
 			"\t service run %s -args \"test_controller \" \n",
 			argv[0], argv[0], argv[0], argv[0], argv[0], argv[0]);
 }

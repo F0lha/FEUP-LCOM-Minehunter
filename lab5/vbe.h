@@ -19,11 +19,16 @@ typedef struct
 {
  char VESASignature[4]; /* 'VESA' 4 byte signature */
  short VESAVersion; /* VBE version number */
- char far *OEMStringPtr; /* Pointer to OEM string */
+ phys_bytes *OEMStringPtr; /* Pointer to OEM string */
  long Capabilities; /* Capabilities of video card */
- unsigned far *VideoModePtr; /* Pointer to supported modes */
+ char *VideoModePtr; /* Pointer to supported modes */
  short TotalMemory; /* Number of 64kb memory blocks */
+ short OemSoftwareRev; //VBE implementation Software revision
+ short OemVendorNamePtr; //Pointer to Vendor Name String
+ short OemProductNamePtr; //Pointer to Product Name String
+ short OemProductRevPtr; //Pointer to Product Revision String
  char reserved[236]; /* Pad to 256 byte block size */
+ short OemData;  // Data Area for OEM Strings
 } VbeInfoBlock;
 
 
