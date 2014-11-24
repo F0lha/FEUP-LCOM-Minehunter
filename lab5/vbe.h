@@ -106,6 +106,7 @@ typedef struct {
  * @return 0 on success, non-zero otherwise
  */
 int vbe_get_mode_info(unsigned short mode, vbe_mode_info_t *vmi_p);
+int vbe_get_controller_info(vbe_mode_info_t *vmi_p);
 
  /** @} end of vbe */
 

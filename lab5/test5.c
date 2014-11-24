@@ -22,7 +22,7 @@ void *test_init(unsigned short mode, unsigned short delay) {
 	int counter = 0;
 	int ipc_status, loops = 0;
 	message msg;
-	int irq_set = BIT(timer_subscribe_int());
+	int irq_set = timer_subscribe_int();
 
 	while (loops != delay) {
 		/* Get a request message. */
@@ -53,11 +53,8 @@ void *test_init(unsigned short mode, unsigned short delay) {
 	}
 
 	timer_unsubscribe_int();
-//	vbe_mode_info_t* vbe;
-	//vbe_get_mode_info(mode,vbe);
 	vg_exit();
-	//printf ("%0x%.8X \n",vbe->PhysBasePtr);
-	printf("%d",video_mem);
+	printf ("%0x%.8X \n",get_phys_mem());
 }
 
 
