@@ -141,7 +141,21 @@ int test_line(unsigned short xi, unsigned short yi,
 
 	//plotLine(x0,y0, x1,y1)
 
-	unsigned int *ptr = vg_init(0x105);
+	unsigned int *ptr = vg_init(0x105);typedef struct
+	{
+	uint8_t VESASignature[4]; /* 'VESA' 4 byte signature */
+	uint16_t VESAVersion; /* VBE version number */
+	phys_bytes OEMStringPtr; /* Pointer to OEM string */
+	uint8_t Capabilities[4]; /* Capabilities of video card */
+	phys_bytes VideoModePtr; /* Pointer to supported modes */
+	short TotalMemory; /* Number of 64kb memory blocks */
+	phys_bytes OemSoftwareRev; //VBE implementation Software revision
+	phys_bytes OemVendorNamePtr; //Pointer to Vendor Name String
+	phys_bytes OemProductNamePtr; //Pointer to Product Name String
+	phys_bytes OemProductRevPtr; //Pointer to Product Revision String
+	char reserved[236]; /* Pad to 256 byte block size */
+	char OemData[256]; // Data Area for OEM Strings
+	} VbeInfoBlock;
 
 	vg_set_line(xi, yi, xf, yf, color);
 

@@ -130,17 +130,25 @@ void vg_set_line(unsigned short xi, unsigned short yi,
 				}
 	}
 	else{
-			if(xf < xi)
+		if(xf < xi && yf > yi){
+			x = xf;
+			xf = xi;
+			xi = x;
+		}
+		else if(xf < xi && yf < yi)
 			{
 				x = xf;
 				xf = xi;
 				xi = x;
+				y = yf;
+				yf = yi;
+				yi = y;
 			}
+
 
 
 			dx=xf-xi;
 			dy=yf-yi;
-			////
 
 
 
