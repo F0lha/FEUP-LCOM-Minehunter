@@ -1,5 +1,6 @@
 #include <minix/syslib.h>
 #include <minix/drivers.h>
+#include "vbe.h"
 #include "keyboard.h"
 #include "test5.h"
 #include "timer.h"
@@ -52,9 +53,11 @@ void *test_init(unsigned short mode, unsigned short delay) {
 	}
 
 	timer_unsubscribe_int();
-
+//	vbe_mode_info_t* vbe;
+	//vbe_get_mode_info(mode,vbe);
 	vg_exit();
-	printf ("%d \n",video_mem);
+	//printf ("%0x%.8X \n",vbe->PhysBasePtr);
+	printf("%d",video_mem);
 }
 
 
@@ -265,9 +268,9 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 
 	float pixels_per_sec = (float)delta /((float)time*60), x = 0, y = 0, x_se = 0,y_se = 0, andado = 0;
 	if(delta < 0){
-			negative = 1;
-			delta = -delta;
-			pixels_per_sec = -pixels_per_sec;
+		negative = 1;
+		delta = -delta;
+		pixels_per_sec = -pixels_per_sec;
 	}
 
 	int irq_set_key = kbd_subscribe_int();
@@ -311,45 +314,54 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 							x = x_se;
 
 						}
+						if(negative){
+							if((sp->x - pixels_per_sec) < 0){
+								breaker = 0;
 
-						if((sp->x + pixels_per_sec + sp->width) >= H_RES){
-							breaker = 0;
-						}else if((sp->x - pixels_per_sec) < 0){
-							breaker = 0;
-						}
-					}
-					else{
-						y += pixels_per_sec;
-						y_se += pixels_per_sec;
-						if(y_se>1)
-						{
-							int y_se_int = y_se;
-							y_se = y_se - (float)y_se_int;
-							erase_sprite(sp);
-							if(negative)
-								sp->y -= y - y_se;
+							}
 							else
-								sp->y += y - y_se;
-							andado +=y - y_se;
-							draw_sprite(sp);
-							y = y_se;
-						}
-
-						if((sp->y + pixels_per_sec + sp->height) >= V_RES){
-							breaker = 0;
-						}else if((sp->y - pixels_per_sec) < 0){
-							breaker = 0;
+								if((sp->x + pixels_per_sec + sp->width) >= H_RES){
+									breaker = 0;
+								}
 						}
 					}
+						else{
+							y += pixels_per_sec;
+							y_se += pixels_per_sec;
+							if(y_se>1)
+							{
+								int y_se_int = y_se;
+								y_se = y_se - (float)y_se_int;
+								erase_sprite(sp);
+								if(negative)
+									sp->y -= y - y_se;
+								else
+									sp->y += y - y_se;
+								andado +=y - y_se;
+								draw_sprite(sp);
+								y = y_se;
+							}
+							if(negative){
+								if((sp->y - pixels_per_sec) < 0){
+									breaker = 0;
+								}
+							}
+							else{
+								if((sp->y + pixels_per_sec + sp->height) >= V_RES){
+									breaker = 0;
+								}
+							}
 
-					if (global_counter == 60) {
-						loops++;
-						global_counter = 0;
-					}
-					if(andado > delta){
-						breaker = 0;
-					}
+							if (global_counter == 60) {
+								loops++;
+								global_counter = 0;
+							}
+							if(andado > delta){
+								breaker = 0;
+							}
+						}
 				}
+
 				else if (msg.NOTIFY_ARG & irq_set_key) {
 					kbd_int_handler();
 					if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
@@ -389,26 +401,7 @@ int test_move(unsigned short xi, unsigned short yi, char *xpm[],
 
 
 int test_controller(){
-	struct reg86u reg86;
-	mmap_t m;
 
-	while(vbe.VideoModePtr != -1){
-		if(getVbeInfo(vbe))
-			printf("Error! Something wrong with VBE get info \n");
-		else{
-			printf("0x%x \n", vbe.VideoModePtr);
-		}
-	}
-
-	reg86.u.b.intno = 0x10; /* BIOS video services */
-	reg86.u.b.ah = 0x00;    /* Set Video Mode function */
-	reg86.u.b.al = 0x03;    /* 80x25 text mode*/
-
-	if( sys_int86(&reg86) != OK ) {
-		printf("\tvg_exit(): sys_int86() failed \n");
-		return 1;
-	} else
-		return 0;
 }
 
 
