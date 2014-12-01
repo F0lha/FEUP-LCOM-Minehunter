@@ -13,9 +13,9 @@
 
 
 
-int draw_mine(Sprite *sp);
+int draw_mine(Sprite (*sp));
 
-int draw_number (Sprite *sp);
+int draw_number (Sprite (*sp));
 
 int draw_flag(int x, int y);
 
