@@ -1,7 +1,7 @@
 #ifndef __MODGRAFICO_H
 #define __MODGRAFICO_H
 
-
+#include "sprite.h"
 #define HEIGHT_MINE_EXPERT 32
 #define WIDTH_MINE_EXPERT 32
 #define HEIGHT_NUMBER_EXPERT 32
@@ -17,7 +17,7 @@ int draw_mine(Sprite *sp);
 
 int draw_number (Sprite *sp);
 
-int draw_flag(Sprite *sp);
+int draw_flag(int x, int y);
 
 int draw_water (Sprite *sp);
 

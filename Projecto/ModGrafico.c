@@ -4,7 +4,7 @@
 
 int draw_flag(int x, int y){
 	int i, j, k, l;
-	char *mapMine = read_xpm(retXPM(pic1),&k,&l);
+	char *mapMine = read_xpm(retXPM("pic1"),&k,&l);
 	for (j = y; j < y + l; j++) {
 		for (i = x; i < x + k; i++) {
 			vg_set_pixel(i, j, mapMine[(j-y)*k + i-x]);
