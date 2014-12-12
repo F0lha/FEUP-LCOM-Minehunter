@@ -1,4 +1,10 @@
+#include <minix/drivers.h>
+#include <minix/syslib.h>
+#include <minix/com.h>
+#include <assert.h>
+#include <minix/sysutil.h>
 #include "ModTeclado.h"
+
 
 #define PAR_ERR 	BIT(7)
 #define TO_ERR 		BIT(6)

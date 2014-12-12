@@ -1,11 +1,11 @@
 #ifndef __MODRATO_H
 #define __MODRATO_H
 
+#define BIT(n) (0x01<<(n))
 
 #define STATUS_PORT 		0x64
 #define OUT_BUF 			0x60
 #define IN_BUF 				0x60
-#define KBD_HOOK_ID   		0x00
 #define DELAY_US 			20000
 #define TWO_BYTE_CODE 		0xE0
 #define BREAK_CODE_ESC 		0x81
@@ -23,9 +23,41 @@
 #define OBF                 BIT(0)
 #define RESEND              0xFE
 #define ERROR               0xFC
+#define MOUSE_IRQ 			12
+#define MOUSE_HOOK_ID		2
 
 
 
+
+typedef struct{
+	int x,y;
+	int deslX,deslY;
+
+
+	unsigned long packets[3];
+
+    int leftButtonDown;
+
+    int middleButtonDown;
+
+    int rightButtonDown;
+
+    int leftButtonReleased;
+
+    int rightButtonReleased;
+
+    int middleButtonReleased;
+
+    int hasBeenUpdated;
+
+}Rato;
+
+static Rato* rato = 0;
+
+
+Rato* getRato();
+
+Rato* newRato();
 
 int mouse_subscribe_int();
 
@@ -33,9 +65,11 @@ int mouse_unsubscribe_int();
 
 int mouse_int_handler();
 
+void updateMouse();
 
+int first_byte(unsigned long mouse_byte);
 
-
+void drawRato();
 
 
 
