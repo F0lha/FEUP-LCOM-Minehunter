@@ -1,5 +1,12 @@
-#include "ModGrafico.h"
+#include <minix/syslib.h>
+#include <minix/drivers.h>
+#include <machine/int86.h>
+#include <sys/mman.h>
+#include <sys/types.h>
 
+#include "ModGrafico.h"
+#include "pixmap.h"
+#include "vbe.h"
 
 
 int draw_flag(int x, int y){
@@ -13,28 +20,7 @@ int draw_flag(int x, int y){
 }
 
 
-int draw_number (Sprite *sp){
-	int i, j;
-	for (j = sp->y; j < sp->y + sp->height; j++) {
-		for (i = sp->x; i < sp->x + sp->width; i++) {
-			vg_set_pixel(i, j, sp->map[(j-sp->y)*sp->width + i-sp->x]);
-		}
-	}
-}
 
-int draw_mine(Sprite *sp){
-	int i, j;
-	for (j = sp->y; j < sp->y + sp->height; j++) {
-		for (i = sp->x; i < sp->x + sp->width; i++) {
-			vg_set_pixel(i, j, sp->map[(j-sp->y)*sp->width + i-sp->x]);
-		}
-	}
-}
-
-
-int draw_water (Sprite *sp){
-
-}
 
 
 int draw_table (int col, int lin){
@@ -46,116 +32,159 @@ int draw_string (char* str, double scale, unsigned long x, unsigned long y, unsi
 
 }
 
+char** retXPM(char *xpm){
+	if(strncmp(xpm, "pic1", strlen("pic1")) == 00)
+	{
+		return pic1;
+	}
+	else if(strncmp(xpm, "pic2", strlen("pic21")) == 00)
+	{
+		return pic2;
+	}
+	else if(strncmp(xpm, "pic3", strlen("pic3")) == 00)
+	{
+		return pic3;
+	}
+	else if(strncmp(xpm, "cross", strlen("cross")) == 00)
+	{
+		return cross;
+	}
+	else if(strncmp(xpm, "penguin", strlen("penguin")) == 00)
+	{
+		return penguin;
+	}
+}
+
+char *read_xpm(char *map[], int *wd, int *ht)
+{
+  int width, height, colors;
+  char sym[256];
+  int  col;
+  int i, j;
+  char *pix, *pixtmp, *tmp, *line;
+  char symbol;
+
+  /* read width, height, colors */
+  if (sscanf(map[0],"%d %d %d", &width, &height, &colors) != 3) {
+    printf("read_xpm: incorrect width, height, colors\n");
+    return NULL;
+  }
+#ifdef DEBUG
+  printf("%d %d %d\n", width, height, colors);
+#endif
+  if (width > HRES || height > VRES || colors > 256) {
+    printf("read_xpm: incorrect width, height, colors\n");
+    return NULL;
+  }
+
+  *wd = width;
+  *ht = height;
+
+  for (i=0; i<256; i++)
+    sym[i] = 0;
+
+  /* read symbols <-> colors */
+  for (i=0; i<colors; i++) {
+    if (sscanf(map[i+1], "%c %d", &symbol, &col) != 2) {
+      printf("read_xpm: incorrect symbol, color at line %d\n", i+1);
+      return NULL;
+    }
+#ifdef DEBUG
+    printf("%c %d\n", symbol, col);
+#endif
+    if (col > 256) {
+      printf("read_xpm: incorrect color at line %d\n", i+1);
+      return NULL;
+    }
+    sym[col] = symbol;
+  }
+
+  /* allocate pixmap memory */
+  pix = pixtmp = malloc(width*height);
+
+  /* parse each pixmap symbol line */
+  for (i=0; i<height; i++) {
+    line = map[colors+1+i];
+#ifdef DEBUG
+    printf("\nparsing %s\n", line);
+#endif
+    for (j=0; j<width; j++) {
+      tmp = memchr(sym, line[j], 256);  /* find color of each symbol */
+      if (tmp == NULL) {
+    	  printf("read_xpm: incorrect symbol at line %d, col %d\n", colors+i+1, j);
+    	  return NULL;
+      }
+      *pixtmp++ = tmp - sym; /* pointer arithmetic! back to books :-) */
+#ifdef DEBUG
+      printf("%c:%d ", line[j], tmp-sym);
+#endif
+    }
+  }
+
+  return pix;
+}
+
 void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color){
 	char *ptr = video_mem;
 	ptr += x;
-	ptr += H_RES*y;
+	ptr += HRES*y;
 	*ptr = color;
 }
 
-void vg_fill(unsigned int x,unsigned int y, unsigned int width, unsigned int height,unsigned long color){
-	int i,j;
-	for(j = 0; j < height;j++){
-		for(i = 0; i < width;i++)
-		{
-			vg_set_pixel(x+i,y+j,color);
-		}
-	}
+void vg_set_pixel_final_buffer(unsigned int x,unsigned int y, unsigned long color){
+	char *ptr = buffer_final;
+	ptr += x;
+	ptr += HRES*y;
+	*ptr = color;
 }
 
-void vg_set_line(unsigned short xi, unsigned short yi,
-		unsigned short xf, unsigned short yf, unsigned long color){
-	float dx=xf-xi;
-	float dy=yf-yi;
-	float d = 2*dy - dx;
-	float y = yi;
-	float x = xi;
 
+int vg_exit() {
+  struct reg86u reg86;
 
+  reg86.u.b.intno = 0x10; /* BIOS video services */
 
+  reg86.u.b.ah = 0x00;    /* Set Video Mode function */
+  reg86.u.b.al = 0x03;    /* 80x25 text mode*/
 
-
-
-	if(xi==xf){
-		if(yi > yf){
-			for (yf; yf < yi; yf++)
-				vg_set_pixel(xi, yf,color);
-		}else{
-			for (yi; yi < yf; yi++)
-				vg_set_pixel(xi, yi,color);
-		}
-
-	}
-	else if(yi==yf){
-		if(xi > xf){
-					for (xf; xf < xi; xf++)
-						vg_set_pixel(xf, yi,color);
-				}else{
-					for (xi; xi < xf; xi++)
-						vg_set_pixel(xi, yi,color);
-				}
-	}
-	else{
-			if(xf < xi)
-			{
-				x = xf;
-				xf = xi;
-				xi = x;
-			}
-
-
-			dx=xf-xi;
-			dy=yf-yi;
-			////
-
-
-
-		float erro;
-
-		if(dy > 0)
-			erro= 2*dy - dx;
-		else erro= 2*dx + dy;
-		vg_set_pixel(x,y,color);
-
-
-		//
-
-
-		vg_set_pixel(x, y, color);
-		if(dy > 0){
-			while((x <= xf) && (y <= yf)){
-
-				vg_set_pixel(x,y,color);
-				if(erro > 0)
-				{
-					y = y + 1;
-					erro = erro - 2 * dx;
-				}
-				else
-				{
-					x = x + 1;
-					erro = erro + 2 * dy;
-				}
-			}
-		}
-		else{
-			while((x <= xf) && (y >= xi)){
-				vg_set_pixel(x,y,color);
-				if(erro > 0)
-				{
-					y = y - 1;
-					erro = erro - 2 * dx;
-				}
-				else
-				{
-					x = x + 1;
-					erro = erro - 2 * dy;
-				}
-			}
-		}
-
-
-
-	}
+  if( sys_int86(&reg86) != OK ) {
+      printf("\tvg_exit(): sys_int86() failed \n");
+      return 1;
+  } else
+      return 0;
 }
 
+void *vg_init(unsigned short mode){
+
+	struct reg86u r;
+	r.u.w.ax = 0x4F02; // VBE call, function 02 -- set VBE mode
+	r.u.w.bx = 1<<14|mode; // set bit 14: linear framebuffer
+	r.u.b.intno = 0x10;
+	if( sys_int86(&r) != OK ) {
+		printf("set_vbe_mode: sys_int86() failed \n");
+		return;
+	}
+	int s;
+	struct mem_range mr;
+
+
+	/* Allow memory mapping */
+	mr.mr_base = (phys_bytes)(VRAM_PHYS_ADDR);
+	mr.mr_limit = mr.mr_base + (HRES*VRES*BITS_PER_PIXEL/8);
+
+	if( OK != (s = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr)))
+		panic("video_txt: sys_privctl (ADD_MEM) failed: %d\n", s);
+
+	/* Map memory */
+	video_mem = vm_map_phys(SELF, (void *)mr.mr_base, HRES*VRES*BITS_PER_PIXEL/8);
+
+	if(video_mem == MAP_FAILED)
+		panic("video_txt: couldn't map video memory");
+	return video_mem;
+}
+
+
+
+void trocarBuffer(){
+	memcpy(video_mem,buffer_final,videoMemSize);
+}

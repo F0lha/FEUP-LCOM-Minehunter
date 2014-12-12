@@ -4,7 +4,7 @@
 
 #define HEIGHT_EXPERT 16
 #define WIDTH_EXPERT 30
-#define NUM_MINES 100
+#define NUM_MINES_EXPERT 100
 
 typedef struct{
 	int carregado; ///0 se nao estiver, 1 se carregado,  2 se flag
@@ -12,11 +12,11 @@ typedef struct{
 }Mine;
 
 
-char* create_table(int difficulty);
+Mine** create_table(int difficulty);
 
+void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mouse);
 
-
-
+void stop_interrupts();
 
 
 
