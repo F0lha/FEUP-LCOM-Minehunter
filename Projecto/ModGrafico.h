@@ -25,6 +25,9 @@ int draw_table (int col, int lin);
 
 int draw_string (char* str, double scale, unsigned long x, unsigned long y, unsigned long color);
 
+void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color);
+void vg_fill(unsigned int x,unsigned int y, unsigned int width, unsigned int height,unsigned long color);
+void vg_set_line(unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color);
 
 
 

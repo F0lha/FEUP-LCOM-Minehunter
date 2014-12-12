@@ -4,7 +4,7 @@
 #include <time.h>
 
 void main() {
-	create_table(2);
+	draw_table(table, 2);
 }
 
 char* create_table(int difficulty){
