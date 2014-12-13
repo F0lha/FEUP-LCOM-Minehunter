@@ -26,11 +26,12 @@
 #define MOUSE_IRQ 			12
 #define MOUSE_HOOK_ID		2
 
-
+#define MOUSE_MULTIPLIER	1
 
 
 typedef struct{
 	int x,y;
+
 	int deslX,deslY;
 
 
@@ -71,7 +72,7 @@ int first_byte(unsigned long mouse_byte);
 
 void drawRato();
 
-
+int enable_packets();
 
 
 

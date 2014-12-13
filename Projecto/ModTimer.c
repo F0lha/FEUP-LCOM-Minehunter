@@ -5,7 +5,7 @@
 #include <minix/sysutil.h>
 #include "ModTimer.h"
 
-int global_counter, hook_id;
+int hook_id;
 
 int timer_subscribe_int(void) {
 	hook_id = HOOK_ID;

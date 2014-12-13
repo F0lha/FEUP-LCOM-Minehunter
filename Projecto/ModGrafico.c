@@ -11,10 +11,10 @@
 
 int draw_flag(int x, int y){
 	int i, j, k, l;
-	char *mapMine = read_xpm(retXPM("pic1"),&k,&l);
+	char *mapFlag = read_xpm(retXPM("pic1"),&k,&l);
 	for (j = y; j < y + l; j++) {
 		for (i = x; i < x + k; i++) {
-			vg_set_pixel(i, j, mapFlag[(j-y)*k + i-x]);
+			vg_set_pixel(i, j,  mapFlag[(j-y)*k + i-x]);
 		}
 	}
 }
@@ -131,8 +131,15 @@ void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color){
 	*ptr = color;
 }
 
-void vg_set_pixel_final_buffer(unsigned int x,unsigned int y, unsigned long color){
-	char *ptr = buffer_final;
+void vg_set_pixel_bufferRato(unsigned int x,unsigned int y, unsigned long color){
+	char *ptr = bufferRato;
+	ptr += x;
+	ptr += HRES*y;
+	*ptr = color;
+}
+
+void vg_set_pixel_buffer(unsigned int x,unsigned int y, unsigned long color){
+	char *ptr = buffer;
 	ptr += x;
 	ptr += HRES*y;
 	*ptr = color;
@@ -158,7 +165,7 @@ void *vg_init(unsigned short mode){
 
 	struct reg86u r;
 	r.u.w.ax = 0x4F02; // VBE call, function 02 -- set VBE mode
-	r.u.w.bx = 1<<14|mode; // set bit 14: linear framebuffer
+	r.u.w.bx = 1<<14|0x105; // set bit 14: linear framebuffer
 	r.u.b.intno = 0x10;
 	if( sys_int86(&r) != OK ) {
 		printf("set_vbe_mode: sys_int86() failed \n");
@@ -183,8 +190,10 @@ void *vg_init(unsigned short mode){
 	return video_mem;
 }
 
+void trocarRato_buffer(){
+	memcpy(bufferRato,buffer,videoMemSize* BITS_PER_PIXEL	/8);
+}
 
-
-void trocarBuffer(){
-	memcpy(video_mem,buffer_final,videoMemSize);
+void trocarVideo_Mem_Rato(){
+	memcpy(video_mem,bufferRato,videoMemSize* BITS_PER_PIXEL	/8);
 }
