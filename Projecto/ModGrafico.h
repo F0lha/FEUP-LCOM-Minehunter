@@ -14,8 +14,8 @@
 #define VRAM_PHYS_ADDR	0xF0000000
 #define videoMemSize HRES*VRES
 static char *video_mem;
-static char *buffer_secondary;
-static char *buffer_final;
+char *buffer;
+char *bufferRato;
 
 #define BITS_PER_PIXEL	  8
 
@@ -44,9 +44,12 @@ void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color);
 
 char** retXPM(char *xpm);
 
-void trocarBuffer();
+void trocarRato_buffer();
 
-void vg_set_pixel_final_buffer(unsigned int x,unsigned int y, unsigned long color);
+void trocarVideo_Mem_Rato();
 
+void vg_set_pixel_bufferRato(unsigned int x,unsigned int y, unsigned long color);
+
+void vg_set_pixel_buffer(unsigned int x,unsigned int y, unsigned long color);
 
 #endif

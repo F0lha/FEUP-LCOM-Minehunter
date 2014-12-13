@@ -6,7 +6,7 @@
 #define STATUS_PORT 0x64
 #define OUT_BUF 0x60
 #define IN_BUF 0x60
-#define KBD_HOOK_ID   4
+#define KBD_HOOK_ID  0
 #define DELAY_US 20000
 #define TWO_BYTE_CODE 0xE0
 #define BREAK_CODE_ESC 0x81

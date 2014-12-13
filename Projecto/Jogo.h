@@ -1,7 +1,6 @@
 #ifndef __JOGO_H
 #define __JOGO_H
 
-
 #define HEIGHT_EXPERT 16
 #define WIDTH_EXPERT 30
 #define NUM_MINES_EXPERT 100
