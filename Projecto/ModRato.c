@@ -83,9 +83,9 @@ Rato* getRato(){
 Rato* newRato(){
 	rato = malloc(sizeof(Rato));
 
-	rato->x = 0;
+	rato->x = 500;
 
-	rato->y = 0;
+	rato->y = 500;
 
 	rato->leftButtonDown= 0;
 
@@ -103,10 +103,12 @@ Rato* newRato(){
 }
 
 void drawRato(){
+	if(!rato)
+		newRato();
 	int i,j;
 	trocarRato_buffer();
-	for(i = 0;i < 5;i++)
-		for(j = 0; j < 5;j++){
+	for(i = 0;i < 10;i++)
+		for(j = 0; j < 10;j++){
 			vg_set_pixel_bufferRato(rato->x+i,rato->y+j,4);
 		}
 }
@@ -116,32 +118,32 @@ void updateMouse(){
 	{
 		if((rato->x + (signed char)rato->packets[1] )< 0)
 			rato->x = 0;
-		else if(rato->x + (signed char)rato->packets[1] > 1024 - 5)
-			rato->x = 1019;
+		else if(rato->x + (signed char)rato->packets[1] > 1024 - 10)
+			rato->x = 1014;
 		else rato->x +=  (signed char)rato->packets[1];
 	}
 	else{
 		char temp =((-1 << 8) | rato->packets[1]);
 		if((rato->x + temp ) < 0)
 			rato->x = 0;
-		else if( rato->x + temp > 1024 - 5)
-			rato->x = 1019;
+		else if( rato->x + temp > 1024 - 10)
+			rato->x = 1014;
 		else rato->x +=  temp;
 	}
 	if(!(rato->packets[1] & BIT(5)))
 	{
 		if((rato->y - (signed char)rato->packets[2] )< 0)
 			rato->y = 0;
-		else if( rato->y - (signed char)rato->packets[2] > 768 - 5)
-			rato->y = 763;
+		else if( rato->y - (signed char)rato->packets[2] > 768 - 10)
+			rato->y = 758;
 		else rato->y -= (signed char)rato->packets[2];
 	}
 	else{
 		char temp = ((-1 << 8) | rato->packets[2]);
 		if((rato->y - temp ) < 0)
 			rato->y = 0;
-		else if( rato->y - temp > 768 - 5)
-			rato->y = 763;
+		else if( rato->y - temp > 768 - 10)
+			rato->y = 758;
 		else rato->y -= (signed char)temp;
 	}
 	printf("delta x : %d\ndelta y : %d\n",(signed char)rato->packets[1],rato->packets[2]);

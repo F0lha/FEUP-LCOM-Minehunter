@@ -17,7 +17,7 @@ void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mou
 
 void stop_interrupts();
 
-
+void update_screen();
 
 
 
