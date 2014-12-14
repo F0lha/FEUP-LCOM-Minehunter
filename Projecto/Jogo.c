@@ -34,6 +34,20 @@ int main(int argc, char **argv) {
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set_timer) {
 					timer_int_handler();
+					if(global_counter % 1 == 0)
+					{
+						update_screen();
+					}
+					if(loops % 5 == 0)
+					{
+						int i,j;
+						for(j = 0; j < VRES;j++){
+							for(i = 0; i < HRES;i++)
+							{
+								vg_set_pixel_buffer(i,j,loops % 63 + 1);
+							}
+						}
+					}
 					if (global_counter == 60) {
 						loops++;
 						global_counter = 0;
@@ -75,7 +89,6 @@ int main(int argc, char **argv) {
 							///fazer aqui merda
 							updateMouse();
 							teste = 1;
-							drawRato();
 						}
 						continue;
 					}
@@ -85,15 +98,42 @@ int main(int argc, char **argv) {
 				break;
 			}
 		}
-		if(teste)
-			trocarVideo_Mem_Rato();
+
 	}
+	printf("sai\n");
 	vg_exit();
+	printf("vgexit\n");
 	stop_interrupts();
+	printf("stopinterrupts\n");
 	free(rato);
+	printf("free1\n");
+
 	free(buffer);
+	printf("free2\n");
 	free(bufferRato);
+	printf("free3\n");
+	int i;
+	int j;
+	Mine** table = create_table(2);
+
+
+		for(j = 0; j < HEIGHT_EXPERT;j++)
+		{
+			for(i = 0;i < WIDTH_EXPERT;i++){
+			printf("%d ",table[i][j].valor);
+		}
+			printf("\n");
+	}
+
+	free(table);
+
 }
+
+void update_screen(){
+	drawRato();
+	trocarVideo_Mem_Rato();
+}
+
 
 Mine** create_table(int difficulty){
 	if(difficulty == 2) ///expert
@@ -107,37 +147,47 @@ Mine** create_table(int difficulty){
 		for(i = 0;i < WIDTH_EXPERT;i++)
 			for(j = 0; j < HEIGHT_EXPERT;j++)
 			{
-				table[i,j]->valor = 0;
-				table[i,j]->carregado = 0;
+				table[i][j].valor = 0;
+				table[i][j].carregado = 0;
 			}
 		time_t t;
 		srand((unsigned) time(&t));
 		for(i = 0; i < NUM_MINES_EXPERT;i++)
 		{
+
 			int j = rand() % HEIGHT_EXPERT;
-			int k = rand() % WIDTH_EXPERT ;
-			if(table[k,j]->valor == -1)
-			{}
-			else if(table[k,j]->valor == 8)
-			{}
+			int k = rand() % WIDTH_EXPERT;
+			if(table[k][j].valor == -1)
+			{i--;}
+			else if(table[k][j].valor >= 8)
+			{i--;}
 			else{
-				table[k,j]->valor = -1;
+				printf("x = %d // y = %d // valor-> %d\n",k,j, table[k][j].valor);
+				table[k][j].valor = -1;
 				if(k != 0) // parede lateral esquerda
-					table[k-1,j]->valor += 1;
+					if(table[k-1][j].valor != -1)
+						table[k-1][j].valor += 1;
 				if(k != WIDTH_EXPERT - 1) /// parede lateral direita
-					table[k+1,j]->valor += 1;
+					if(table[k+1][j].valor != -1)
+						table[k+1][j].valor += 1;
 				if(j != 0) /// parede vertical de cima
-					table[k,j - 1]->valor += 1;
+					if(table[k][j - 1].valor != -1)
+						table[k][j - 1].valor += 1;
 				if(j != HEIGHT_EXPERT - 1)///parede vertical de baixo
-					table[k,j + 1]->valor += 1;
+					if(table[k][j+1].valor != -1)
+						table[k][j + 1].valor += 1;
 				if(k != 0 && j != 0) ///canto superior esquerdo
-					table[k - 1,j - 1]->valor += 1;
+					if(table[k - 1][j - 1].valor != -1)
+						table[k - 1][j - 1].valor += 1;
 				if(k != WIDTH_EXPERT - 1 && j != HEIGHT_EXPERT - 1)  /// canto inferior direito
-					table[k + 1,j + 1]->valor += 1;
+					if(table[k + 1][j + 1].valor != -1)
+						table[k + 1][j + 1].valor += 1;
 				if(k != WIDTH_EXPERT - 1 && j != 0)  /// canto superior direito
-						table[k + 1,j - 1]->valor += 1;
+					if(table[k + 1][ - 1].valor != -1)
+						table[k + 1][j - 1].valor += 1;
 				if(k != 0 && j != HEIGHT_EXPERT - 1)/// canto inferior esquerdo
-					table[k - 1,j + 1]->valor += 1;
+					if(table[k - 1][j + 1].valor != -1)
+						table[k - 1][j + 1].valor += 1;
 			}
 		}
 		return table;
