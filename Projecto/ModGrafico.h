@@ -30,7 +30,7 @@ static char *phys_mem;
 
 int draw_flag(int x, int y);
 
-int draw_table (int col, int lin);
+int draw_table ();
 
 int draw_string (char* str, double scale, unsigned long x, unsigned long y, unsigned long color);
 

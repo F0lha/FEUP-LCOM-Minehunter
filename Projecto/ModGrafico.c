@@ -9,6 +9,12 @@
 #include "vbe.h"
 
 
+
+int draw_table (){
+
+}
+
+
 int draw_flag(int x, int y){
 	int i, j, k, l;
 	char *mapFlag = read_xpm(retXPM("pic1"),&k,&l);
@@ -23,9 +29,7 @@ int draw_flag(int x, int y){
 
 
 
-int draw_table (int col, int lin){
 
-}
 
 
 int draw_string (char* str, double scale, unsigned long x, unsigned long y, unsigned long color){
