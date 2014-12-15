@@ -1,4 +1,4 @@
-#include "Bitmap.h"
+#include "bitmap.h"
 
 #include "stdio.h"
 #include "ModGrafico.h"
@@ -47,7 +47,7 @@ Bitmap* loadBitmap(const char* filename) {
     fseek(filePtr, bitmapFileHeader.offset, SEEK_SET);
 
     // allocate enough memory for the bitmap image data
-    unsigned char* bitmapImage = (unsigned char*) malloc(
+    uint16_t* bitmapImage = (uint16_t*) malloc(
             bitmapInfoHeader.imageSize);
 
     // verify memory allocation
@@ -88,8 +88,8 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
     else if (alignment == ALIGN_RIGHT)
         x -= width;
 
-    if (x + width < 0 || x > getHorResolution() || y + height < 0
-            || y > getVerResolution())
+    if (x + width < 0 || x > HRES || y + height < 0
+            || y > VRES)
         return;
 
     int xCorrection = 0;
@@ -98,26 +98,26 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
         drawWidth -= xCorrection;
         x = 0;
 
-        if (drawWidth > getHorResolution())
-            drawWidth = getHorResolution();
-    } else if (x + drawWidth >= getHorResolution()) {
-        drawWidth = getHorResolution() - x;
+        if (drawWidth > HRES)
+            drawWidth = HRES;
+    } else if (x + drawWidth >= HRES) {
+        drawWidth = HRES - x;
     }
 
-    char* bufferStartPos;
-    char* imgStartPos;
+    uint16_t* bufferStartPos;
+    uint16_t* imgStartPos;
 
     int i;
     for (i = 0; i < height; i++) {
         int pos = y + height - 1 - i;
 
-        if (pos < 0 || pos >= getVerResolution())
+        if (pos < 0 || pos >= VRES)
             continue;
 
-        bufferStartPos = getGraphicsBuffer();
-        bufferStartPos += x * 2 + pos * getHorResolution() * 2;
+        bufferStartPos = buffer;
+        bufferStartPos += x + pos * HRES;
 
-        imgStartPos = bmp->bitmapData + xCorrection * 2 + i * width * 2;
+        imgStartPos = bmp->bitmapData + xCorrection + i * width;
 
         memcpy(bufferStartPos, imgStartPos, drawWidth * 2);
     }

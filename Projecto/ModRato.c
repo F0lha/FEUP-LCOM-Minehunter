@@ -109,7 +109,7 @@ void drawRato(){
 	trocarRato_buffer();
 	for(i = 0;i < 10;i++)
 		for(j = 0; j < 10;j++){
-			vg_set_pixel_bufferRato(rato->x+i,rato->y+j,4);
+			vg_set_pixel_bufferRato(rato->x+i,rato->y+j,11);
 		}
 }
 

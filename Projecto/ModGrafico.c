@@ -129,21 +129,21 @@ char *read_xpm(char *map[], int *wd, int *ht)
 }
 
 void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color){
-	char *ptr = video_mem;
+	uint16_t *ptr = video_mem;
 	ptr += x;
 	ptr += HRES*y;
 	*ptr = color;
 }
 
 void vg_set_pixel_bufferRato(unsigned int x,unsigned int y, unsigned long color){
-	char *ptr = bufferRato;
+	uint16_t *ptr = bufferRato;
 	ptr += x;
 	ptr += HRES*y;
 	*ptr = color;
 }
 
 void vg_set_pixel_buffer(unsigned int x,unsigned int y, unsigned long color){
-	char *ptr = buffer;
+	uint16_t *ptr = buffer;
 	ptr += x;
 	ptr += HRES*y;
 	*ptr = color;
@@ -169,7 +169,7 @@ void *vg_init(unsigned short mode){
 
 	struct reg86u r;
 	r.u.w.ax = 0x4F02; // VBE call, function 02 -- set VBE mode
-	r.u.w.bx = 1<<14|0x105; // set bit 14: linear framebuffer
+	r.u.w.bx = 1<<14|mode; // set bit 14: linear framebuffer
 	r.u.b.intno = 0x10;
 	if( sys_int86(&r) != OK ) {
 		printf("set_vbe_mode: sys_int86() failed \n");
