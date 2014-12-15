@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 	message msg;
 	create_interrupts(&irq_set_timer,&irq_set_keyboard,&irq_set_mouse);
 	video_mem = vg_init(0x117);
-	while (breaker && loops < 30) {
+	while (breaker && loops < 20) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
 			continue;
@@ -107,12 +107,8 @@ int main(int argc, char **argv) {
 	vg_exit();
 	stop_interrupts();
 	free(rato);
-	printf("free1\n");
-
 	free(buffer);
-	printf("free2\n");
 	free(bufferRato);
-	printf("free3\n");
 	int i;
 	int j;
 	Mine** table = create_table(2);
