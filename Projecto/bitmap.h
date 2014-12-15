@@ -1,5 +1,8 @@
 #pragma once
 
+#include <minix/syslib.h>
+#include <minix/drivers.h>
+
 /** @defgroup Bitmap Bitmap
  * @{
  * Functions for manipulating bitmaps
@@ -33,7 +36,7 @@ typedef struct {
 /// Represents a Bitmap
 typedef struct {
     BitmapInfoHeader bitmapInfoHeader;
-    unsigned char* bitmapData;
+    uint16_t* bitmapData;
 } Bitmap;
 
 /**

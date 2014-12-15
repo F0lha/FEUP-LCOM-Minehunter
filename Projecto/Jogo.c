@@ -8,12 +8,15 @@
 #include "ModTeclado.h"
 #include "ModTimer.h"
 #include "ModGrafico.h"
+#include "bitmap.h"
 
 
-
+Bitmap* bitmap_fundo;
 
 int main(int argc, char **argv) {
 	sef_startup();
+	bitmap_fundo = loadBitmap("home/Projecto/res/images/fundo2.bmp");
+	printf("bitmap loaded\n");
 	global_counter = 0;
 	buffer = malloc(videoMemSize * BITS_PER_PIXEL	/8);
 	bufferRato =malloc(videoMemSize * BITS_PER_PIXEL	/8);
@@ -22,7 +25,7 @@ int main(int argc, char **argv) {
 	int ipc_status, loops = 0, teste = 0;
 	message msg;
 	create_interrupts(&irq_set_timer,&irq_set_keyboard,&irq_set_mouse);
-	video_mem = vg_init(0x105);
+	video_mem = vg_init(0x117);
 	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
@@ -36,17 +39,12 @@ int main(int argc, char **argv) {
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen();
+						//update_screen();
 					}
 					if(loops % 5 == 0)
 					{
-						int i,j;
-						for(j = 0; j < VRES;j++){
-							for(i = 0; i < HRES;i++)
-							{
-								vg_set_pixel_buffer(i,j,loops % 63 + 1);
-							}
-						}
+
+						drawBitmap(bitmap_fundo,0,-100,ALIGN_LEFT);
 					}
 					if (global_counter == 60) {
 						loops++;
@@ -102,6 +100,7 @@ int main(int argc, char **argv) {
 	}
 	printf("sai\n");
 	vg_exit();
+	kbd_unsubscribe_int();
 	printf("vgexit\n");
 	stop_interrupts();
 	printf("stopinterrupts\n");
