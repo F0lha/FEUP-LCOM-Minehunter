@@ -18,7 +18,6 @@ int main(int argc, char **argv) {
 	bitmap_fundo = loadBitmap("home/Projecto/res/images/fundo2.bmp");
 	printf("bitmap loaded\n");
 	global_counter = 0;
-	int ticks = 0;
 	buffer = malloc(videoMemSize * BITS_PER_PIXEL	/8);
 	bufferRato =malloc(videoMemSize * BITS_PER_PIXEL	/8);
 	int irq_set_timer,irq_set_keyboard, irq_set_mouse;
@@ -27,7 +26,7 @@ int main(int argc, char **argv) {
 	message msg;
 	create_interrupts(&irq_set_timer,&irq_set_keyboard,&irq_set_mouse);
 	video_mem = vg_init(0x117);
-	while (breaker && loops < 5) {
+	while (breaker && loops < 30) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
 			continue;
@@ -38,7 +37,6 @@ int main(int argc, char **argv) {
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set_timer) {
 					timer_int_handler();
-					ticks++;
 					if(global_counter % 1 == 0)
 					{
 						update_screen();
