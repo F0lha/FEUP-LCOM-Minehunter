@@ -13,6 +13,8 @@
 #define RESEND 		0xFE
 #define ERROR 		0xFC
 
+
+
 unsigned long data;
 int value;
 
@@ -24,6 +26,8 @@ int kbd_subscribe_int(void) { //
 }
 
 int kbd_unsubscribe_int() {
+
+	unsigned long stat;
 	return (sys_irqrmpolicy(&value)||sys_irqdisable(&value));
 }
 

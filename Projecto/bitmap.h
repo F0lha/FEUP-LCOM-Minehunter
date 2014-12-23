@@ -55,7 +55,7 @@ Bitmap* loadBitmap(const char* filename);
  * @param y destiny y coord
  * @param alignment image alignment
  */
-void drawBitmap(Bitmap* bitmap, int x, int y, Alignment alignment);
+void drawBitmap(Bitmap* bitmap, int x, int y, Alignment alignment, uint16_t* temp_buffer);
 
 /**
  * @brief Destroys the given bitmap, freeing all resources used by it.

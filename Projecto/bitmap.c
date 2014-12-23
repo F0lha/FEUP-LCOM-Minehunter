@@ -75,7 +75,7 @@ Bitmap* loadBitmap(const char* filename) {
     return bmp;
 }
 
-void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
+void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment, uint16_t* temp_buffer) {
     if (bmp == NULL)
         return;
 
@@ -114,12 +114,21 @@ void drawBitmap(Bitmap* bmp, int x, int y, Alignment alignment) {
         if (pos < 0 || pos >= VRES)
             continue;
 
-        bufferStartPos = buffer;
+        bufferStartPos = temp_buffer;
         bufferStartPos += x + pos * HRES;
 
         imgStartPos = bmp->bitmapData + xCorrection + i * width;
 
-        memcpy(bufferStartPos, imgStartPos, drawWidth * 2);
+        int j;
+        for(j = 0; j < drawWidth;j++)
+        {
+        	uint16_t *map =(uint16_t *)imgStartPos;
+        	if((*map) != 0xF81F){
+        		memcpy(bufferStartPos, map, 2);
+        	}
+        	bufferStartPos++;
+        	imgStartPos++;
+        }
     }
 }
 
