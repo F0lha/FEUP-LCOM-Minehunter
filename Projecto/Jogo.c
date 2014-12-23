@@ -11,12 +11,13 @@
 #include "bitmap.h"
 
 
-Bitmap* bitmap_fundo;
+Bitmap* bitmap_table;
+Bitmap* fundo;
 
-int main(int argc, char **argv) {
+int jogo(int difficulty) {
 	sef_startup();
-	bitmap_fundo = loadBitmap("home/lcom/Projecto/res/images/fundo2.bmp");
-	printf("bitmap loaded\n");
+	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
+	fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo.bmp");
 	global_counter = 0;
 	buffer = malloc(videoMemSize * BITS_PER_PIXEL	/8);
 	bufferRato =malloc(videoMemSize * BITS_PER_PIXEL	/8);
@@ -25,9 +26,11 @@ int main(int argc, char **argv) {
 	int ipc_status, loops = 0, teste = 0;
 	message msg;
 	create_interrupts(&irq_set_timer,&irq_set_keyboard,&irq_set_mouse);
-	Mine** table = create_table(2);
+	int filled = 0;
+	Mine** table = create_table(difficulty);
 	video_mem = vg_init(0x117);
-	drawBitmap(bitmap_fundo,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
 	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
@@ -91,13 +94,23 @@ int main(int argc, char **argv) {
 					{
 						rato->leftButtonDown = 1;
 						rato->leftButtonReleased = 0;
-						click_screen(table,rato->x,rato->y,2);
-						printf("x = %d\ny = %d\n",rato->x,rato->y);
+						click_screen(&table,rato->x,rato->y,difficulty,&filled);
 					}
 					else if(!(rato->packets[0]&BIT(0)))
 					{
 						rato->leftButtonDown = 0;
 						rato->leftButtonReleased = 1;
+					}
+					if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
+					{
+						rato->rightButtonDown = 1;
+						rato->rightButtonReleased = 0;
+						right_click_screen(&table,rato->x,rato->y,difficulty);
+					}
+					else if(!(rato->packets[0]&BIT(1)))
+					{
+						rato->rightButtonDown = 0;
+						rato->rightButtonReleased = 1;
 					}
 				}
 				break;
@@ -110,40 +123,15 @@ int main(int argc, char **argv) {
 	free(rato);
 	free(buffer);
 	free(bufferRato);
-	int i;
-	int j;
-
-
-		for(j = 0; j < HEIGHT_EXPERT;j++)
-		{
-			for(i = 0;i < WIDTH_EXPERT;i++){
-			printf("%d ",table[i][j].valor);
-		}
-			printf("\n");
-	}
-
 	free(table);
 
 }
 
 
-
-
-Mine** create_table(int difficulty){
-	if(difficulty == 2) ///expert
-	{
+Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse)
+{
+	if(difficulty == 2){
 		int i;
-		Mine** table;
-		table = malloc(WIDTH_EXPERT *sizeof(Mine *));
-		for (i = 0; i < WIDTH_EXPERT; i++)
-			table[i] = malloc( HEIGHT_EXPERT *sizeof(Mine));
-		int j;
-		for(i = 0;i < WIDTH_EXPERT;i++)
-			for(j = 0; j < HEIGHT_EXPERT;j++)
-			{
-				table[i][j].valor = 0;
-				table[i][j].carregado = 0;
-			}
 		time_t t;
 		srand((unsigned) time(&t));
 		for(i = 0; i < NUM_MINES_EXPERT;i++)
@@ -155,8 +143,11 @@ Mine** create_table(int difficulty){
 			{i--;}
 			else if(table[k][j].valor >= 8)
 			{i--;}
+			else if((k == k_mouse || k == k_mouse + 1 || k == k_mouse - 1)&&(j == j_mouse || j ==j_mouse -1 || j == j_mouse + 1))
+			{
+				i--;
+			}
 			else{
-				printf("x = %d // y = %d // valor-> %d\n",k,j, table[k][j].valor);
 				table[k][j].valor = -1;
 				if(k != 0) // parede lateral esquerda /// certo!!
 					if(table[k-1][j].valor != -1)
@@ -184,120 +175,169 @@ Mine** create_table(int difficulty){
 						table[k - 1][j + 1].valor += 1;
 			}
 		}
+	}
+		return table;
+
+}
+
+
+Mine** create_table(int difficulty){
+	if(difficulty == 2) ///expert
+	{
+		int i;
+		Mine** table;
+		table = malloc(WIDTH_EXPERT *sizeof(Mine *));
+		for (i = 0; i < WIDTH_EXPERT; i++)
+			table[i] = malloc( HEIGHT_EXPERT *sizeof(Mine));
+		int j;
+		for(i = 0;i < WIDTH_EXPERT;i++)
+			for(j = 0; j < HEIGHT_EXPERT;j++)
+			{
+				table[i][j].valor = 0;
+				table[i][j].carregado = 0;
+			}
 		return table;
 	}
 }
 
-int click_screen(Mine** table, int x, int y, int difficulty){
-	Bitmap* quadrado;
-	if(difficulty == 2)
-	if(x-32 > 0 && x < 992)
+int click_screen(Mine*** table, int x, int y, int difficulty, int *filled){
+	if((*filled) == 0)
 	{
-		if(y-186>0 && y < 698)
+		printf("cria nova table\n");
+		*(table) = fill_table((*table),difficulty,(x-32)/32,(y-186)/32);
+		*(filled)  = 1;
+	}
+	printf("continua para o jogo\n");
+	Bitmap* quadrado;
+	if(difficulty == 2){
+		if(x-32 > 0 && x < 992)
 		{
-			table[(x-32)/32][(y-186)/32].carregado = 1;
-			int valor = table[(x-32)/32][(y-186)/32].valor;
-			if(valor == 0)
-				click_vazio(table, ((x-32)/32), ((y-186)/32), difficulty);
-			if(valor == 0)
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Vazio.bmp");
-			else if(valor == -1)
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Bomba.bmp");
-			else if(valor == 1)
+			if(y-186>0 && y < 698)
 			{
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado1.bmp");
+				if((*table)[(x-32)/32][(y-186)/32].carregado == 0){
+					(*table)[(x-32)/32][(y-186)/32].carregado = 1;
+					int valor = (*table)[(x-32)/32][(y-186)/32].valor;
+					if(valor == 0)
+						click_vazio(table, ((x-32)/32), ((y-186)/32), difficulty);
+					if(valor == 0)
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Vazio.bmp");
+					else if(valor == -1)
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Bomba.bmp");
+					else if(valor == 1)
+					{
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado1.bmp");
+					}
+					else if(valor == 2)
+					{
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado2.bmp");
+					}
+					else if(valor == 3)
+					{
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado3.bmp");
+					}
+					else if(valor == 4)
+					{
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado4.bmp");
+					}
+					else if(valor == 5)
+					{
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado5.bmp");
+					}
+					else if(valor == 6)
+					{
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado6.bmp");
+					}
+					else if(valor == 7)
+					{
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado7.bmp");
+					}
+					else
+					{
+						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado8.bmp");
+					}
+					drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
+				}
 			}
-			else if(valor == 2)
-			{
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado2.bmp");
-			}
-			else if(valor == 3)
-			{
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado3.bmp");
-			}
-			else if(valor == 4)
-			{
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado4.bmp");
-			}
-			else if(valor == 5)
-			{
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado5.bmp");
-			}
-			else if(valor == 6)
-			{
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado6.bmp");
-			}
-			else if(valor == 7)
-			{
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado7.bmp");
-			}
-			else
-			{
-				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado8.bmp");
-			}
-			drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
 		}
 	}
 }
 
-void click_vazio(Mine** table, int k, int j, int difficulty)
+
+int right_click_screen(Mine*** table, int x, int y, int difficulty){
+	Bitmap* quadrado;
+	if(difficulty == 2){
+		if(x-32 > 0 && x < 992)
+		{
+			if(y-186>0 && y < 698)
+			{
+				if((*table)[(x-32)/32][(y-186)/32].carregado == 0){
+					(*table)[(x-32)/32][(y-186)/32].carregado = 2;
+					quadrado = loadBitmap("home/lcom/Projecto/res/images/Bandeira.bmp");
+					drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
+				}
+				else if((*table)[(x-32)/32][(y-186)/32].carregado == 2)
+				{
+					(*table)[(x-32)/32][(y-186)/32].carregado = 0;
+					quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado_Tapado.bmp");
+					drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
+				}
+
+			}
+		}
+	}
+
+}
+
+void click_vazio(Mine*** table, int k, int j, int difficulty)
 {
-	printf("click_vazio");
+	int filled = 1;
 	if(difficulty == 2){
 		if(k != 0)
-			if(table[k-1][j].valor != -1){
-				if(table[k-1][j].carregado == 0){
-					table[k-1][j].carregado = 1;
-					click_screen(table, (k-1)*32+32+2, (j)*32 + 186+2, difficulty);
+			if((*table)[k-1][j].valor != -1){
+				if((*table)[k-1][j].carregado == 0){
+					click_screen(table, (k-1)*32+32+2, (j)*32 + 186+2, difficulty,&filled);
 				}
 			}
 		if(k != WIDTH_EXPERT - 1)
-			if(table[k+1][j].valor != -1){
-				if(table[k+1][j].carregado == 0){
-					table[k+1][j].carregado = 1;
-					click_screen(table, (k+1)*32+32+2, (j)*32 + 186+2, difficulty);
+			if((*table)[k+1][j].valor != -1){
+				if((*table)[k+1][j].carregado == 0){
+					click_screen(table, (k+1)*32+32+2, (j)*32 + 186+2, difficulty,&filled);
 				}
 			}
 		if(j != 0)
-			if(table[k][j - 1].valor != -1){
-				if(table[k][j-1].carregado == 0){
-					table[k][j-1].carregado = 1;
-					click_screen(table, (k)*32+32+2, (j-1)*32 + 186+2, difficulty);
+			if((*table)[k][j - 1].valor != -1){
+				if((*table)[k][j-1].carregado == 0){
+					click_screen(table, (k)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled);
 				}
 			}
 		if(j != HEIGHT_EXPERT - 1)
-			if(table[k][j+1].valor != -1){
-				if(table[k][j+1].carregado == 0){
-					table[k][j+1].carregado = 1;
-					click_screen(table, (k)*32+32+2, (j+1)*32 + 186+2, difficulty);
+			if((*table)[k][j+1].valor != -1){
+				if((*table)[k][j+1].carregado == 0){
+					click_screen(table, (k)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled);
 				}
 			}
 		if(k != 0 && j != 0)
-			if(table[k - 1][j - 1].valor != -1){
-				if(table[k-1][j-1].carregado == 0){
-					table[k-1][j-1].carregado = 1;
-					click_screen(table, (k-1)*32+32+2, (j-1)*32 + 186+2, difficulty);
+			if((*table)[k - 1][j - 1].valor != -1){
+				if((*table)[k-1][j-1].carregado == 0){
+					click_screen(table, (k-1)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled);
 				}
 			}
 		if(k != WIDTH_EXPERT - 1 && j != HEIGHT_EXPERT - 1)
-			if(table[k + 1][j + 1].valor != -1){
-				if(table[k+1][j+1].carregado == 0){
-					table[k+1][j+1].carregado = 1;
-					click_screen(table, (k+1)*32+32+2, (j+1)*32 + 186+2, difficulty);
+			if((*table)[k + 1][j + 1].valor != -1){
+				if((*table)[k+1][j+1].carregado == 0){
+					click_screen(table, (k+1)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled);
 				}
 			}
 		if(k != WIDTH_EXPERT - 1 && j != 0)
-			if(table[k + 1][j - 1].valor != -1){
-				if(table[k+1][j-1].carregado == 0){
-					table[k+1][j-1].carregado = 1;
-					click_screen(table, (k+1)*32+32+2, (j-1)*32 + 186+2, difficulty);
+			if((*table)[k + 1][j - 1].valor != -1){
+				if((*table)[k+1][j-1].carregado == 0){
+					click_screen(table, (k+1)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled);
 				}
 			}
 		if(k != 0 && j != HEIGHT_EXPERT - 1)
-			if(table[k - 1][j + 1].valor != -1){
-				if(table[k-1][j+1].carregado == 0){
-					table[k-1][j+1].carregado = 1;
-					click_screen(table, (k-1)*32+32+2, (j+1)*32 + 186+2, difficulty);
+			if((*table)[k - 1][j + 1].valor != -1){
+				if((*table)[k-1][j+1].carregado == 0){
+					click_screen(table, (k-1)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled);
 				}
 			}
 	}
