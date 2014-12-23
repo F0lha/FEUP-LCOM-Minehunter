@@ -5,7 +5,7 @@ COMPILER_TYPE= gnu
 CC=gcc
 
 PROG=	Projecto
-SRCS=	Jogo.c ModGrafico.c ModMenu.c ModPortaSerie.c ModRato.c ModRTC.c ModTeclado.c ModTimer.c ModWindow.c bitmap.c
+SRCS=	Menu.c Jogo.c ModGrafico.c ModMenu.c ModPortaSerie.c ModRato.c ModRTC.c ModTeclado.c ModTimer.c ModWindow.c bitmap.c
 
 CCFLAGS= -Wall
 

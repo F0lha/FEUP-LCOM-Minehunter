@@ -18,8 +18,12 @@ void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mou
 
 void stop_interrupts();
 
-void click_vazio(Mine** table, int k, int j, int difficulty);
+int right_click_screen(Mine*** table, int x, int y, int difficulty);
 
-int click_screen(Mine** table, int x, int y, int difficulty);
+void click_vazio(Mine*** table, int k, int j, int difficulty);
+
+int click_screen(Mine*** table, int x, int y, int difficulty, int *filled);
+
+Mine** fill_table(Mine** table,int difficulty,int k, int j);
 
 #endif
