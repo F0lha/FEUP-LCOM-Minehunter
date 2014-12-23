@@ -5,6 +5,7 @@
 #include <minix/sysutil.h>
 #include "ModRato.h"
 #include "ModGrafico.h"
+#include "bitmap.h"
 
 
 
@@ -107,10 +108,9 @@ void drawRato(){
 		newRato();
 	int i,j;
 	trocarRato_buffer();
-	for(i = 0;i < 10;i++)
-		for(j = 0; j < 10;j++){
-			vg_set_pixel_bufferRato(rato->x+i,rato->y+j,11);
-		}
+	Bitmap* rato_bmp;
+	rato_bmp = loadBitmap("home/lcom/Projecto/res/images/Cursor.bmp");
+	drawBitmap(rato_bmp,rato->x,rato->y,ALIGN_LEFT,bufferRato);
 }
 
 void updateMouse(){
@@ -118,35 +118,35 @@ void updateMouse(){
 	{
 		if((rato->x + (signed char)rato->packets[1] )< 0)
 			rato->x = 0;
-		else if(rato->x + (signed char)rato->packets[1] > 1024 - 10)
-			rato->x = 1014;
+		else if(rato->x + (signed char)rato->packets[1] > 1024)
+			rato->x = 1024;
 		else rato->x +=  (signed char)rato->packets[1];
 	}
 	else{
 		char temp =((-1 << 8) | rato->packets[1]);
 		if((rato->x + temp ) < 0)
 			rato->x = 0;
-		else if( rato->x + temp > 1024 - 10)
-			rato->x = 1014;
-		else rato->x +=  temp;
+		else if( rato->x + temp > 1024)
+			rato->x = 1024;
+		else rato->x +=  (signed char)temp;
 	}
 	if(!(rato->packets[1] & BIT(5)))
 	{
 		if((rato->y - (signed char)rato->packets[2] )< 0)
 			rato->y = 0;
-		else if( rato->y - (signed char)rato->packets[2] > 768 - 10)
-			rato->y = 758;
+		else if( rato->y - (signed char)rato->packets[2] > 768)
+			rato->y = 768;
 		else rato->y -= (signed char)rato->packets[2];
 	}
 	else{
 		char temp = ((-1 << 8) | rato->packets[2]);
 		if((rato->y - temp ) < 0)
 			rato->y = 0;
-		else if( rato->y - temp > 768 - 10)
-			rato->y = 758;
+		else if( rato->y - temp > 768)
+			rato->y = 768;
 		else rato->y -= (signed char)temp;
 	}
-	printf("delta x : %d\ndelta y : %d\n",(signed char)rato->packets[1],rato->packets[2]);
+
 }
 
 int first_byte(unsigned long mouse_byte) {

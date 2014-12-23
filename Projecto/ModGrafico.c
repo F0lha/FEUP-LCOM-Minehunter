@@ -10,9 +10,7 @@
 
 
 
-int draw_table (){
 
-}
 
 
 int draw_flag(int x, int y){
@@ -26,11 +24,10 @@ int draw_flag(int x, int y){
 }
 
 
-
-
-
-
-
+void update_screen(){
+	drawRato();
+	trocarVideo_Mem_Rato();
+}
 
 int draw_string (char* str, double scale, unsigned long x, unsigned long y, unsigned long color){
 

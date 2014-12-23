@@ -30,7 +30,7 @@ static unsigned bits_per_pixel; /* Number of VRAM bits per pixel */
 
 static char *phys_mem;
 
-
+void update_screen();
 
 int draw_flag(int x, int y);
 
@@ -47,6 +47,8 @@ char *read_xpm(char *map[], int *wd, int *ht);
 void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color);
 
 char** retXPM(char *xpm);
+
+
 
 void trocarRato_buffer();
 

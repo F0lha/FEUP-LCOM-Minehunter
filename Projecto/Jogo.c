@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "ModGrafico.h"
 #include "Jogo.h"
 #include "ModRato.h"
 #include "ModTeclado.h"
 #include "ModTimer.h"
-#include "ModGrafico.h"
 #include "bitmap.h"
 
 
@@ -15,7 +15,7 @@ Bitmap* bitmap_fundo;
 
 int main(int argc, char **argv) {
 	sef_startup();
-	bitmap_fundo = loadBitmap("home/Projecto/res/images/fundo2.bmp");
+	bitmap_fundo = loadBitmap("home/lcom/Projecto/res/images/fundo2.bmp");
 	printf("bitmap loaded\n");
 	global_counter = 0;
 	buffer = malloc(videoMemSize * BITS_PER_PIXEL	/8);
@@ -25,8 +25,10 @@ int main(int argc, char **argv) {
 	int ipc_status, loops = 0, teste = 0;
 	message msg;
 	create_interrupts(&irq_set_timer,&irq_set_keyboard,&irq_set_mouse);
+	Mine** table = create_table(2);
 	video_mem = vg_init(0x117);
-	while (breaker && loops < 20) {
+	drawBitmap(bitmap_fundo,0,0,ALIGN_LEFT,buffer);
+	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
 			continue;
@@ -41,17 +43,7 @@ int main(int argc, char **argv) {
 					{
 						update_screen();
 					}
-					if(loops % 5 == 0)
-					{
-					/*	int i,j;
-						for(j = 0; j < VRES;j++){
-							for(i = 0; i < HRES;i++)
-							{
-								vg_set_pixel_buffer(i,j,loops % 63 + 1);
-							}
-						}*/
-						drawBitmap(bitmap_fundo,0,-100,ALIGN_LEFT);
-					}
+
 					if (global_counter == 60) {
 						loops++;
 						global_counter = 0;
@@ -77,7 +69,6 @@ int main(int argc, char **argv) {
 				}
 				if (msg.NOTIFY_ARG & irq_set_mouse)
 				{
-					printf("adsad\n");
 					rato = getRato();
 					mouse_byte = mouse_int_handler();
 					if (contador == 0) {
@@ -90,14 +81,24 @@ int main(int argc, char **argv) {
 					if (contador == 2) {
 						contador = 0;
 						{
-							///fazer aqui merda
 							updateMouse();
 							teste = 1;
 						}
 						continue;
 					}
 					contador++;
-
+					if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
+					{
+						rato->leftButtonDown = 1;
+						rato->leftButtonReleased = 0;
+						click_screen(table,rato->x,rato->y,2);
+						printf("x = %d\ny = %d\n",rato->x,rato->y);
+					}
+					else if(!(rato->packets[0]&BIT(0)))
+					{
+						rato->leftButtonDown = 0;
+						rato->leftButtonReleased = 1;
+					}
 				}
 				break;
 			}
@@ -111,7 +112,6 @@ int main(int argc, char **argv) {
 	free(bufferRato);
 	int i;
 	int j;
-	Mine** table = create_table(2);
 
 
 		for(j = 0; j < HEIGHT_EXPERT;j++)
@@ -126,10 +126,7 @@ int main(int argc, char **argv) {
 
 }
 
-void update_screen(){
-	drawRato();
-	trocarVideo_Mem_Rato();
-}
+
 
 
 Mine** create_table(int difficulty){
@@ -161,26 +158,26 @@ Mine** create_table(int difficulty){
 			else{
 				printf("x = %d // y = %d // valor-> %d\n",k,j, table[k][j].valor);
 				table[k][j].valor = -1;
-				if(k != 0) // parede lateral esquerda
+				if(k != 0) // parede lateral esquerda /// certo!!
 					if(table[k-1][j].valor != -1)
 						table[k-1][j].valor += 1;
-				if(k != WIDTH_EXPERT - 1) /// parede lateral direita
+				if(k != WIDTH_EXPERT - 1) /// parede laterral direita/// certo!!
 					if(table[k+1][j].valor != -1)
 						table[k+1][j].valor += 1;
-				if(j != 0) /// parede vertical de cima
+				if(j != 0) /// parede vertical de cima /// certo!!
 					if(table[k][j - 1].valor != -1)
 						table[k][j - 1].valor += 1;
-				if(j != HEIGHT_EXPERT - 1)///parede vertical de baixo
+				if(j != HEIGHT_EXPERT - 1)///parede vertical de baixo/// certo!!
 					if(table[k][j+1].valor != -1)
 						table[k][j + 1].valor += 1;
-				if(k != 0 && j != 0) ///canto superior esquerdo
+				if(k != 0 && j != 0) ///canto superior esquerdo ///certo
 					if(table[k - 1][j - 1].valor != -1)
 						table[k - 1][j - 1].valor += 1;
-				if(k != WIDTH_EXPERT - 1 && j != HEIGHT_EXPERT - 1)  /// canto inferior direito
+				if(k != WIDTH_EXPERT - 1 && j != HEIGHT_EXPERT - 1)  /// canto inferior direito /// certo
 					if(table[k + 1][j + 1].valor != -1)
 						table[k + 1][j + 1].valor += 1;
 				if(k != WIDTH_EXPERT - 1 && j != 0)  /// canto superior direito
-					if(table[k + 1][ - 1].valor != -1)
+					if(table[k + 1][j - 1].valor != -1)
 						table[k + 1][j - 1].valor += 1;
 				if(k != 0 && j != HEIGHT_EXPERT - 1)/// canto inferior esquerdo
 					if(table[k - 1][j + 1].valor != -1)
@@ -191,8 +188,123 @@ Mine** create_table(int difficulty){
 	}
 }
 
+int click_screen(Mine** table, int x, int y, int difficulty){
+	Bitmap* quadrado;
+	if(difficulty == 2)
+	if(x-32 > 0 && x < 992)
+	{
+		if(y-186>0 && y < 698)
+		{
+			table[(x-32)/32][(y-186)/32].carregado = 1;
+			int valor = table[(x-32)/32][(y-186)/32].valor;
+			if(valor == 0)
+				click_vazio(table, ((x-32)/32), ((y-186)/32), difficulty);
+			if(valor == 0)
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Vazio.bmp");
+			else if(valor == -1)
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Bomba.bmp");
+			else if(valor == 1)
+			{
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado1.bmp");
+			}
+			else if(valor == 2)
+			{
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado2.bmp");
+			}
+			else if(valor == 3)
+			{
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado3.bmp");
+			}
+			else if(valor == 4)
+			{
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado4.bmp");
+			}
+			else if(valor == 5)
+			{
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado5.bmp");
+			}
+			else if(valor == 6)
+			{
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado6.bmp");
+			}
+			else if(valor == 7)
+			{
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado7.bmp");
+			}
+			else
+			{
+				quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado8.bmp");
+			}
+			drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
+		}
+	}
+}
 
-void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mouse){
+void click_vazio(Mine** table, int k, int j, int difficulty)
+{
+	printf("click_vazio");
+	if(difficulty == 2){
+		if(k != 0)
+			if(table[k-1][j].valor != -1){
+				if(table[k-1][j].carregado == 0){
+					table[k-1][j].carregado = 1;
+					click_screen(table, (k-1)*32+32+2, (j)*32 + 186+2, difficulty);
+				}
+			}
+		if(k != WIDTH_EXPERT - 1)
+			if(table[k+1][j].valor != -1){
+				if(table[k+1][j].carregado == 0){
+					table[k+1][j].carregado = 1;
+					click_screen(table, (k+1)*32+32+2, (j)*32 + 186+2, difficulty);
+				}
+			}
+		if(j != 0)
+			if(table[k][j - 1].valor != -1){
+				if(table[k][j-1].carregado == 0){
+					table[k][j-1].carregado = 1;
+					click_screen(table, (k)*32+32+2, (j-1)*32 + 186+2, difficulty);
+				}
+			}
+		if(j != HEIGHT_EXPERT - 1)
+			if(table[k][j+1].valor != -1){
+				if(table[k][j+1].carregado == 0){
+					table[k][j+1].carregado = 1;
+					click_screen(table, (k)*32+32+2, (j+1)*32 + 186+2, difficulty);
+				}
+			}
+		if(k != 0 && j != 0)
+			if(table[k - 1][j - 1].valor != -1){
+				if(table[k-1][j-1].carregado == 0){
+					table[k-1][j-1].carregado = 1;
+					click_screen(table, (k-1)*32+32+2, (j-1)*32 + 186+2, difficulty);
+				}
+			}
+		if(k != WIDTH_EXPERT - 1 && j != HEIGHT_EXPERT - 1)
+			if(table[k + 1][j + 1].valor != -1){
+				if(table[k+1][j+1].carregado == 0){
+					table[k+1][j+1].carregado = 1;
+					click_screen(table, (k+1)*32+32+2, (j+1)*32 + 186+2, difficulty);
+				}
+			}
+		if(k != WIDTH_EXPERT - 1 && j != 0)
+			if(table[k + 1][j - 1].valor != -1){
+				if(table[k+1][j-1].carregado == 0){
+					table[k+1][j-1].carregado = 1;
+					click_screen(table, (k+1)*32+32+2, (j-1)*32 + 186+2, difficulty);
+				}
+			}
+		if(k != 0 && j != HEIGHT_EXPERT - 1)
+			if(table[k - 1][j + 1].valor != -1){
+				if(table[k-1][j+1].carregado == 0){
+					table[k-1][j+1].carregado = 1;
+					click_screen(table, (k-1)*32+32+2, (j+1)*32 + 186+2, difficulty);
+				}
+			}
+	}
+}
+
+
+	void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mouse){
 	*irq_set_timer = timer_subscribe_int();
 	*irq_set_keyboard = kbd_subscribe_int();
 	*irq_set_mouse = mouse_subscribe_int();
