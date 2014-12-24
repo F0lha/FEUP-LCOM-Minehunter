@@ -198,3 +198,21 @@ void trocarRato_buffer(){
 void trocarVideo_Mem_Rato(){
 	memcpy(video_mem,bufferRato,videoMemSize* BITS_PER_PIXEL	/8);
 }
+
+void darker_screen(){
+	printf("darker_screen\n");
+	int i;
+	int total;
+	for(i = 0; i < HRES*VRES;i++)
+	{
+		unsigned char red,blue,green;
+		red = 0;
+		green = 0;
+		blue = 0;
+		red -= red*(1/4);
+		blue -= blue*(1/4);
+		green -= green*(1/4);
+		total = (red << 11)|(green<<5)|blue;
+		memcpy(&total,buffer+i*2,2);
+	}
+}

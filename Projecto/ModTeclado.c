@@ -6,12 +6,7 @@
 #include "ModTeclado.h"
 
 
-#define PAR_ERR 	BIT(7)
-#define TO_ERR 		BIT(6)
-#define IBF 		BIT(1)
-#define OBF 		BIT(0)
-#define RESEND 		0xFE
-#define ERROR 		0xFC
+
 
 
 
@@ -27,7 +22,6 @@ int kbd_subscribe_int(void) { //
 
 int kbd_unsubscribe_int() {
 
-	unsigned long stat;
 	return (sys_irqrmpolicy(&value)||sys_irqdisable(&value));
 }
 

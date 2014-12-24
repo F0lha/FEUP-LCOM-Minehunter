@@ -58,4 +58,6 @@ void vg_set_pixel_bufferRato(unsigned int x,unsigned int y, unsigned long color)
 
 void vg_set_pixel_buffer(unsigned int x,unsigned int y, unsigned long color);
 
+void darker_screen();
+
 #endif

@@ -11,26 +11,31 @@
 #include "bitmap.h"
 
 
-Bitmap* bitmap_table;
-Bitmap* fundo;
 
-int jogo(int difficulty) {
-	sef_startup();
+
+int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse) {
+	Bitmap* bitmap_table;
+	Bitmap* fundo_jogo;
+	Bitmap* smiley;
 	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
-	fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo.bmp");
-	global_counter = 0;
-	buffer = malloc(videoMemSize * BITS_PER_PIXEL	/8);
-	bufferRato =malloc(videoMemSize * BITS_PER_PIXEL	/8);
-	int irq_set_timer,irq_set_keyboard, irq_set_mouse;
-	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte;
-	int ipc_status, loops = 0, teste = 0;
+	fundo_jogo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Jogo.bmp");
+	smiley = loadBitmap("home/lcom/Projecto/res/images/Smile.bmp");
+	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
+	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	create_interrupts(&irq_set_timer,&irq_set_keyboard,&irq_set_mouse);
-	int filled = 0;
+	int filled = 0,por_carregar,repeat = 0;///jogo
+	if(difficulty == 2)
+		por_carregar = 380;
+	else if (difficulty == 1)
+		por_carregar = 0; /// alterar
+	else por_carregar = 0; // alterar
 	Mine** table = create_table(difficulty);
-	video_mem = vg_init(0x117);
-	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(smiley,486,68,ALIGN_LEFT,buffer);
+	deleteBitmap(fundo_jogo);
+	deleteBitmap(bitmap_table);
+	deleteBitmap(smiley);
 	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
@@ -85,50 +90,61 @@ int jogo(int difficulty) {
 						contador = 0;
 						{
 							updateMouse();
-							teste = 1;
+
+							if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
+							{
+								rato->leftButtonDown = 1;
+								rato->leftButtonReleased = 0;
+								if(rato->x >=486 && rato->x<=538 && rato->y >=68 && rato->y <= 120)
+								{
+									repeat = 1;
+									breaker = 0;
+								}
+								else if(click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1) == -1)
+								{
+									post_game_state(difficulty,-1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse);
+									breaker = 0;
+								}else if(por_carregar == 0)
+								{
+									post_game_state(difficulty,1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse);
+									breaker = 0;
+								}
+							}
+							else if(!(rato->packets[0]&BIT(0)))
+							{
+								rato->leftButtonDown = 0;
+								rato->leftButtonReleased = 1;
+							}
+							if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
+							{
+								rato->rightButtonDown = 1;
+								rato->rightButtonReleased = 0;
+								right_click_screen(&table,rato->x,rato->y,difficulty);
+							}
+							else if(!(rato->packets[0]&BIT(1)))
+							{
+								rato->rightButtonDown = 0;
+								rato->rightButtonReleased = 1;
+							}
+
 						}
 						continue;
 					}
 					contador++;
-					if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
-					{
-						rato->leftButtonDown = 1;
-						rato->leftButtonReleased = 0;
-						click_screen(&table,rato->x,rato->y,difficulty,&filled);
-					}
-					else if(!(rato->packets[0]&BIT(0)))
-					{
-						rato->leftButtonDown = 0;
-						rato->leftButtonReleased = 1;
-					}
-					if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
-					{
-						rato->rightButtonDown = 1;
-						rato->rightButtonReleased = 0;
-						right_click_screen(&table,rato->x,rato->y,difficulty);
-					}
-					else if(!(rato->packets[0]&BIT(1)))
-					{
-						rato->rightButtonDown = 0;
-						rato->rightButtonReleased = 1;
-					}
+
 				}
 				break;
 			}
 		}
 
 	}
-	vg_exit();
-	stop_interrupts();
-	free(rato);
-	free(buffer);
-	free(bufferRato);
 	free(table);
-
+	if(repeat)
+		jogo_single_player(difficulty,irq_set_timer,irq_set_keyboard,irq_set_mouse);
 }
 
 
-Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse)
+Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int single)
 {
 	if(difficulty == 2){
 		int i;
@@ -143,7 +159,7 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse)
 			{i--;}
 			else if(table[k][j].valor >= 8)
 			{i--;}
-			else if((k == k_mouse || k == k_mouse + 1 || k == k_mouse - 1)&&(j == j_mouse || j ==j_mouse -1 || j == j_mouse + 1))
+			else if((k == k_mouse || k == k_mouse + 1 || k == k_mouse - 1)&&(j == j_mouse || j ==j_mouse -1 || j == j_mouse + 1) && single)
 			{
 				i--;
 			}
@@ -200,25 +216,26 @@ Mine** create_table(int difficulty){
 	}
 }
 
-int click_screen(Mine*** table, int x, int y, int difficulty, int *filled){
-	if((*filled) == 0)
-	{
-		printf("cria nova table\n");
-		*(table) = fill_table((*table),difficulty,(x-32)/32,(y-186)/32);
-		*(filled)  = 1;
-	}
-	printf("continua para o jogo\n");
+int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *por_carregar,int single){
 	Bitmap* quadrado;
+	int valor;
 	if(difficulty == 2){
 		if(x-32 > 0 && x < 992)
 		{
 			if(y-186>0 && y < 698)
 			{
+				if((*filled) == 0)
+				{
+					printf("cria nova table\n");
+					*(table) = fill_table((*table),difficulty,(x-32)/32,(y-186)/32,single);
+					*(filled)  = 1;
+				}
 				if((*table)[(x-32)/32][(y-186)/32].carregado == 0){
 					(*table)[(x-32)/32][(y-186)/32].carregado = 1;
-					int valor = (*table)[(x-32)/32][(y-186)/32].valor;
+					(*por_carregar) -= 1;
+					valor = (*table)[(x-32)/32][(y-186)/32].valor;
 					if(valor == 0)
-						click_vazio(table, ((x-32)/32), ((y-186)/32), difficulty);
+						click_vazio(table, ((x-32)/32), ((y-186)/32), difficulty,por_carregar,single);
 					if(valor == 0)
 						quadrado = loadBitmap("home/lcom/Projecto/res/images/Vazio.bmp");
 					else if(valor == -1)
@@ -256,10 +273,12 @@ int click_screen(Mine*** table, int x, int y, int difficulty, int *filled){
 						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado8.bmp");
 					}
 					drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
+					deleteBitmap(quadrado);
 				}
 			}
 		}
 	}
+	return valor;
 }
 
 
@@ -288,71 +307,191 @@ int right_click_screen(Mine*** table, int x, int y, int difficulty){
 
 }
 
-void click_vazio(Mine*** table, int k, int j, int difficulty)
+void click_vazio(Mine*** table, int k, int j, int difficulty,int *por_carregar,int single)
 {
 	int filled = 1;
 	if(difficulty == 2){
 		if(k != 0)
 			if((*table)[k-1][j].valor != -1){
 				if((*table)[k-1][j].carregado == 0){
-					click_screen(table, (k-1)*32+32+2, (j)*32 + 186+2, difficulty,&filled);
+					click_screen(table, (k-1)*32+32+2, (j)*32 + 186+2, difficulty,&filled,por_carregar, single);
 				}
 			}
 		if(k != WIDTH_EXPERT - 1)
 			if((*table)[k+1][j].valor != -1){
 				if((*table)[k+1][j].carregado == 0){
-					click_screen(table, (k+1)*32+32+2, (j)*32 + 186+2, difficulty,&filled);
+					click_screen(table, (k+1)*32+32+2, (j)*32 + 186+2, difficulty,&filled,por_carregar, single);
 				}
 			}
 		if(j != 0)
 			if((*table)[k][j - 1].valor != -1){
 				if((*table)[k][j-1].carregado == 0){
-					click_screen(table, (k)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled);
+					click_screen(table, (k)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled,por_carregar, single);
 				}
 			}
 		if(j != HEIGHT_EXPERT - 1)
 			if((*table)[k][j+1].valor != -1){
 				if((*table)[k][j+1].carregado == 0){
-					click_screen(table, (k)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled);
+					click_screen(table, (k)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled,por_carregar, single);
 				}
 			}
 		if(k != 0 && j != 0)
 			if((*table)[k - 1][j - 1].valor != -1){
 				if((*table)[k-1][j-1].carregado == 0){
-					click_screen(table, (k-1)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled);
+					click_screen(table, (k-1)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled,por_carregar, single);
 				}
 			}
 		if(k != WIDTH_EXPERT - 1 && j != HEIGHT_EXPERT - 1)
 			if((*table)[k + 1][j + 1].valor != -1){
 				if((*table)[k+1][j+1].carregado == 0){
-					click_screen(table, (k+1)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled);
+					click_screen(table, (k+1)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled,por_carregar, single);
 				}
 			}
 		if(k != WIDTH_EXPERT - 1 && j != 0)
 			if((*table)[k + 1][j - 1].valor != -1){
 				if((*table)[k+1][j-1].carregado == 0){
-					click_screen(table, (k+1)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled);
+					click_screen(table, (k+1)*32+32+2, (j-1)*32 + 186+2, difficulty,&filled,por_carregar, single);
 				}
 			}
 		if(k != 0 && j != HEIGHT_EXPERT - 1)
 			if((*table)[k - 1][j + 1].valor != -1){
 				if((*table)[k-1][j+1].carregado == 0){
-					click_screen(table, (k-1)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled);
+					click_screen(table, (k-1)*32+32+2, (j+1)*32 + 186+2, difficulty,&filled,por_carregar, single);
 				}
 			}
 	}
 }
 
 
-	void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mouse){
+void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mouse){
 	*irq_set_timer = timer_subscribe_int();
-	*irq_set_keyboard = kbd_subscribe_int();
 	*irq_set_mouse = mouse_subscribe_int();
+	*irq_set_keyboard = kbd_subscribe_int();
 	enable_packets();
 }
 
 void stop_interrupts(){
+	unsigned long stat;
+	unsigned long lixo;
+	sys_inb(STAT_REG ,&stat); //lê status-reg para variavel
+	while ((stat & OBF)){
+		sys_inb(STAT_REG ,&stat);
+		sys_inb(OUT_BUF, &lixo); //le out_buff para variavel
+	}
 	mouse_unsubscribe_int();
 	kbd_unsubscribe_int();
 	timer_unsubscribe_int();
+}
+
+
+int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
+	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte;
+	int ipc_status, loops = 0;
+	message msg;
+	Bitmap* banner;
+	Bitmap* fundo;
+	Bitmap* back_button;
+	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	if(win == -1)
+	{
+		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Lost.bmp");
+		banner = loadBitmap("home/lcom/Projecto/res/images/You_Lost.bmp");
+	}
+	else{
+		banner = loadBitmap("home/lcom/Projecto/res/images/You_Won.bmp");
+		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Won.bmp");
+	}
+	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(banner,32,100,ALIGN_LEFT,buffer);
+	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
+	deleteBitmap(fundo);
+	deleteBitmap(back_button);
+	deleteBitmap(banner);
+	while (breaker) {
+		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+			printf("driver_receive failed with: %d");
+			continue;
+		}
+		//printf("msg.notifyArg: 0x%X\n", msg.NOTIFY_ARG);
+		if (is_ipc_notify(ipc_status)) {
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE:
+				if (msg.NOTIFY_ARG & irq_set_timer) {
+					timer_int_handler();
+					if(global_counter % 1 == 0)
+					{
+						update_screen();
+					}
+
+					if (global_counter == 60) {
+						global_counter = 0;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_set_keyboard)
+				{
+					kbd_int_handler();
+					if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
+					else if(scan_code>>7){
+						if(two_bytes) ;
+						else ;
+						if (scan_code==BREAK_CODE_ESC)
+							breaker = 0;
+					}
+					else
+					{
+						if (two_bytes){
+							two_bytes=0;
+						}
+						else ;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_set_mouse)
+				{
+
+					rato = getRato();
+					mouse_byte = mouse_int_handler();
+					if (contador == 0) {
+						if (!first_byte(mouse_byte)) {
+							contador = 0;
+							continue;
+						}
+					}
+					rato->packets[contador] = mouse_byte;
+					if (contador == 2) {
+						contador = 0;
+						{
+							updateMouse();
+
+							if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
+							{
+								rato->leftButtonDown = 1;
+								rato->leftButtonReleased = 0;
+								if(rato->x >=0 && rato->x < 50 && rato->y >=0 && rato->y < 50)
+									breaker = 0;
+							}
+							else if(!(rato->packets[0]&BIT(0)))
+							{
+								rato->leftButtonDown = 0;
+								rato->leftButtonReleased = 1;
+							}
+							if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
+							{
+								rato->rightButtonDown = 1;
+								rato->rightButtonReleased = 0;
+							}
+							else if(!(rato->packets[0]&BIT(1)))
+							{
+								rato->rightButtonDown = 0;
+								rato->rightButtonReleased = 1;
+							}
+
+						}
+						continue;
+					}
+					contador++;
+
+				}
+			}
+		}
+	}
 }
