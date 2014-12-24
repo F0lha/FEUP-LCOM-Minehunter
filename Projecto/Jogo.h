@@ -20,10 +20,15 @@ void stop_interrupts();
 
 int right_click_screen(Mine*** table, int x, int y, int difficulty);
 
-void click_vazio(Mine*** table, int k, int j, int difficulty);
+void click_vazio(Mine*** table, int k, int j, int difficulty,int *por_carregar,int single);
 
-int click_screen(Mine*** table, int x, int y, int difficulty, int *filled);
+int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *por_carregar,int single);
 
-Mine** fill_table(Mine** table,int difficulty,int k, int j);
+Mine** fill_table(Mine** table,int difficulty,int k, int j,int single);
+
+int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
+
+int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
+
 
 #endif

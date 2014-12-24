@@ -4,7 +4,7 @@
 #include "bitmap.h"
 
 
-
+void draw_main_menu();
 
 
 #endif
