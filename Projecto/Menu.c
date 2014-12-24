@@ -55,7 +55,7 @@ int main(int argc, char **argv){
 						timer_int_handler();
 						if(global_counter % 1 == 0)
 						{
-							update_screen();
+							update_screen(0);
 						}
 
 						if (global_counter == 60) {
@@ -105,6 +105,8 @@ int main(int argc, char **argv){
 										breaker = 0;
 									else if(rato->x >=270 && rato->x < 750 && rato->y >=342 && rato->y < 405)
 										jogo_single_player(2,irq_set_timer,irq_set_keyboard, irq_set_mouse);
+									else if(rato->x >=285 && rato->x < 732 && rato->y >=485 && rato->y < 552)
+										jogo_multi_player(2,irq_set_timer,irq_set_keyboard, irq_set_mouse);
 									draw_main_menu();
 
 								}
