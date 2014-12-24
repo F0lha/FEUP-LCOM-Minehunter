@@ -70,7 +70,7 @@ void updateMouse();
 
 int first_byte(unsigned long mouse_byte);
 
-void drawRato();
+void drawRato(int cor);
 
 int enable_packets();
 

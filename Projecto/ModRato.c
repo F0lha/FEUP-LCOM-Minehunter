@@ -102,14 +102,19 @@ Rato* newRato(){
 	return rato;
 }
 
-void drawRato(){
+void drawRato(int cor){
 	if(!rato)
 		newRato();
 	int i,j;
 	trocarRato_buffer();
 	Bitmap* rato_bmp;
-	rato_bmp = loadBitmap("home/lcom/Projecto/res/images/Cursor.bmp");
+	if(cor == 0)
+		rato_bmp = loadBitmap("home/lcom/Projecto/res/images/Cursor.bmp");
+	else if(cor == 1)
+		loadBitmap("home/lcom/Projecto/res/images/Cursor_1.bmp");
+	else loadBitmap("home/lcom/Projecto/res/images/Cursor_2.bmp");
 	drawBitmap(rato_bmp,rato->x,rato->y,ALIGN_LEFT,bufferRato);
+	deleteBitmap(rato_bmp);
 }
 
 void updateMouse(){
