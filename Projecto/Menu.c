@@ -103,11 +103,16 @@ int main(int argc, char **argv){
 									rato->leftButtonReleased = 0;
 									if(rato->x >=0 && rato->x < 50 && rato->y >=0 && rato->y < 50)
 										breaker = 0;
-									else if(rato->x >=270 && rato->x < 750 && rato->y >=342 && rato->y < 405)
+									else if(rato->x >=270 && rato->x < 750 && rato->y >=342 && rato->y < 405){
 										jogo_single_player(2,irq_set_timer,irq_set_keyboard, irq_set_mouse);
+										draw_main_menu();
+									}
 									else if(rato->x >=285 && rato->x < 732 && rato->y >=485 && rato->y < 552)
+									{
 										jogo_multi_player(2,irq_set_timer,irq_set_keyboard, irq_set_mouse);
-									draw_main_menu();
+										draw_main_menu();
+									}
+
 
 								}
 								else if(!(rato->packets[0]&BIT(0)))
