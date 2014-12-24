@@ -26,6 +26,7 @@ int draw_flag(int x, int y){
 
 void update_screen(int cor){
 	drawRato(cor);
+	printf("passa o draw rato\n");
 	trocarVideo_Mem_Rato();
 }
 

@@ -517,6 +517,7 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
 	deleteBitmap(bitmap_table);
+	printf("chega ao ciclo\n");
 	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
@@ -530,6 +531,7 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
+						printf("chega ao update_screen\n");
 						update_screen(jogador);
 					}
 
@@ -542,6 +544,7 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 						if(jogador)
 							jogador = 2;
 						else jogador = 1;
+						cronometro = 30;
 					}
 				}
 				if (msg.NOTIFY_ARG & irq_set_keyboard)
