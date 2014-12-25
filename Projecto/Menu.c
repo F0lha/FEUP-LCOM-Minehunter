@@ -30,7 +30,7 @@ void draw_main_menu(){
 
 int main(int argc, char **argv){
 
-
+	load_cronometro();
 	sef_startup();
 	buffer = malloc(videoMemSize * BITS_PER_PIXEL	/8);
 	bufferRato =malloc(videoMemSize * BITS_PER_PIXEL	/8);
@@ -143,10 +143,12 @@ int main(int argc, char **argv){
 
 /// interrupts
 	vg_exit();
+	delete_cronometro();
 	stop_interrupts();
 	free(rato);
 	free(buffer);
 	free(bufferRato);
+	printf("acabou\n");
 }
 
 

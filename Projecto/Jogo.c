@@ -23,7 +23,7 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	int filled = 0,por_carregar,repeat = 0;///jogo
+	int filled = 0,por_carregar,repeat = 0,tempo = 0,cronometro_parado = 1;///jogo
 	if(difficulty == 2)
 		por_carregar = 380;
 	else if (difficulty == 1)
@@ -51,10 +51,25 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 					{
 						update_screen(0);
 					}
+					if(cronometro_parado)
+					{
+						if(difficulty == 2 && por_carregar != 380)
+						{
+							cronometro_parado = 0;
+							global_counter = 0;
+						}
+						///acrescentar outras dificuldades
+					}
 
 					if (global_counter == 60) {
-						loops++;
 						global_counter = 0;
+						if(cronometro_parado == 0)
+						{
+							tempo++;
+							if(tempo >= 1000)
+								tempo = 999;
+							update_cronometro(tempo);
+						}
 					}
 				}
 				if (msg.NOTIFY_ARG & irq_set_keyboard)
@@ -375,6 +390,7 @@ void stop_interrupts(){
 	unsigned long lixo;
 	sys_inb(STAT_REG ,&stat); //lê status-reg para variavel
 	while ((stat & OBF)){
+		printf("limpa\n");
 		sys_inb(STAT_REG ,&stat);
 		sys_inb(OUT_BUF, &lixo); //le out_buff para variavel
 	}
@@ -506,13 +522,17 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	int filled = 0,por_carregar,cronometro = 30,jogador = 1,pontuacao1 = 0,pontuacao2 = 0;///jogo
+	int filled = 0,por_carregar,cronometro = 30,jogador = 1,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
 	if(difficulty == 2)
-		por_carregar = 100; /// ALTERAR O CLICK_SCREEN
+	{
+		por_carregar = 380;
+		bombas_por_carregar = 100;
+	}
 	else if (difficulty == 1)
-		por_carregar = 0; /// alterar
-	else por_carregar = 0; // alterar
+		bombas_por_carregar = 0; /// alterar
+	else bombas_por_carregar = 0; // alterar
 	Mine** table = create_table(difficulty);
+	table = fill_table(table,difficulty,0,0,0);
 	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
@@ -534,14 +554,27 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 						printf("chega ao update_screen\n");
 						update_screen(jogador);
 					}
+					if(cronometro_parado)
+					{
+						if(difficulty == 2 && por_carregar != 380)
+						{
+							cronometro_parado = 0;
+							cronometro = 30;
+						}
+						///acrescentar outras dificuldades
+					}
 
 					if (global_counter == 60) {
 						cronometro--;
 						global_counter = 0;
+						if(cronometro_parado == 0)
+						{
+							update_multi_cronometro(cronometro,jogador,pontuacao1,pontuacao2);
+						}
 					}
-					if(cronometro == 0)
+					if(cronometro == 0 && cronometro_parado == 0)
 					{
-						if(jogador)
+						if(jogador == 1)
 							jogador = 2;
 						else jogador = 1;
 						cronometro = 30;
@@ -585,14 +618,32 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 							{
 								rato->leftButtonDown = 1;
 								rato->leftButtonReleased = 0;
-								if(click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1) == -1)
+								int carregado = click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1);
+								if(carregado != -1)
 								{
-									post_game_state(difficulty,-1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse);
-									breaker = 0;
-								}else if(por_carregar == 0)
+									if(jogador == 1)
+										jogador = 2;
+									else jogador = 1;
+									cronometro = 30;
+								}else if(carregado == -1)
 								{
-									post_game_state(difficulty,1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse);
-									breaker = 0;
+									bombas_por_carregar--;
+									if(jogador == 1)
+										pontuacao1++;
+									else pontuacao2++;
+									cronometro = 30;
+								}
+								if(bombas_por_carregar == 0)
+								{
+									if(jogador == 1)
+									{
+										//estado final jogador 1
+										breaker = 0;
+									}
+									else {
+										//estado final jogador 2
+										breaker = 0;
+									}
 								}
 							}
 							else if(!(rato->packets[0]&BIT(0)))
@@ -600,7 +651,7 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 								rato->leftButtonDown = 0;
 								rato->leftButtonReleased = 1;
 							}
-							if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
+							/*if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
 							{
 								rato->rightButtonDown = 1;
 								rato->rightButtonReleased = 0;
@@ -610,7 +661,7 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 							{
 								rato->rightButtonDown = 0;
 								rato->rightButtonReleased = 1;
-							}
+							}*/
 
 						}
 						continue;
@@ -624,4 +675,361 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 
 	}
 	free(table);
+}
+
+void update_cronometro(int tempo){
+	int centenas = (tempo / 100) % 10;
+	int dezenas = (tempo / 10) % 10;
+	int unidades = tempo % 10;
+	switch(centenas){
+	case 0:
+		drawBitmap(Cron_0,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 1:
+		drawBitmap(Cron_1,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 2:
+		drawBitmap(Cron_2,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 3:
+		drawBitmap(Cron_3,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 4:
+		drawBitmap(Cron_4,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 5:
+		drawBitmap(Cron_5,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 6:
+		drawBitmap(Cron_6,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 7:
+		drawBitmap(Cron_7,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 8:
+		drawBitmap(Cron_8,850,100,ALIGN_LEFT,buffer);
+		break;
+	case 9:
+		drawBitmap(Cron_9,850,100,ALIGN_LEFT,buffer);
+		break;
+	}
+	switch(dezenas)
+	{
+	case 0:
+		drawBitmap(Cron_0,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 1:
+		drawBitmap(Cron_1,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 2:
+		drawBitmap(Cron_2,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 3:
+		drawBitmap(Cron_3,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 4:
+		drawBitmap(Cron_4,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 5:
+		drawBitmap(Cron_5,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 6:
+		drawBitmap(Cron_6,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 7:
+		drawBitmap(Cron_7,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 8:
+		drawBitmap(Cron_8,866,100,ALIGN_LEFT,buffer);
+		break;
+	case 9:
+		drawBitmap(Cron_9,866,100,ALIGN_LEFT,buffer);
+		break;
+	}
+	switch(unidades)
+	{
+	case 0:
+		drawBitmap(Cron_0,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 1:
+		drawBitmap(Cron_1,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 2:
+		drawBitmap(Cron_2,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 3:
+		drawBitmap(Cron_3,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 4:
+		drawBitmap(Cron_4,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 5:
+		drawBitmap(Cron_5,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 6:
+		drawBitmap(Cron_6,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 7:
+		drawBitmap(Cron_7,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 8:
+		drawBitmap(Cron_8,882,100,ALIGN_LEFT,buffer);
+		break;
+	case 9:
+		drawBitmap(Cron_9,882,100,ALIGN_LEFT,buffer);
+		break;
+	}
+}
+
+void delete_cronometro(){
+	deleteBitmap(Cron_0);
+	deleteBitmap(Cron_1);
+	deleteBitmap(Cron_2);
+	deleteBitmap(Cron_3);
+	deleteBitmap(Cron_4);
+	deleteBitmap(Cron_5);
+	deleteBitmap(Cron_6);
+	deleteBitmap(Cron_7);
+	deleteBitmap(Cron_8);
+	deleteBitmap(Cron_9);
+	deleteBitmap(Player1_table);
+	deleteBitmap(Player2_table);
+}
+
+void load_cronometro(){
+	Cron_0 = loadBitmap("home/lcom/Projecto/res/images/Cron_0.bmp");
+	Cron_1 = loadBitmap("home/lcom/Projecto/res/images/Cron_1.bmp");
+	Cron_2 = loadBitmap("home/lcom/Projecto/res/images/Cron_2.bmp");
+	Cron_3 = loadBitmap("home/lcom/Projecto/res/images/Cron_3.bmp");
+	Cron_4 = loadBitmap("home/lcom/Projecto/res/images/Cron_4.bmp");
+	Cron_5 = loadBitmap("home/lcom/Projecto/res/images/Cron_5.bmp");
+	Cron_6 = loadBitmap("home/lcom/Projecto/res/images/Cron_6.bmp");
+	Cron_7 = loadBitmap("home/lcom/Projecto/res/images/Cron_7.bmp");
+	Cron_8 = loadBitmap("home/lcom/Projecto/res/images/Cron_8.bmp");
+	Cron_9 = loadBitmap("home/lcom/Projecto/res/images/Cron_9.bmp");
+	Player1_table = loadBitmap("home/lcom/Projecto/res/images/Player1_table.bmp");
+	Player2_table = loadBitmap("home/lcom/Projecto/res/images/Player2_table.bmp");
+}
+
+void update_multi_cronometro(int tempo, int jogador,int jogador1,int jogador2){
+	int dezenas = (tempo / 10) % 10;
+	int unidades = tempo % 10;
+	drawBitmap(Player1_table,32,50,ALIGN_LEFT,buffer);
+	drawBitmap(Player2_table,880,50,ALIGN_LEFT,buffer);
+	if(jogador == 1)
+	{
+		switch(dezenas)
+			{
+			case 0:
+				drawBitmap(Cron_0,32,104,ALIGN_LEFT,buffer);
+				break;
+			case 1:
+				drawBitmap(Cron_1,32,104,ALIGN_LEFT,buffer);
+				break;
+			case 2:
+				drawBitmap(Cron_2,32,104,ALIGN_LEFT,buffer);
+				break;
+			case 3:
+				drawBitmap(Cron_3,32,104,ALIGN_LEFT,buffer);
+				break;
+			}
+		switch(unidades)
+		{
+		case 0:
+			drawBitmap(Cron_0,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 1:
+			drawBitmap(Cron_1,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 2:
+			drawBitmap(Cron_2,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 3:
+			drawBitmap(Cron_3,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 4:
+			drawBitmap(Cron_4,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 5:
+			drawBitmap(Cron_5,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 6:
+			drawBitmap(Cron_6,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 7:
+			drawBitmap(Cron_7,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 8:
+			drawBitmap(Cron_8,48,104,ALIGN_LEFT,buffer);
+			break;
+		case 9:
+			drawBitmap(Cron_9,48,104,ALIGN_LEFT,buffer);
+			break;
+		}
+		drawBitmap(Cron_9,960,104,ALIGN_LEFT,buffer);
+		drawBitmap(Cron_9,976,104,ALIGN_LEFT,buffer);
+	}else{
+		switch(dezenas)
+		{
+		case 0:
+			drawBitmap(Cron_0,960,104,ALIGN_LEFT,buffer);
+			break;
+		case 1:
+			drawBitmap(Cron_1,960,104,ALIGN_LEFT,buffer);
+			break;
+		case 2:
+			drawBitmap(Cron_2,960,104,ALIGN_LEFT,buffer);
+			break;
+		case 3:
+			drawBitmap(Cron_3,960,104,ALIGN_LEFT,buffer);
+			break;
+		}
+		switch(unidades)
+		{
+		case 0:
+			drawBitmap(Cron_0,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 1:
+			drawBitmap(Cron_1,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 2:
+			drawBitmap(Cron_2,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 3:
+			drawBitmap(Cron_3,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 4:
+			drawBitmap(Cron_4,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 5:
+			drawBitmap(Cron_5,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 6:
+			drawBitmap(Cron_6,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 7:
+			drawBitmap(Cron_7,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 8:
+			drawBitmap(Cron_8,976,104,ALIGN_LEFT,buffer);
+			break;
+		case 9:
+			drawBitmap(Cron_9,976,104,ALIGN_LEFT,buffer);
+			break;
+		}
+		drawBitmap(Cron_9,32,104,ALIGN_LEFT,buffer);
+		drawBitmap(Cron_9,48,104,ALIGN_LEFT,buffer);
+	}
+	dezenas = (jogador1 / 10) % 10;
+	unidades = jogador1 % 10;
+	switch(dezenas)
+	{
+	case 0:
+		drawBitmap(Cron_0,112,104,ALIGN_LEFT,buffer);
+		break;
+	case 1:
+		drawBitmap(Cron_1,112,104,ALIGN_LEFT,buffer);
+		break;
+	case 2:
+		drawBitmap(Cron_2,112,104,ALIGN_LEFT,buffer);
+		break;
+	case 3:
+		drawBitmap(Cron_3,112,104,ALIGN_LEFT,buffer);
+		break;
+	case 4:
+		drawBitmap(Cron_4,112,104,ALIGN_LEFT,buffer);
+		break;
+	case 5:
+		drawBitmap(Cron_5,112,104,ALIGN_LEFT,buffer);
+		break;
+	}
+	switch(unidades)
+	{
+	case 0:
+		drawBitmap(Cron_0,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 1:
+		drawBitmap(Cron_1,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 2:
+		drawBitmap(Cron_2,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 3:
+		drawBitmap(Cron_3,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 4:
+		drawBitmap(Cron_4,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 5:
+		drawBitmap(Cron_5,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 6:
+		drawBitmap(Cron_6,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 7:
+		drawBitmap(Cron_7,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 8:
+		drawBitmap(Cron_8,128,104,ALIGN_LEFT,buffer);
+		break;
+	case 9:
+		drawBitmap(Cron_9,128,104,ALIGN_LEFT,buffer);
+		break;
+	}
+	dezenas = (jogador2 / 10) % 10;
+	unidades = jogador2 % 10;
+	switch(dezenas)
+	{
+	case 0:
+		drawBitmap(Cron_0,880,104,ALIGN_LEFT,buffer);
+		break;
+	case 1:
+		drawBitmap(Cron_1,880,104,ALIGN_LEFT,buffer);
+		break;
+	case 2:
+		drawBitmap(Cron_2,880,104,ALIGN_LEFT,buffer);
+		break;
+	case 3:
+		drawBitmap(Cron_3,880,104,ALIGN_LEFT,buffer);
+		break;
+	case 4:
+		drawBitmap(Cron_4,880,104,ALIGN_LEFT,buffer);
+		break;
+	case 5:
+		drawBitmap(Cron_5,880,104,ALIGN_LEFT,buffer);
+		break;
+	}
+	switch(unidades)
+	{
+	case 0:
+		drawBitmap(Cron_0,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 1:
+		drawBitmap(Cron_1,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 2:
+		drawBitmap(Cron_2,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 3:
+		drawBitmap(Cron_3,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 4:
+		drawBitmap(Cron_4,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 5:
+		drawBitmap(Cron_5,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 6:
+		drawBitmap(Cron_6,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 7:
+		drawBitmap(Cron_7,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 8:
+		drawBitmap(Cron_8,896,104,ALIGN_LEFT,buffer);
+		break;
+	case 9:
+		drawBitmap(Cron_9,896,104,ALIGN_LEFT,buffer);
+		break;
+	}
 }

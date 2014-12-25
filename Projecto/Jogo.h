@@ -11,6 +11,19 @@ typedef struct{
 	int valor; ///-1 se mina, 0 se vazia, outro valor
 }Mine;
 
+Bitmap* Cron_0;
+Bitmap* Cron_1;
+Bitmap* Cron_2;
+Bitmap* Cron_3;
+Bitmap* Cron_4;
+Bitmap* Cron_5;
+Bitmap* Cron_6;
+Bitmap* Cron_7;
+Bitmap* Cron_8;
+Bitmap* Cron_9;
+Bitmap* Player1_table;
+Bitmap* Player2_table;
+
 
 Mine** create_table(int difficulty);
 
@@ -30,5 +43,12 @@ int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_se
 
 int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
 
+void update_cronometro(int tempo);
+
+void load_cronometro();
+
+void delete_cronometro();
+
+void update_multi_cronometro(int tempo, int jogador,int jogador1,int jogador2);
 
 #endif
