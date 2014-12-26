@@ -78,7 +78,7 @@ int ser_test_set(unsigned short base_addr, unsigned long bits, unsigned long sto
 
 int ser_test_poll(unsigned short base_addr, unsigned char tx, unsigned long bits, 
                     unsigned long stop, long parity, unsigned long rate, 
-                    int stringc, char *strings[]) {
+                    int stringc, char c) {
 
 	ser_test_set(base_addr,bits,stop,parity,rate);
 	if(tx == 0)  ///receiver
@@ -87,39 +87,11 @@ int ser_test_poll(unsigned short base_addr, unsigned char tx, unsigned long bits
 		{
 			char temp;
 			getChar(base_addr,&temp);
-			if(temp == ' ')
-			{
-				printf("\n");
-			}
-			else if(temp == '.')
-			{
-				printf(".\n");
-				break;
-			}
-			else{
-				printf("%c",temp);
-			}
+			printf("%c",temp);
 		}
 	}
 	else{ /// sender
-		int n = 0,i = 0;
-		char* c;
-		while(n != 1 || i  != stringc)
-		{
-
-			c = (strings[i]);
-			if(*c == ' ')
-			{
-				//printf("chega aqui");
-				i++;
-			}
-			else if(*c == '.')
-			{
-				n = 1;
-			}
-			sendChar(base_addr,*c);
-			c++;
-		}
+			sendChar(base_addr,c);
 	}
 
 
