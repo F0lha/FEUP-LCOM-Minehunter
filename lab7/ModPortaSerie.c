@@ -79,7 +79,6 @@ int getChar(unsigned short base_addr, unsigned char *c) {
 		sys_inb(base_addr + LSR, &temp1);
 
 		if (temp1 & BIT(RR)) {
-			changeDLAB(base_addr,0);
 			sys_inb(base_addr + RB, &temp2);
 			*c = temp2;
 			return 0;
@@ -95,7 +94,6 @@ int getCharOne(unsigned short base_addr, unsigned char *c) {
 	sys_inb(base_addr + LSR, &temp1);
 
 	if (temp1 & BIT(RR)) {
-		changeDLAB(base_addr,0);
 		sys_inb(base_addr + RB, &temp2);
 		*c = temp2;
 		return 0;
