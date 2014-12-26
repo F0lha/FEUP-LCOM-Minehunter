@@ -44,8 +44,8 @@ static int proc_args(int argc, char *argv[]) {
 			return 1;
 		}
 		unsigned long tx = parse_ulong(argv[2], 10);
-		char *cenas = "oil tudo bem.";
-		ser_test_poll(COM1_ADDR,tx,8,1,-1,9600,12,&cenas);
+		char *arr[4] = {"C ","C++ ","Java ","VBA."};
+		ser_test_poll(COM1_ADDR,tx,8,1,-1,9600,4,arr);
 		return 0;
 	}
 }
