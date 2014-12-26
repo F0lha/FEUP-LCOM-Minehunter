@@ -77,8 +77,8 @@ int getChar(unsigned short base_addr, unsigned char *c) {
 	while (1) {
 
 		sys_inb(base_addr + LSR, &temp1);
-		printf("%d\n",temp1);
-		if ((temp1 & BIT(RR))==0) {
+		printf("0x%X\n",temp1);
+		if ((temp1 & BIT(RR))!=0) {
 			printf("chega aqui!");
 			sys_inb(base_addr + RB, &temp2);
 			*c = temp2;
@@ -103,16 +103,16 @@ int getCharOne(unsigned short base_addr, unsigned char *c) {
 
 }
 
-int sendChar(unsigned short base_addr, char c) {
+int sendChar(unsigned short base_addr,unsigned char* c) {
 	unsigned long temp1;
 
 
 	while(1) {
 
 		sys_inb(base_addr+LSR, &temp1);
-		printf("%d\n",temp1);
+		printf("0x%X\n",temp1);
 		if (temp1 & BIT(THRE)) {
-			sys_outb(base_addr, c);
+			sys_outb(base_addr,c);
 			return 0;
 		}
 		tickdelay(micros_to_ticks(20));
