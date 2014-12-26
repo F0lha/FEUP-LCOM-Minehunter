@@ -87,17 +87,18 @@ int ser_test_poll(unsigned short base_addr, unsigned char tx, unsigned long bits
                     int stringc, char c) {
 
 	ser_test_set(base_addr,bits,stop,parity,rate);
+	set_poll(base_addr);
 	if(tx == 0)  ///receiver
 	{
 
 			char temp;
 			getChar(base_addr,&temp);
-			printf("%c",temp);
+			printf("YEAH!!");
 
 	}
 	else{ /// sender
 
-sendChar(base_addr,c);
+		sendChar(base_addr,c);
 	}
 
 
