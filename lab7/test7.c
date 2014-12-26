@@ -1,6 +1,12 @@
 #include <minix/syslib.h>
 #include <minix/drivers.h>
 
+
+#define SER_LSR 5
+#define SER_DATA 0
+#define SER_TX_RDY (1<<5)
+
+
 #include "test7.h"
 #include "ModPortaSerie.h"
 
@@ -90,8 +96,16 @@ int ser_test_poll(unsigned short base_addr, unsigned char tx, unsigned long bits
 
 	}
 	else{ /// sender
-			sendChar(base_addr,'s');
 
+		unsigned long lsr;
+
+		sys_inb(base_addr + SER_LSR, &lsr);
+
+		while( !(lsr & SER_TX_RDY) ) {
+		sys_inb(base_addr + SER_LSR, &lsr);
+		}
+
+		sys_outb(base_addr+SER_DATA, c);
 	}
 
 
