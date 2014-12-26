@@ -32,6 +32,5 @@ void changeDLAB(unsigned short base_addr,int bit);
 
 void setPorta(unsigned short base_addr, unsigned long bits, unsigned long stop, long parity, unsigned long rate);
 
-void set_poll(unsigned short base_addr);
 
 #endif
