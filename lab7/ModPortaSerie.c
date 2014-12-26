@@ -79,6 +79,7 @@ int getChar(unsigned short base_addr, unsigned char *c) {
 		sys_inb(base_addr + LSR, &temp1);
 
 		if (temp1 & BIT(RR)) {
+			changeDLAB(base_addr,0);
 			sys_inb(base_addr + RB, &temp2);
 			*c = temp2;
 			return 0;
@@ -94,6 +95,7 @@ int getCharOne(unsigned short base_addr, unsigned char *c) {
 	sys_inb(base_addr + LSR, &temp1);
 
 	if (temp1 & BIT(RR)) {
+		changeDLAB(base_addr,0);
 		sys_inb(base_addr + RB, &temp2);
 		*c = temp2;
 		return 0;
@@ -110,11 +112,10 @@ int sendChar(unsigned short base_addr, char c) {
 
 		sys_inb(base_addr+LSR, &temp1);
 
-		if (temp1 & BIT(THRE)) {
+		if ((temp1>>THRE) & 1 == 1) {
 			sys_outb(base_addr + TH, c);
 			return 0;
 		}
-
 		tickdelay(micros_to_ticks(2000));
 
 	}
@@ -125,6 +126,6 @@ void set_poll(unsigned short base_addr)
 {
  unsigned long ier;
  sys_inb(base_addr + 1, &ier);
- ier = ier & 0xF8;
+ ier = ier & 0xF8;// nao haver interrupts
  sys_outb(base_addr + 1, ier);
 }
