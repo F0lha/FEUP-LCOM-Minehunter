@@ -84,7 +84,7 @@ int getChar(unsigned short base_addr, unsigned char *c) {
 			return 0;
 		}
 
-		tickdelay(micros_to_ticks(500));
+		tickdelay(micros_to_ticks(20));
 	}
 }
 
@@ -114,7 +114,7 @@ int sendChar(unsigned short base_addr, char c) {
 			sys_outb(base_addr + TH, c);
 			return 0;
 		}
-		tickdelay(micros_to_ticks(2000));
+		tickdelay(micros_to_ticks(20));
 
 	}
 	return -1;
