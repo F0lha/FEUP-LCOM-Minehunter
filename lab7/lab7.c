@@ -38,7 +38,7 @@ static int proc_args(int argc, char *argv[]) {
 	long num;
 
 	/* check the function to test: if the first characters match, accept it */
-	if (strncmp(argv[1], "timer_test_config", strlen("timer_test_config")) == 0) {
+	if (strncmp(argv[1], "teste", strlen("teste")) == 0) {
 		if( argc != 3 ) {
 			printf("Timer:wrong no of arguments for test of timer_test_config() \n");
 			return 1;

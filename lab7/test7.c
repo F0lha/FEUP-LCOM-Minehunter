@@ -97,15 +97,7 @@ int ser_test_poll(unsigned short base_addr, unsigned char tx, unsigned long bits
 	}
 	else{ /// sender
 
-		unsigned long lsr;
-
-		sys_inb(base_addr + SER_LSR, &lsr);
-
-		while( !(lsr & SER_TX_RDY) ) {
-		sys_inb(base_addr + SER_LSR, &lsr);
-		}
-
-		sys_outb(base_addr+SER_DATA, c);
+sendChar(base_addr,c);
 	}
 
 
