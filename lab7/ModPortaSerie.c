@@ -120,3 +120,11 @@ int sendChar(unsigned short base_addr, char c) {
 	}
 	return -1;
 }
+
+void set_poll(unsigned short base_addr)
+{
+ unsigned long ier;
+ sys_inb(base_addr + 1, &ier);
+ ier = ier & 0xF8;
+ sys_outb(base_addr + 1, ier);
+}
