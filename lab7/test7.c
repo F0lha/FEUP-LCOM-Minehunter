@@ -85,15 +85,19 @@ int ser_test_set(unsigned short base_addr, unsigned long bits, unsigned long sto
 int ser_test_poll(unsigned short base_addr, unsigned char tx, unsigned long bits, 
                     unsigned long stop, long parity, unsigned long rate, 
                     int stringc, char c) {
+	int value;
+
+	sys_irqsetpolicy(COM1_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &value);
+
 
 	ser_test_set(base_addr,bits,stop,parity,rate);
 	set_poll(base_addr);
 	if(tx == 0)  ///receiver
 	{
 
-			char temp;
+			char temp = 'a';
 			getChar(base_addr,&temp);
-			printf("YEAH!!");
+			printf("YEAH!!, %c",temp);
 
 	}
 	else{ /// sender
