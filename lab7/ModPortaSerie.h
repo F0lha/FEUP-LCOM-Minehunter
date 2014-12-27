@@ -24,7 +24,7 @@ int hook_id;
 
 
 #define RR				0
-#define THRE			5
+#define THRE			BIT(5)
 
 void changeDLAB(unsigned short base_addr,int bit);
 
