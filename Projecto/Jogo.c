@@ -387,6 +387,8 @@ void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mou
 	*irq_set_timer = timer_subscribe_int();
 	*irq_set_mouse = mouse_subscribe_int();
 	*irq_set_keyboard = kbd_subscribe_int();
+	int value;
+	sys_irqsetpolicy(COM1_IRQ, IRQ_REENABLE | IRQ_EXCLUSIVE, &value);
 	enable_packets();
 }
 
