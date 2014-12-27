@@ -89,16 +89,17 @@ int getChar(unsigned short base_addr, unsigned char *c) {
 
 int getCharOne(unsigned short base_addr, unsigned char *c) {
 	unsigned long temp1,temp2;
-
-	sys_inb(base_addr + LSR, &temp1);
-	if (temp1 & BIT(RR)) {
-		sys_inb(base_addr + RB, &temp2);
-		*c = temp2;
-		return 0;
+	int tentativa = 0;
+	while(tentativa < 1){
+		sys_inb(base_addr + LSR, &temp1);
+		if (temp1 & BIT(RR)) {
+			sys_inb(base_addr + RB, &temp2);
+			*c = temp2;
+			return 0;
+		}
+		tentativa++;
 	}
-	else return 1;
-
-
+	return 1;
 }
 
 int sendChar(unsigned short base_addr,char c) {
