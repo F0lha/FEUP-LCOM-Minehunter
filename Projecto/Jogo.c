@@ -1243,7 +1243,7 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					if(host == 1 && connected == 0)
 					{
 						printf("aqui - host\n");
-						if(getCharOne(addr,resposta) != 1)
+						if(getCharOne(addr,&resposta) != 1)
 						{
 							printf("loop no get do server\n");
 							if(resposta == 'c'){
@@ -1255,7 +1255,7 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					else if(host == 0 && connected == 0)
 					{
 						printf("aqui - client\n");
-						if(getCharOne(addr,resposta) != 1)
+						if(getCharOne(addr,&resposta) != 1)
 						{
 							printf("loop no get do client\n");
 							if(resposta == 'c'){
