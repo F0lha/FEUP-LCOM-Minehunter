@@ -1215,7 +1215,7 @@ void draw_connection_state(){
 
 int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse, int host)
 {
-
+	int sent = 0;
 	global_counter = 0;
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
@@ -1247,6 +1247,7 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 						{
 							printf("loop no get do server\n");
 							if(resposta == 'c'){
+								printf("aqui\n");
 								sendChar(addr,resposta);
 								connected = 1;
 							}
@@ -1254,6 +1255,7 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					}
 					else if(host == 0 && connected == 0)
 					{
+
 						printf("aqui - client\n");
 						if(getCharOne(addr,&resposta) != 1)
 						{
@@ -1263,7 +1265,6 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 							}
 						}
 						else{
-							printf("envia char\n");
 							sendChar(addr,'c');
 						}
 
@@ -1345,16 +1346,18 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 			}
 		}
 	}
+	printf("passou o while\n");
+	char seed;
 	if(host == 0)
 	{
-		char seed;
+
 		*table = fill_table(*table,difficulty,0,0,0,&seed,0);
 		sendChar(addr,seed);
 	}
 	else{
-		char seed;
-		getChar(addr,seed);
+		getCharOne(addr,&seed);
 		*table = fill_table(*table,difficulty,0,0,0,&seed,1);
 	}
+	printf("passou tudo");
 	return 1;
 }
