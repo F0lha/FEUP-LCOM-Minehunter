@@ -1255,6 +1255,11 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					}
 					else if(host == 0 && connected == 0)
 					{
+						if(sent == 0)
+						{
+							sendChar(addr,'c');
+							sent = 1;
+						}
 
 						printf("aqui - client\n");
 						if(getCharOne(addr,&resposta) != 1)
@@ -1263,9 +1268,6 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 							if(resposta == 's'){
 								connected = 1;
 							}
-						}
-						else{
-							sendChar(addr,'c');
 						}
 
 					}
