@@ -1058,7 +1058,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	Mine** table = create_table(difficulty);
 	unsigned short addr = COM1_ADDR;
 	int turn; /// porta
-	breaker = connection_state(table,difficulty,irq_set_timer, irq_set_keyboard, irq_set_mouse,  host);
+	breaker = connection_state(&table,difficulty,irq_set_timer, irq_set_keyboard, irq_set_mouse, host);
 	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
@@ -1212,7 +1212,7 @@ void draw_connection_state(){
 	deleteBitmap(back_button);
 }
 
-int connection_state(Mine** table,int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse, int host)
+int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse, int host)
 {
 	global_counter = 0;
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
@@ -1321,7 +1321,6 @@ int connection_state(Mine** table,int difficulty,int irq_set_timer,int irq_set_k
 							{
 								rato->rightButtonDown = 1;
 								rato->rightButtonReleased = 0;
-								right_click_screen(&table,rato->x,rato->y,difficulty);
 							}
 							else if(!(rato->packets[0]&BIT(1)))
 							{
@@ -1342,13 +1341,13 @@ int connection_state(Mine** table,int difficulty,int irq_set_timer,int irq_set_k
 	if(host == 0)
 	{
 		char seed;
-		table = fill_table(table,difficulty,0,0,0,&seed,0);
+		*table = fill_table(*table,difficulty,0,0,0,&seed,0);
 		sendChar(addr,seed);
 	}
 	else{
 		char seed;
 		getChar(addr,seed);
-		table = fill_table(table,difficulty,0,0,0,&seed,1);
+		*table = fill_table(*table,difficulty,0,0,0,&seed,1);
 	}
 	return 1;
 }
