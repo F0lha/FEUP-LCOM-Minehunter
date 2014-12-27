@@ -37,7 +37,7 @@ void click_vazio(Mine*** table, int k, int j, int difficulty,int *por_carregar,i
 
 int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *por_carregar,int single);
 
-Mine** fill_table(Mine** table,int difficulty,int k, int j,int single);
+Mine** fill_table(Mine** table,int difficulty,int k, int j,int single,char *seed,int use); /// use é para usar a seed para criar
 
 int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
 

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "ModPortaSerie.h"
 #include "ModGrafico.h"
 #include "Jogo.h"
 #include "ModRato.h"
@@ -158,12 +159,19 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 		jogo_single_player(difficulty,irq_set_timer,irq_set_keyboard,irq_set_mouse);
 }
 
-
-Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int single)
+Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int single,char *seed,int use)
 {
 	if(difficulty == 2){
 		int i;
 		time_t t;
+		if(use == 0){
+			t = time(NULL);
+			*seed = (char)t;
+			t = *seed;
+		}
+		else{
+			t = *seed;
+		}
 		srand((unsigned) time(&t));
 		for(i = 0; i < NUM_MINES_EXPERT;i++)
 		{
@@ -211,7 +219,6 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 
 }
 
-
 Mine** create_table(int difficulty){
 	if(difficulty == 2) ///expert
 	{
@@ -233,7 +240,7 @@ Mine** create_table(int difficulty){
 
 int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *por_carregar,int single){
 	Bitmap* quadrado;
-	int valor;
+	int valor = - 2;
 	if(difficulty == 2){
 		if(x-32 > 0 && x < 992)
 		{
@@ -241,8 +248,8 @@ int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *p
 			{
 				if((*filled) == 0)
 				{
-					printf("cria nova table\n");
-					*(table) = fill_table((*table),difficulty,(x-32)/32,(y-186)/32,single);
+					char lixo;
+					*(table) = fill_table((*table),difficulty,(x-32)/32,(y-186)/32,single,&lixo,0);
 					*(filled)  = 1;
 				}
 				if((*table)[(x-32)/32][(y-186)/32].carregado == 0){
@@ -295,7 +302,6 @@ int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *p
 	}
 	return valor;
 }
-
 
 int right_click_screen(Mine*** table, int x, int y, int difficulty){
 	Bitmap* quadrado;
@@ -377,7 +383,6 @@ void click_vazio(Mine*** table, int k, int j, int difficulty,int *por_carregar,i
 	}
 }
 
-
 void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mouse){
 	*irq_set_timer = timer_subscribe_int();
 	*irq_set_mouse = mouse_subscribe_int();
@@ -398,7 +403,6 @@ void stop_interrupts(){
 	kbd_unsubscribe_int();
 	timer_unsubscribe_int();
 }
-
 
 int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte;
@@ -512,8 +516,6 @@ int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_se
 	}
 }
 
-
-
 int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse) {
 	Bitmap* bitmap_table;
 	Bitmap* fundo_jogo;
@@ -532,7 +534,8 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 		bombas_por_carregar = 0; /// alterar
 	else bombas_por_carregar = 0; // alterar
 	Mine** table = create_table(difficulty);
-	table = fill_table(table,difficulty,0,0,0);
+	char lixo;
+	table = fill_table(table,difficulty,0,0,0,&lixo,0);
 	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
@@ -567,10 +570,9 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 					if (global_counter == 60) {
 						cronometro--;
 						global_counter = 0;
-						if(cronometro_parado == 0)
-						{
+
 							update_multi_cronometro(cronometro,jogador,pontuacao1,pontuacao2);
-						}
+
 					}
 					if(cronometro == 0 && cronometro_parado == 0)
 					{
@@ -619,7 +621,7 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 								rato->leftButtonDown = 1;
 								rato->leftButtonReleased = 0;
 								int carregado = click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1);
-								if(carregado != -1)
+								if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
 								{
 									if(jogador == 1)
 										jogador = 2;
@@ -1032,4 +1034,192 @@ void update_multi_cronometro(int tempo, int jogador,int jogador1,int jogador2){
 		drawBitmap(Cron_9,896,104,ALIGN_LEFT,buffer);
 		break;
 	}
+}
+
+
+///ainda nao completo
+
+
+int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse, int host) {
+	Bitmap* bitmap_table;
+	Bitmap* fundo_jogo;
+	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
+	fundo_jogo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Jogo.bmp");
+	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
+	int ipc_status, loops = 0;///cenas das interrupcoes
+	message msg;
+	int filled = 0,por_carregar,cronometro = 30,jogador = 1,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
+	if(difficulty == 2)
+	{
+		por_carregar = 380;
+		bombas_por_carregar = 100;
+	}
+	else if (difficulty == 1)
+		bombas_por_carregar = 0; /// alterar
+	else bombas_por_carregar = 0; // alterar
+	Mine** table = create_table(difficulty);
+	char lixo;
+	int connected,turn; /// porta
+	if(host == 1){
+		table = fill_table(table,difficulty,0,0,0,&lixo,0);
+		sendChar(COM1_ADDR,lixo);
+		turn = 1;
+	}
+	else turn = 0;
+	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
+	deleteBitmap(fundo_jogo);
+	deleteBitmap(bitmap_table);
+	while (breaker) {
+		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+			printf("driver_receive failed with: %d");
+			continue;
+		}
+		//printf("msg.notifyArg: 0x%X\n", msg.NOTIFY_ARG);
+		if (is_ipc_notify(ipc_status)) {
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE:
+				if (msg.NOTIFY_ARG & irq_set_timer) {
+					timer_int_handler();
+					if(global_counter % 1 == 0)
+					{
+						update_screen(jogador);
+					}
+					char command = 'z';
+					int resposta = getCharOne(COM1_ADDR,&command);
+					if(resposta != 1) /// foi recebido alguma coisa
+					{
+						if(connected == 0 && host == 0)
+						{
+							table = fill_table(table,difficulty,0,0,0,&command,1);
+							connected = 1;
+							sendChar(COM1_ADDR,'c'); /// c = connected
+						}else if(connected == 0 && host == 1)
+						{
+							if(command == 'c')
+							{
+								connected = 1;
+							}
+						}
+					}
+					if(cronometro_parado && connected == 1)
+					{
+						if(difficulty == 2 && por_carregar != 380)
+						{
+							cronometro_parado = 0;
+							cronometro = 30;
+						}
+						///acrescentar outras dificuldades
+					}
+
+					if (global_counter == 60) {
+						cronometro--;
+						global_counter = 0;
+
+							update_multi_cronometro(cronometro,jogador,pontuacao1,pontuacao2);
+
+					}
+					if(cronometro == 0 && cronometro_parado == 0)
+					{
+						if(jogador == 1)
+							jogador = 2;
+						else jogador = 1;
+						cronometro = 30;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_set_keyboard)
+				{
+					kbd_int_handler();
+					if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
+					else if(scan_code>>7){
+						if(two_bytes) ;
+						else ;
+						if (scan_code==BREAK_CODE_ESC)
+							breaker = 0;
+					}
+					else
+					{
+						if (two_bytes){
+							two_bytes=0;
+						}
+						else ;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_set_mouse)
+				{
+					rato = getRato();
+					mouse_byte = mouse_int_handler();
+					if (contador == 0) {
+						if (!first_byte(mouse_byte)) {
+							contador = 0;
+							continue;
+						}
+					}
+					rato->packets[contador] = mouse_byte;
+					if (contador == 2) {
+						contador = 0;
+						{
+							updateMouse();
+
+							if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
+							{
+								rato->leftButtonDown = 1;
+								rato->leftButtonReleased = 0;
+								int carregado = click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1);
+								if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
+								{
+									if(jogador == 1)
+										jogador = 2;
+									else jogador = 1;
+									cronometro = 30;
+								}else if(carregado == -1)
+								{
+									bombas_por_carregar--;
+									if(jogador == 1)
+										pontuacao1++;
+									else pontuacao2++;
+									cronometro = 30;
+								}
+								if(bombas_por_carregar == 0)
+								{
+									if(jogador == 1)
+									{
+										//estado final jogador 1
+										breaker = 0;
+									}
+									else {
+										//estado final jogador 2
+										breaker = 0;
+									}
+								}
+							}
+							else if(!(rato->packets[0]&BIT(0)))
+							{
+								rato->leftButtonDown = 0;
+								rato->leftButtonReleased = 1;
+							}
+							/*if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
+							{
+								rato->rightButtonDown = 1;
+								rato->rightButtonReleased = 0;
+								right_click_screen(&table,rato->x,rato->y,difficulty);
+							}
+							else if(!(rato->packets[0]&BIT(1)))
+							{
+								rato->rightButtonDown = 0;
+								rato->rightButtonReleased = 1;
+							}*/
+
+						}
+						continue;
+					}
+					contador++;
+
+				}
+				break;
+			}
+		}
+
+	}
+	free(table);
 }
