@@ -166,7 +166,7 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 		time_t t;
 		if(use == 0){
 			t = time(NULL);
-			*seed = (char)t;
+			*seed = t;
 			t = *seed;
 		}
 		else{
