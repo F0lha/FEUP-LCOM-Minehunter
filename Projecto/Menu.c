@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "ModPortaSerie.h"
 #include "ModGrafico.h"
 #include "Jogo.h"
 #include "ModRato.h"
@@ -156,6 +157,8 @@ void multi_menu(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
 
 
 int main(int argc, char **argv){
+
+	sys_outb(COM1_ADDR + 2, 0x7);
 
 	load_cronometro();
 	sef_startup();
