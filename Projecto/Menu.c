@@ -117,7 +117,7 @@ void multi_menu(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
 									jogo_multi_player_porta(2,irq_set_timer,irq_set_keyboard, irq_set_mouse, 1);
 									draw_multi_menu();
 								}
-								else if(rato->x >=390 && rato->x < 544 && rato->y >=612 && rato->y < 642)
+								else if(rato->x >=385 && rato->x < 620 && rato->y >=544 && rato->y < 642)
 								{
 									jogo_multi_player_porta(2,irq_set_timer,irq_set_keyboard, irq_set_mouse, 0);
 									draw_multi_menu();

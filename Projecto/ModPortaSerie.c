@@ -110,7 +110,7 @@ int sendChar(unsigned short base_addr,char c) {
 			sys_outb(base_addr + TH, c);
 			return 0;
 		}
-
+		printf("loop no sendchar\n");
 		tickdelay(micros_to_ticks(20));
 
 	}

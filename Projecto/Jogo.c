@@ -395,7 +395,6 @@ void stop_interrupts(){
 	unsigned long lixo;
 	sys_inb(STAT_REG ,&stat); //lê status-reg para variavel
 	while ((stat & OBF)){
-		printf("limpa\n");
 		sys_inb(STAT_REG ,&stat);
 		sys_inb(OUT_BUF, &lixo); //le out_buff para variavel
 	}
@@ -1214,13 +1213,13 @@ void draw_connection_state(){
 
 int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse, int host)
 {
+
 	global_counter = 0;
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	int connected = 0;
 	message msg;
 	unsigned short addr = COM1_ADDR;
-
 	draw_connection_state();
 	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
@@ -1241,8 +1240,10 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					char resposta;
 					if(host == 1 && connected == 0)
 					{
+						printf("aqui - host\n");
 						if(getCharOne(addr,resposta) != 1)
 						{
+							printf("loop no get do server\n");
 							if(resposta == 'c'){
 								sendChar(addr,resposta);
 								connected = 1;
@@ -1251,19 +1252,23 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					}
 					else if(host == 0 && connected == 0)
 					{
-						if(global_counter % 2 == 0)
-							sendChar(addr,'c');
-						else{
-							if(getCharOne(addr,resposta) != 1)
-							{
-								if(resposta == 'c'){
-									connected = 1;
-								}
+						printf("aqui - client\n");
+						if(getCharOne(addr,resposta) != 1)
+						{
+							printf("loop no get do client\n");
+							if(resposta == 'c'){
+								connected = 1;
 							}
 						}
+						else{
+							printf("envia char\n");
+							sendChar(addr,'c');
+						}
+
 					}
-					if(connected == 1)
+					if(connected == 1){
 						breaker = 0;
+					}
 
 
 					////
