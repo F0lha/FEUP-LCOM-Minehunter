@@ -187,6 +187,7 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 				i--;
 			}
 			else{
+				printf("%d\n",i);
 				table[k][j].valor = -1;
 				if(k != 0) // parede lateral esquerda /// certo!!
 					if(table[k-1][j].valor != -1)
@@ -1047,7 +1048,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	int filled = 0,por_carregar,cronometro = 30,jogador = 1,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
+	int filled = 1,por_carregar,cronometro = 30,jogador = 1,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
 	if(difficulty == 2)
 	{
 		por_carregar = 380;
