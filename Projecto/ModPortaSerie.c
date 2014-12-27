@@ -92,10 +92,12 @@ int getCharOne(unsigned short base_addr, unsigned char *c) {
 	int tentativa = 0;
 	while(tentativa < 1){
 		sys_inb(base_addr + LSR, &temp1);
+		if ((temp1 & BIT(RR))!=0) {
 			sys_inb(base_addr + RB, &temp2);
 			printf("%c",temp2);
 			*c = temp2;
 			return 0;
+		}
 		tentativa++;
 	}
 	return 1;
