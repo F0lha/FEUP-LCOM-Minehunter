@@ -104,21 +104,17 @@ int getCharOne(unsigned short base_addr, unsigned char *c) {
 }
 
 int sendChar(unsigned short base_addr,char ch) {
-	unsigned long LSRcontent;
+	unsigned long temp;
 
 
 	while(1) {
-		// reading LSR
-		sys_inb(base_addr+LSR, &LSRcontent);
-		printf("content: 0x%X\n", LSRcontent);
-		changeDLAB(base_addr,0);
-		if (LSRcontent & THRE) {
+		sys_inb(base_addr+LSR, &temp);
+		if (temp & THRE) {
 			sys_outb(base_addr + TH, ch);
-			printf(" %c sent \n",ch);
 			return 0;
 		}
 
-		tickdelay(micros_to_ticks(20000));
+		tickdelay(micros_to_ticks(20));
 
 	}
 
