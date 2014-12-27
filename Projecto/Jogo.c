@@ -1056,14 +1056,9 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 		bombas_por_carregar = 0; /// alterar
 	else bombas_por_carregar = 0; // alterar
 	Mine** table = create_table(difficulty);
-	char lixo;
-	int connected,turn; /// porta
-	if(host == 1){
-		table = fill_table(table,difficulty,0,0,0,&lixo,0);
-		sendChar(COM1_ADDR,lixo);
-		turn = 1;
-	}
-	else turn = 0;
+	unsigned short addr = COM1_ADDR;
+	int turn; /// porta
+	breaker = connection_state(table,difficulty,irq_set_timer, irq_set_keyboard, irq_set_mouse,  host);
 	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
@@ -1083,24 +1078,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 					{
 						update_screen(jogador);
 					}
-					char command = 'z';
-					int resposta = getCharOne(COM1_ADDR,&command);
-					if(resposta != 1) /// foi recebido alguma coisa
-					{
-						if(connected == 0 && host == 0)
-						{
-							table = fill_table(table,difficulty,0,0,0,&command,1);
-							connected = 1;
-							sendChar(COM1_ADDR,'c'); /// c = connected
-						}else if(connected == 0 && host == 1)
-						{
-							if(command == 'c')
-							{
-								connected = 1;
-							}
-						}
-					}
-					if(cronometro_parado && connected == 1)
+					if(cronometro_parado)
 					{
 						if(difficulty == 2 && por_carregar != 380)
 						{
@@ -1114,7 +1092,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						cronometro--;
 						global_counter = 0;
 
-							update_multi_cronometro(cronometro,jogador,pontuacao1,pontuacao2);
+						update_multi_cronometro(cronometro,jogador,pontuacao1,pontuacao2);
 
 					}
 					if(cronometro == 0 && cronometro_parado == 0)
@@ -1197,16 +1175,16 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								rato->leftButtonReleased = 1;
 							}
 							/*if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
-							{
-								rato->rightButtonDown = 1;
-								rato->rightButtonReleased = 0;
-								right_click_screen(&table,rato->x,rato->y,difficulty);
-							}
-							else if(!(rato->packets[0]&BIT(1)))
-							{
-								rato->rightButtonDown = 0;
-								rato->rightButtonReleased = 1;
-							}*/
+								{
+									rato->rightButtonDown = 1;
+									rato->rightButtonReleased = 0;
+									right_click_screen(&table,rato->x,rato->y,difficulty);
+								}
+								else if(!(rato->packets[0]&BIT(1)))
+								{
+									rato->rightButtonDown = 0;
+									rato->rightButtonReleased = 1;
+								}*/
 
 						}
 						continue;
@@ -1220,4 +1198,157 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 
 	}
 	free(table);
+}
+
+
+void draw_connection_state(){
+	Bitmap* fundo;
+	Bitmap* back_button;
+	fundo = loadBitmap("home/lcom/Projecto/res/images/Connecting.bmp");
+	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
+	deleteBitmap(fundo);
+	deleteBitmap(back_button);
+}
+
+int connection_state(Mine** table,int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse, int host)
+{
+	global_counter = 0;
+	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
+	int ipc_status, loops = 0;///cenas das interrupcoes
+	int connected = 0;
+	message msg;
+	unsigned short addr = COM1_ADDR;
+
+	draw_connection_state();
+	while (breaker) {
+		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+			printf("driver_receive failed with: %d");
+			continue;
+		}
+		//printf("msg.notifyArg: 0x%X\n", msg.NOTIFY_ARG);
+		if (is_ipc_notify(ipc_status)) {
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE:
+				if (msg.NOTIFY_ARG & irq_set_timer) {
+					timer_int_handler();
+					if(global_counter % 1 == 0)
+					{
+						update_screen(0);
+					}
+					////
+					char resposta;
+					if(host == 1 && connected == 0)
+					{
+						if(getCharOne(addr,resposta) != 1)
+						{
+							if(resposta == 'c'){
+								sendChar(addr,resposta);
+								connected = 1;
+							}
+						}
+					}
+					else if(host == 0 && connected == 0)
+					{
+						if(global_counter % 2 == 0)
+							sendChar(addr,'c');
+						else{
+							if(getCharOne(addr,resposta) != 1)
+							{
+								if(resposta == 'c'){
+									connected = 1;
+								}
+							}
+						}
+					}
+					if(connected == 1)
+						breaker = 0;
+
+
+					////
+					if (global_counter == 60) {
+						global_counter = 0;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_set_keyboard)
+				{
+					kbd_int_handler();
+					if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
+					else if(scan_code>>7){
+						if(two_bytes) ;
+						else ;
+						if (scan_code==BREAK_CODE_ESC)
+							return 0;
+					}
+					else
+					{
+						if (two_bytes){
+							two_bytes=0;
+						}
+						else ;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_set_mouse)
+				{
+					rato = getRato();
+					mouse_byte = mouse_int_handler();
+					if (contador == 0) {
+						if (!first_byte(mouse_byte)) {
+							contador = 0;
+							continue;
+						}
+					}
+					rato->packets[contador] = mouse_byte;
+					if (contador == 2) {
+						contador = 0;
+						{
+							updateMouse();
+
+							if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
+							{
+								rato->leftButtonDown = 1;
+								rato->leftButtonReleased = 0;
+								if(rato->x >=0 && rato->x < 50 && rato->y >=0 && rato->y < 50)
+									return 0;
+							}
+							else if(!(rato->packets[0]&BIT(0)))
+							{
+								rato->leftButtonDown = 0;
+								rato->leftButtonReleased = 1;
+							}
+							if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
+							{
+								rato->rightButtonDown = 1;
+								rato->rightButtonReleased = 0;
+								right_click_screen(&table,rato->x,rato->y,difficulty);
+							}
+							else if(!(rato->packets[0]&BIT(1)))
+							{
+								rato->rightButtonDown = 0;
+								rato->rightButtonReleased = 1;
+							}
+
+						}
+						continue;
+					}
+					contador++;
+
+				}
+				break;
+			}
+		}
+	}
+	if(host == 0)
+	{
+		char seed;
+		table = fill_table(table,difficulty,0,0,0,&seed,0);
+		sendChar(addr,seed);
+	}
+	else{
+		char seed;
+		getChar(addr,seed);
+		table = fill_table(table,difficulty,0,0,0,&seed,1);
+	}
+	return 1;
 }
