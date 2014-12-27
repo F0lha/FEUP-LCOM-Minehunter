@@ -91,7 +91,6 @@ int ser_test_poll(unsigned short base_addr, unsigned char tx, unsigned long bits
 	//sys_outb(base_addr + 2, 0x7);
 
 	//ser_test_set(base_addr,bits,stop,parity,rate);
-	//set_poll(base_addr);
 	if(tx == 0)  ///receiver
 	{
 
