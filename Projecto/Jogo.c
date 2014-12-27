@@ -182,7 +182,7 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 			{i--;}
 			else if(table[k][j].valor >= 8)
 			{i--;}
-			else if((k == k_mouse || k == k_mouse + 1 || k == k_mouse - 1)&&(j == j_mouse || j ==j_mouse -1 || j == j_mouse + 1) && single)
+			else if(((k == k_mouse || k == k_mouse + 1 || k == k_mouse - 1)&&(j == j_mouse || j ==j_mouse -1 || j == j_mouse + 1)) && (single==1))
 			{
 				i--;
 			}
@@ -524,7 +524,7 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	int filled = 0,por_carregar,cronometro = 30,jogador = 1,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
+	int filled = 1,por_carregar,cronometro = 30,jogador = 1,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
 	if(difficulty == 2)
 	{
 		por_carregar = 380;
@@ -540,7 +540,6 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
 	deleteBitmap(bitmap_table);
-	printf("chega ao ciclo\n");
 	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
@@ -554,7 +553,6 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						printf("chega ao update_screen\n");
 						update_screen(jogador);
 					}
 					if(cronometro_parado)
