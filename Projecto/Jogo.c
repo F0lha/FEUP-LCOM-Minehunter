@@ -1103,7 +1103,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								x = (x2 << 8) | x1;
 								if(x1 == 's' && x2 == 's')
 								{
-									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
+									//end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
 									goto skip;
 								}
@@ -1142,7 +1142,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								getCharOne(addr,&resposta);
 								if(resposta = 's')
 								{
-									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
+									//end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
 								}
 							}
@@ -1462,6 +1462,7 @@ void draw_end_scree_multi_porta(int turn,int jogador){
 }
 
 void end_scree_multi_porta(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,int turn,int jogador){
+	printf ("entra\n");
 		global_counter = 0;
 		int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 		int ipc_status, loops = 0;///cenas das interrupcoes
@@ -1469,6 +1470,7 @@ void end_scree_multi_porta(int irq_set_timer,int irq_set_keyboard,int irq_set_mo
 		message msg;
 		unsigned short addr = COM1_ADDR;
 		draw_end_scree_multi_porta(turn,jogador);
+		printf ("entra\n");
 		while (breaker) {
 			if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 				printf("driver_receive failed with: %d");
