@@ -168,6 +168,10 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 			t = time(NULL);
 			*seed = t;
 			t = *seed;
+			if(*seed == 'c'){
+				*seed++;
+				t++;
+			}
 		}
 		else{
 			t = *seed;
@@ -1094,6 +1098,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						char resposta;
 						if(getCharOne(addr,&resposta) != 1)
 						{
+							if(resposta == 's')
+								breaker = 0;
 							unsigned char x1,x2,y1,y2;
 							int x,y;
 							x1 = resposta;
@@ -1162,7 +1168,10 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						if(two_bytes) ;
 						else ;
 						if (scan_code==BREAK_CODE_ESC)
+						{
+							sendChar(addr,'s');
 							breaker = 0;
+						}
 					}
 					else
 					{
@@ -1394,6 +1403,10 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 	}
 	printf("passou o while\n");
 	char seed;
+	while(getCharOne(addr,&seed) != 1){
+		if(seed != 'c')
+			break;
+	}
 	if(host == 0)
 	{
 
@@ -1401,7 +1414,6 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 		sendChar(addr,seed);
 	}
 	else{
-		getChar(addr,&seed);
 		*table = fill_table(*table,difficulty,0,0,0,&seed,1);
 	}
 	return 1;
