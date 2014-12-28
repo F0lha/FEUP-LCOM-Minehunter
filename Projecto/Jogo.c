@@ -1055,7 +1055,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	int filled = 1,por_carregar,cronometro = 30,jogador,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
+	int filled = 1,por_carregar,cronometro = 30,jogador,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1,pont_max = 5;///jogo
 	if(difficulty == 2)
 	{
 		por_carregar = 380;
@@ -1125,7 +1125,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 									if(turn == 1)
 										pontuacao1++;
 									else pontuacao2++;
-									if(pontuacao1 >= 51 || pontuacao2 >= 51)
+									if(pontuacao1 >= pont_max || pontuacao2 >= pont_max)
 									{
 										end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,turn,jogador);
 										breaker = 0;
@@ -1252,7 +1252,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 										if(turn == 1)
 											pontuacao1++;
 										else pontuacao2++;
-										if(pontuacao1 >= 51 || pontuacao2 >= 51)
+										if(pontuacao1 >= pont_max || pontuacao2 >= pont_max)
 										{
 											end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,turn,jogador);
 											breaker = 0;
