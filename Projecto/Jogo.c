@@ -1132,6 +1132,21 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 							//////
 						}
 					}
+					else{
+						char resposta;
+						if(getCharOne(addr,&resposta) != 1)
+						{
+							if(resposta = 's')
+							{
+								getCharOne(addr,&resposta);
+								if(resposta = 's')
+								{
+									breaker = 0;
+								}
+							}
+						}
+
+					}
 					if(cronometro_parado)
 					{
 						if(difficulty == 2 && por_carregar != 380)
