@@ -167,11 +167,11 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 		if(use == 0){
 			t = time(NULL);
 			*seed = t;
-			t = *seed;
 			if(*seed == 'c'){
-				*seed++;
-				t++;
+				*seed += 1;
 			}
+			t = *seed;
+
 		}
 		else{
 			t = *seed;
