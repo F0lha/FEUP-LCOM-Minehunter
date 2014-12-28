@@ -172,6 +172,7 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 		else{
 			t = *seed;
 		}
+		printf("%c\n",*seed);
 		srand((unsigned) time(&t));
 		for(i = 0; i < NUM_MINES_EXPERT + (!single);i++)
 		{
@@ -187,7 +188,6 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 				i--;
 			}
 			else{
-				printf("%d\n",i);
 				table[k][j].valor = -1;
 				if(k != 0) // parede lateral esquerda /// certo!!
 					if(table[k-1][j].valor != -1)
@@ -1404,6 +1404,5 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 		getChar(addr,&seed);
 		*table = fill_table(*table,difficulty,0,0,0,&seed,1);
 	}
-	printf("passou tudo");
 	return 1;
 }
