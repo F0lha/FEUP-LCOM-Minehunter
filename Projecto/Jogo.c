@@ -1459,7 +1459,8 @@ void draw_end_scree_multi_porta(int turn,int jogador){
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo);
 	deleteBitmap(back_button);
-	deleteBitmap(banner);
+	if(turn != 0)
+		deleteBitmap(banner);
 }
 
 void end_scree_multi_porta(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,int turn,int jogador){
