@@ -189,6 +189,7 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 				i--;
 			}
 			else{
+				printf("%d\n",i);
 				table[k][j].valor = -1;
 				if(k != 0) // parede lateral esquerda /// certo!!
 					if(table[k-1][j].valor != -1)
@@ -1400,7 +1401,6 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 			}
 		}
 	}
-	printf("passou o while\n");
 	char seed;
 	if(host == 0)
 	{
