@@ -1100,31 +1100,33 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						{
 							if(resposta == 's')
 								breaker = 0;
-							unsigned char x1,x2,y1,y2;
-							int x,y;
-							x1 = resposta;
-							getChar(addr,&resposta);
-							x2 = resposta;
-							x = (x2 << 8) | x1;
-							getChar(addr,&resposta);
-							y1 = resposta;
-							getChar(addr,&resposta);
-							y2 = resposta;
-							y =  (y2 << 8) | y1;
-							//////
-							printf("x = %d y = %d ",x,y);
-							int carregado = click_screen(&table,x,y,difficulty,&filled,&por_carregar,1);
-							if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
-							{
-								turn = jogador;
-								cronometro = 30;
-							}else if(carregado == -1)
-							{
-								bombas_por_carregar--;
-								if(turn == 1)
-									pontuacao1++;
-								else pontuacao2++;
-								cronometro = 30;
+							else{
+								unsigned char x1,x2,y1,y2;
+								int x,y;
+								x1 = resposta;
+								getChar(addr,&resposta);
+								x2 = resposta;
+								x = (x2 << 8) | x1;
+								getChar(addr,&resposta);
+								y1 = resposta;
+								getChar(addr,&resposta);
+								y2 = resposta;
+								y =  (y2 << 8) | y1;
+								//////
+								printf("x = %d y = %d ",x,y);
+								int carregado = click_screen(&table,x,y,difficulty,&filled,&por_carregar,1);
+								if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
+								{
+									turn = jogador;
+									cronometro = 30;
+								}else if(carregado == -1)
+								{
+									bombas_por_carregar--;
+									if(turn == 1)
+										pontuacao1++;
+									else pontuacao2++;
+									cronometro = 30;
+								}
 							}
 							//////
 						}
