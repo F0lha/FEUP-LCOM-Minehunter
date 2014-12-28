@@ -173,7 +173,7 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 			t = *seed;
 		}
 		srand((unsigned) time(&t));
-		for(i = 0; i < NUM_MINES_EXPERT;i++)
+		for(i = 0; i < NUM_MINES_EXPERT + (!single);i++)
 		{
 
 			int j = rand() % HEIGHT_EXPERT;
@@ -1129,12 +1129,16 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						if(difficulty == 2 && por_carregar != 380)
 						{
 							cronometro_parado = 0;
-							cronometro = 30;
+							cronometro = 31;
 						}
 						///acrescentar outras dificuldades
 					}
-					else{
-						cronometro = 30;
+					else
+					{
+						if(difficulty == 2 && por_carregar == 380)
+						{
+							cronometro = 31;
+						}
 					}
 					if (global_counter == 60) {
 						cronometro--;
