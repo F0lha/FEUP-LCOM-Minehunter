@@ -1144,7 +1144,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						cronometro--;
 						global_counter = 0;
 
-						update_multi_cronometro(cronometro,jogador,pontuacao1,pontuacao2);
+						update_multi_cronometro(cronometro,turn,pontuacao1,pontuacao2);
 
 					}
 					if(cronometro == 0 && cronometro_parado == 0)
