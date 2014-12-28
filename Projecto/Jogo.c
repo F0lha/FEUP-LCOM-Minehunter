@@ -1103,7 +1103,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								x = (x2 << 8) | x1;
 								if(x1 == 's' && x2 == 's')
 								{
-									//end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
+									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
 									goto skip;
 								}
@@ -1142,7 +1142,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								getCharOne(addr,&resposta);
 								if(resposta = 's')
 								{
-									//end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
+									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
 								}
 							}
@@ -1191,6 +1191,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						{
 							sendChar(addr,'s');
 							sendChar(addr,'s');
+							end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 							breaker = 0;
 						}
 					}
