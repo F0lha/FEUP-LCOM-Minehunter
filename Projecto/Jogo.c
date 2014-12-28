@@ -394,8 +394,7 @@ void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mou
 }
 
 void stop_interrupts(){
-	unsigned long stat;
-	unsigned long lixo;
+	unsigned long stat,lixo;
 	sys_inb(STAT_REG ,&stat); //lê status-reg para variavel
 	while ((stat & OBF)){
 		sys_inb(STAT_REG ,&stat);

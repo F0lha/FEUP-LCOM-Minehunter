@@ -39,6 +39,7 @@ void update_screen(int cor,int turn){
 			seta = loadBitmap("home/lcom/Projecto/res/images/Arrow_inv.bmp");
 			drawBitmap(seta,734,50,ALIGN_LEFT,bufferRato);
 		}
+		deleteBitmap(seta);
 	}
 	trocarVideo_Mem_Rato();
 }
