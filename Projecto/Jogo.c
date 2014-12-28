@@ -562,7 +562,14 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 						if(difficulty == 2 && por_carregar != 380)
 						{
 							cronometro_parado = 0;
-							cronometro = 30;
+							cronometro = 31;
+						}
+						else
+						{
+							if(difficulty == 2 && por_carregar == 380)
+							{
+								cronometro = 31;
+							}
 						}
 						///acrescentar outras dificuldades
 					}
@@ -1048,7 +1055,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	int filled = 1,por_carregar,cronometro = 30,jogador = 1,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
+	int filled = 1,por_carregar,cronometro = 30,jogador = host,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
 	if(difficulty == 2)
 	{
 		por_carregar = 380;
@@ -1059,7 +1066,6 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	else bombas_por_carregar = 0; // alterar
 	Mine** table = create_table(difficulty);
 	unsigned short addr = COM1_ADDR;
-	int turn; /// porta
 	breaker = connection_state(&table,difficulty,irq_set_timer, irq_set_keyboard, irq_set_mouse, host);
 	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
@@ -1080,6 +1086,34 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 					{
 						update_screen(jogador);
 					}
+					if(jogador != 1)
+					{
+						char resposta;
+						if(getCharOne(addr,&resposta) != 1)
+						{
+							int x,y;
+							x = resposta;
+							getCharOne(addr,&resposta);
+							y = resposta;
+							//////
+							int carregado = click_screen(&table,x,y,difficulty,&filled,&por_carregar,1);
+							if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
+							{
+								if(jogador == 1)
+									jogador = 2;
+								else jogador = 1;
+								cronometro = 30;
+							}else if(carregado == -1)
+							{
+								bombas_por_carregar--;
+								if(jogador == 1)
+									pontuacao1++;
+								else pontuacao2++;
+								cronometro = 30;
+							}
+							//////
+						}
+					}
 					if(cronometro_parado)
 					{
 						if(difficulty == 2 && por_carregar != 380)
@@ -1089,7 +1123,6 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						}
 						///acrescentar outras dificuldades
 					}
-
 					if (global_counter == 60) {
 						cronometro--;
 						global_counter = 0;
@@ -1143,31 +1176,24 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 							{
 								rato->leftButtonDown = 1;
 								rato->leftButtonReleased = 0;
-								int carregado = click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1);
-								if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
-								{
-									if(jogador == 1)
-										jogador = 2;
-									else jogador = 1;
-									cronometro = 30;
-								}else if(carregado == -1)
-								{
-									bombas_por_carregar--;
-									if(jogador == 1)
-										pontuacao1++;
-									else pontuacao2++;
-									cronometro = 30;
-								}
-								if(bombas_por_carregar == 0)
-								{
-									if(jogador == 1)
+								if (jogador == 1){
+									int carregado = click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1);
+									char x = rato->x,y = rato->y;
+									sendChar(addr, x);
+									sendChar(addr, y);
+									if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
 									{
-										//estado final jogador 1
-										breaker = 0;
-									}
-									else {
-										//estado final jogador 2
-										breaker = 0;
+										if(jogador == 1)
+											jogador = 2;
+										else jogador = 1;
+										cronometro = 30;
+									}else if(carregado == -1)
+									{
+										bombas_por_carregar--;
+										if(jogador == 1)
+											pontuacao1++;
+										else pontuacao2++;
+										cronometro = 30;
 									}
 								}
 							}
