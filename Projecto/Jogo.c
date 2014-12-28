@@ -1098,12 +1098,12 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 							unsigned char x1,x2,y1,y2;
 							int x,y;
 							x1 = resposta;
-							getCharOne(addr,&resposta);
+							getChar(addr,&resposta);
 							x2 = resposta;
 							x = (x2 << 8) | x1;
-							getCharOne(addr,&resposta);
+							getChar(addr,&resposta);
 							y1 = resposta;
-							getCharOne(addr,&resposta);
+							getChar(addr,&resposta);
 							y2 = resposta;
 							y =  (y2 << 8) | y1;
 							//////
@@ -1132,6 +1132,9 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 							cronometro = 30;
 						}
 						///acrescentar outras dificuldades
+					}
+					else{
+						cronometro = 30;
 					}
 					if (global_counter == 60) {
 						cronometro--;
