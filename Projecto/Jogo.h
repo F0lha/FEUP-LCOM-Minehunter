@@ -51,4 +51,8 @@ void delete_cronometro();
 
 void update_multi_cronometro(int tempo, int jogador,int jogador1,int jogador2);
 
+void draw_end_scree_multi_porta(int turn,int jogador);
+
+void end_scree_multi_porta(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,int turn,int jogador);
+
 #endif
