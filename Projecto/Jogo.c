@@ -1125,6 +1125,12 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 									if(turn == 1)
 										pontuacao1++;
 									else pontuacao2++;
+									if(pontuacao1 >= 51 || pontuacao2 >= 51)
+									{
+										end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,turn,jogador);
+										breaker = 0;
+										goto skip;
+									}
 									cronometro = 30;
 								}
 								skip:
@@ -1246,6 +1252,12 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 										if(turn == 1)
 											pontuacao1++;
 										else pontuacao2++;
+										if(pontuacao1 >= 51 || pontuacao2 >= 51)
+										{
+											end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,turn,jogador);
+											breaker = 0;
+											goto skip;
+										}
 										cronometro = 30;
 									}
 								}
