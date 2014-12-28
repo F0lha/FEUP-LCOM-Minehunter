@@ -1103,6 +1103,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								x = (x2 << 8) | x1;
 								if(x1 == 's' && x2 == 's')
 								{
+									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
 									goto skip;
 								}
@@ -1141,6 +1142,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								getCharOne(addr,&resposta);
 								if(resposta = 's')
 								{
+									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
 								}
 							}
@@ -1433,4 +1435,129 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 	}
 	while(getCharOne(addr,&seed) != 1){}
 	return 1;
+}
+
+void draw_end_scree_multi_porta(int turn,int jogador){
+	Bitmap* fundo;
+	Bitmap* back_button;
+	Bitmap* banner;
+	if(turn == 0)
+		fundo = loadBitmap("home/lcom/Projecto/res/images/Disconnecting.bmp");
+	else if(turn == jogador){
+		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Won.bmp");
+		banner = loadBitmap("home/lcom/Projecto/res/images/You_Won.bmp");
+	}
+	else{
+		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Lost.bmp");
+		banner = loadBitmap("home/lcom/Projecto/res/images/You_Lost.bmp");
+	}
+	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
+	if(turn != 0)
+		drawBitmap(banner,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
+	deleteBitmap(fundo);
+	deleteBitmap(back_button);
+	deleteBitmap(banner);
+}
+
+void end_scree_multi_porta(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,int turn,int jogador){
+		global_counter = 0;
+		int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
+		int ipc_status, loops = 0;///cenas das interrupcoes
+		int connected = 0;
+		message msg;
+		unsigned short addr = COM1_ADDR;
+		draw_end_scree_multi_porta(turn,jogador);
+		while (breaker) {
+			if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+				printf("driver_receive failed with: %d");
+				continue;
+			}
+			//printf("msg.notifyArg: 0x%X\n", msg.NOTIFY_ARG);
+			if (is_ipc_notify(ipc_status)) {
+				switch (_ENDPOINT_P(msg.m_source)) {
+				case HARDWARE:
+					if (msg.NOTIFY_ARG & irq_set_timer) {
+						timer_int_handler();
+						if(global_counter % 1 == 0)
+						{
+							update_screen(0,0);
+						}
+						////
+
+
+						////
+						if (global_counter == 60) {
+							global_counter = 0;
+						}
+					}
+					if (msg.NOTIFY_ARG & irq_set_keyboard)
+					{
+						kbd_int_handler();
+						if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
+						else if(scan_code>>7){
+							if(two_bytes) ;
+							else ;
+							if (scan_code==BREAK_CODE_ESC)
+								return;
+						}
+						else
+						{
+							if (two_bytes){
+								two_bytes=0;
+							}
+							else ;
+						}
+					}
+					if (msg.NOTIFY_ARG & irq_set_mouse)
+					{
+						rato = getRato();
+						mouse_byte = mouse_int_handler();
+						if (contador == 0) {
+							if (!first_byte(mouse_byte)) {
+								contador = 0;
+								continue;
+							}
+						}
+						rato->packets[contador] = mouse_byte;
+						if (contador == 2) {
+							contador = 0;
+							{
+								updateMouse();
+
+								if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
+								{
+									rato->leftButtonDown = 1;
+									rato->leftButtonReleased = 0;
+									if(rato->x >=0 && rato->x < 50 && rato->y >=0 && rato->y < 50)
+										return;
+								}
+								else if(!(rato->packets[0]&BIT(0)))
+								{
+									rato->leftButtonDown = 0;
+									rato->leftButtonReleased = 1;
+								}
+								if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
+								{
+									rato->rightButtonDown = 1;
+									rato->rightButtonReleased = 0;
+								}
+								else if(!(rato->packets[0]&BIT(1)))
+								{
+									rato->rightButtonDown = 0;
+									rato->rightButtonReleased = 1;
+								}
+
+							}
+							continue;
+						}
+						contador++;
+
+					}
+					break;
+				}
+			}
+		}
+
 }
