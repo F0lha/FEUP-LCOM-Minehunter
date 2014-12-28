@@ -174,7 +174,7 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 			t = *seed;
 		}
 		printf("%c\n",*seed);
-		srand((unsigned) time(&t));
+		srand((unsigned) t);
 		for(i = 0; i < NUM_MINES_EXPERT + (!single);i++)
 		{
 
@@ -1412,6 +1412,6 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 		getChar(addr,&seed);
 		*table = fill_table(*table,difficulty,0,0,0,&seed,1);
 	}
-	///while(getCharOne(addr,&seed) != 1){}
+	while(getCharOne(addr,&seed) != 1){}
 	return 1;
 }
