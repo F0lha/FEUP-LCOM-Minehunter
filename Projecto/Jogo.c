@@ -1443,7 +1443,7 @@ void draw_end_scree_multi_porta(int turn,int jogador){
 	Bitmap* back_button;
 	Bitmap* banner;
 	if(turn == 0)
-		fundo = loadBitmap("home/lcom/Projecto/res/images/Disconnecting.bmp");
+		fundo = loadBitmap("home/lcom/Projecto/res/images/Disconnected.bmp");
 	else if(turn == jogador){
 		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Won.bmp");
 		banner = loadBitmap("home/lcom/Projecto/res/images/You_Won.bmp");
