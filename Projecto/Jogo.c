@@ -1095,20 +1095,20 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						char resposta;
 						if(getCharOne(addr,&resposta) != 1)
 						{
-							char x1,x2,y1,y2;
+							unsigned char x1,x2,y1,y2;
 							int x,y;
 							x1 = resposta;
 							getCharOne(addr,&resposta);
 							x2 = resposta;
-							x =  (x2 << 8) | x1;
+							x = (x2 << 8) | x1;
 							getCharOne(addr,&resposta);
 							y1 = resposta;
 							getCharOne(addr,&resposta);
 							y2 = resposta;
 							y =  (y2 << 8) | y1;
 							//////
+							printf("x = %d y = %d ",x,y);
 							int carregado = click_screen(&table,x,y,difficulty,&filled,&por_carregar,1);
-							printf("ok?");
 							if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
 							{
 								turn = jogador;
@@ -1188,7 +1188,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								rato->leftButtonReleased = 0;
 								if (turn == jogador){
 									int carregado = click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1);
-									char x1,x2,y1,y2;
+									unsigned char x1,x2,y1,y2;
 									x1 = rato->x & 0xFF;
 									x2 = rato->x >> 8;
 									y1 = rato->y & 0xFF;
