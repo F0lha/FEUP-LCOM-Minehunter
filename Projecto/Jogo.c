@@ -410,25 +410,20 @@ int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_se
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte;
 	int ipc_status, loops = 0;
 	message msg;
-	Bitmap* banner;
 	Bitmap* fundo;
 	Bitmap* back_button;
 	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
 	if(win == -1)
 	{
 		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Lost.bmp");
-		banner = loadBitmap("home/lcom/Projecto/res/images/You_Lost.bmp");
 	}
 	else{
-		banner = loadBitmap("home/lcom/Projecto/res/images/You_Won.bmp");
 		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Won.bmp");
 	}
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
-	drawBitmap(banner,32,100,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo);
 	deleteBitmap(back_button);
-	deleteBitmap(banner);
 	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
@@ -1453,26 +1448,19 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 void draw_end_scree_multi_porta(int turn,int jogador){
 	Bitmap* fundo;
 	Bitmap* back_button;
-	Bitmap* banner;
 	if(turn == 0)
 		fundo = loadBitmap("home/lcom/Projecto/res/images/Disconnected.bmp");
 	else if(turn == jogador){
 		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Won.bmp");
-		banner = loadBitmap("home/lcom/Projecto/res/images/You_Won.bmp");
 	}
 	else{
 		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Lost.bmp");
-		banner = loadBitmap("home/lcom/Projecto/res/images/You_Lost.bmp");
 	}
 	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
-	if(turn != 0)
-		drawBitmap(banner,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo);
 	deleteBitmap(back_button);
-	if(turn != 0)
-		deleteBitmap(banner);
 }
 
 void end_scree_multi_porta(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,int turn,int jogador){
