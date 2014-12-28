@@ -5,6 +5,7 @@
 #include <sys/types.h>
 
 #include "ModGrafico.h"
+#include "bitmap.h"
 #include "pixmap.h"
 #include "vbe.h"
 
@@ -24,8 +25,21 @@ int draw_flag(int x, int y){
 }
 
 
-void update_screen(int cor){
+void update_screen(int cor,int turn){
 	drawRato(cor);
+	if(turn != 0)
+	{
+		Bitmap* seta;
+		if(turn == 1)
+		{
+			seta = loadBitmap("home/lcom/Projecto/res/images/Arrow.bmp");
+			drawBitmap(seta,144,50,ALIGN_LEFT,bufferRato);
+		}
+		else{
+			seta = loadBitmap("home/lcom/Projecto/res/images/Arrow_inv.bmp");
+			drawBitmap(seta,734,50,ALIGN_LEFT,bufferRato);
+		}
+	}
 	trocarVideo_Mem_Rato();
 }
 

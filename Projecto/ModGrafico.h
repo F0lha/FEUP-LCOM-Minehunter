@@ -30,7 +30,7 @@ static unsigned bits_per_pixel; /* Number of VRAM bits per pixel */
 
 static char *phys_mem;
 
-void update_screen(int cor);
+void update_screen(int cor,int turn);
 
 int draw_flag(int x, int y);
 
