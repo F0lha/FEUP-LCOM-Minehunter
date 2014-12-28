@@ -173,7 +173,6 @@ Mine** fill_table(Mine** table,int difficulty,int k_mouse, int j_mouse,int singl
 		else{
 			t = *seed;
 		}
-		printf("%c\n",*seed);
 		srand((unsigned) t);
 		for(i = 0; i < NUM_MINES_EXPERT + (!single);i++)
 		{
@@ -1096,15 +1095,17 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						char resposta;
 						if(getCharOne(addr,&resposta) != 1)
 						{
-							/*if(resposta == 's')
-								breaker = 0;
-							else{*/
 								unsigned char x1,x2,y1,y2;
 								int x,y;
 								x1 = resposta;
 								getChar(addr,&resposta);
 								x2 = resposta;
 								x = (x2 << 8) | x1;
+								if(x1 == 's' && x2 == 's')
+								{
+									breaker = 0;
+									goto skip;
+								}
 								getChar(addr,&resposta);
 								y1 = resposta;
 								getChar(addr,&resposta);
@@ -1125,6 +1126,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 									else pontuacao2++;
 									cronometro = 30;
 								}
+								skip:
+								;
 							//}
 							//////
 						}
@@ -1169,7 +1172,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						else ;
 						if (scan_code==BREAK_CODE_ESC)
 						{
-							///sendChar(addr,'s');
+							sendChar(addr,'s');
+							sendChar(addr,'s');
 							breaker = 0;
 						}
 					}
