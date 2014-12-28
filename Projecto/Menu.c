@@ -61,7 +61,7 @@ void multi_menu(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen(0);
+						update_screen(0,0);
 					}
 
 					if (global_counter == 60) {
@@ -185,7 +185,7 @@ int main(int argc, char **argv){
 						timer_int_handler();
 						if(global_counter % 1 == 0)
 						{
-							update_screen(0);
+							update_screen(0,0);
 						}
 
 						if (global_counter == 60) {

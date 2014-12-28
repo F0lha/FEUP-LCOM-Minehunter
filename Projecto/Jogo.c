@@ -50,7 +50,7 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen(0);
+						update_screen(0,0);
 					}
 					if(cronometro_parado)
 					{
@@ -442,7 +442,7 @@ int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_se
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen(0);
+						update_screen(0,0);
 					}
 
 					if (global_counter == 60) {
@@ -555,7 +555,7 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen(jogador);
+						update_screen(jogador,0);
 					}
 					if(cronometro_parado)
 					{
@@ -1088,7 +1088,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen(turn);
+						update_screen(jogador,turn);
 					}
 					if(turn != jogador)
 					{
@@ -1279,7 +1279,7 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen(0);
+						update_screen(0,0);
 					}
 					////
 					char resposta;
