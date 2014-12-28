@@ -1055,7 +1055,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	int filled = 1,por_carregar,cronometro = 30,jogador = host,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
+	int filled = 1,por_carregar,cronometro = 30,jogador,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1;///jogo
 	if(difficulty == 2)
 	{
 		por_carregar = 380;
@@ -1064,6 +1064,10 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	else if (difficulty == 1)
 		bombas_por_carregar = 0; /// alterar
 	else bombas_por_carregar = 0; // alterar
+	int turn = 1;
+	if(host == 1)
+		jogador = 1;
+	else jogador = 2;
 	Mine** table = create_table(difficulty);
 	unsigned short addr = COM1_ADDR;
 	breaker = connection_state(&table,difficulty,irq_set_timer, irq_set_keyboard, irq_set_mouse, host);
@@ -1084,13 +1088,14 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen(jogador);
+						update_screen(turn);
 					}
-					if(jogador != 1)
+					if(turn != jogador)
 					{
 						char resposta;
 						if(getCharOne(addr,&resposta) != 1)
 						{
+							printf("recebe algo, %d\n",resposta);
 							int x,y;
 							x = resposta;
 							getCharOne(addr,&resposta);
@@ -1099,14 +1104,12 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 							int carregado = click_screen(&table,x,y,difficulty,&filled,&por_carregar,1);
 							if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
 							{
-								if(jogador == 1)
-									jogador = 2;
-								else jogador = 1;
+								turn = jogador;
 								cronometro = 30;
 							}else if(carregado == -1)
 							{
 								bombas_por_carregar--;
-								if(jogador == 1)
+								if(turn == 1)
 									pontuacao1++;
 								else pontuacao2++;
 								cronometro = 30;
@@ -1176,21 +1179,21 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 							{
 								rato->leftButtonDown = 1;
 								rato->leftButtonReleased = 0;
-								if (jogador == 1){
+								if (turn == jogador){
 									int carregado = click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1);
 									char x = rato->x,y = rato->y;
 									sendChar(addr, x);
 									sendChar(addr, y);
 									if(carregado != -1 && (rato->x > 32 && rato->x < 992 && rato->y > 186 && rato->y < 698) && carregado != -2)
 									{
-										if(jogador == 1)
-											jogador = 2;
-										else jogador = 1;
+										if(turn == 1)
+											turn = 2;
+										else turn = 1;
 										cronometro = 30;
 									}else if(carregado == -1)
 									{
 										bombas_por_carregar--;
-										if(jogador == 1)
+										if(turn == 1)
 											pontuacao1++;
 										else pontuacao2++;
 										cronometro = 30;
@@ -1269,12 +1272,9 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					char resposta;
 					if(host == 1 && connected == 0)
 					{
-						printf("aqui - host\n");
 						if(getCharOne(addr,&resposta) != 1)
 						{
-							printf("loop no get do server\n");
 							if(resposta == 'c'){
-								printf("aqui\n");
 								sendChar(addr,'s');
 								connected = 1;
 							}
@@ -1288,10 +1288,8 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 							sent = 1;
 						}
 
-						printf("aqui - client\n");
 						if(getCharOne(addr,&resposta) != 1)
 						{
-							printf("loop no get do client\n");
 							if(resposta == 's'){
 								connected = 1;
 							}
