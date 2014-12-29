@@ -118,37 +118,45 @@ void drawRato(int cor){
 }
 
 void updateMouse(){
-	if(!(rato->packets[0] & BIT(4)))
+	if(!(rato->packets[0] >> 4 & 0x01))
 	{
-		if((rato->x + (signed char)rato->packets[1] )< 0)
+		int16_t temp = 0;
+		temp |= rato->packets[1];
+		if((rato->x + (int)temp ) < 0)
 			rato->x = 0;
-		else if(rato->x + (signed char)rato->packets[1] > 1024)
+		else if( rato->x + (int)temp > 1024)
 			rato->x = 1024;
-		else rato->x +=  (signed char)rato->packets[1];
+		else rato->x +=  (int)temp;
 	}
 	else{
-		char temp =((-1 << 8) | rato->packets[1]);
-		if((rato->x + temp ) < 0)
+		int16_t temp = 0;
+		temp |= 0xFF00;
+		temp |= rato->packets[1];
+		if((rato->x + (int)temp ) < 0)
 			rato->x = 0;
-		else if( rato->x + temp > 1024)
+		else if( rato->x + (int)temp > 1024)
 			rato->x = 1024;
-		else rato->x +=  (signed char)temp;
+		else rato->x +=  (int)temp;
 	}
-	if(!(rato->packets[1] & BIT(5)))
+	if(!(rato->packets[0] >>  5 & 0x01))
 	{
-		if((rato->y - (signed char)rato->packets[2] )< 0)
+		int16_t temp = 0;
+		temp |= rato->packets[2];
+		if((rato->y - (int)temp ) < 0)
 			rato->y = 0;
-		else if( rato->y - (signed char)rato->packets[2] > 768)
+		else if( rato->y - (int)temp > 768)
 			rato->y = 768;
-		else rato->y -= (signed char)rato->packets[2];
+		else rato->y -= (int)temp;
 	}
 	else{
-		char temp = ((-1 << 8) | rato->packets[2]);
-		if((rato->y - temp ) < 0)
+		int16_t temp = 0;
+		temp |= 0xFF00;
+		temp |= rato->packets[2];
+		if((rato->y - (int)temp ) < 0)
 			rato->y = 0;
-		else if( rato->y - temp > 768)
+		else if( rato->y - (int)temp > 768)
 			rato->y = 768;
-		else rato->y -= (signed char)temp;
+		else rato->y -= (int)temp;
 	}
 
 }
