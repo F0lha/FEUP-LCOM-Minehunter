@@ -35,7 +35,7 @@ typedef struct{
 	int deslX,deslY;
 
 
-	unsigned long packets[3];
+	char packets[3];
 
     int leftButtonDown;
 

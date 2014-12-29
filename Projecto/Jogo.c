@@ -637,18 +637,16 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 									else pontuacao2++;
 									cronometro = 30;
 								}
-								if(bombas_por_carregar == 0)
+								if(pontuacao1 >= 26)
 								{
-									if(jogador == 1)
-									{
-										//estado final jogador 1
-										breaker = 0;
-									}
-									else {
-										//estado final jogador 2
-										breaker = 0;
-									}
+									//estado final jogador 1
+									breaker = 0;
 								}
+								else if(pontuacao2 >= 26){
+									//estado final jogador 2
+									breaker = 0;
+								}
+
 							}
 							else if(!(rato->packets[0]&BIT(0)))
 							{
