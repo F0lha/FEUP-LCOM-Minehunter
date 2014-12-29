@@ -99,13 +99,18 @@ int rtc_date(){
         	year = bcd_to_binary(year);
         	month = bcd_to_binary(month);
 
-
+        	int pm = 0;
         	if(!(regB & BIT(1))){
         		if(hour & BIT(7)){
         			hour &= ~BIT(7);
-
+        			pm = 1;
         		}
         	}
+        	hour = bcd_to_binary(hour);
+        	if(pm == 1)
+        		hour += 12;
+        	min = bcd_to_binary(min);
+        	sec = bcd_to_binary(sec);
         }
 
         enable();
