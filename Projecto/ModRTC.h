@@ -2,6 +2,7 @@
 #define __MODRTC_H
 
 
+#define BIT(n)                  (0x01<<(n))
 
 #define RTC_ADDR_REG 	0x70
 #define RTC_DATA_REG 	0x71
@@ -16,9 +17,10 @@
 #define RTC_REG_B		11
 #define RTC_REG_C		12
 #define RTC_REG_D		13
+#define RTC_UIP                 BIT(7)
+#define RTC_DATA_MODE   BIT(2)
 
 
-/*
 unsigned long day_month;
 unsigned long day_week;
 unsigned long month;
@@ -28,11 +30,10 @@ unsigned long min;
 unsigned long sec;
 
 
-int scan_rtc (unsigned int index, unsigned int *dado);
+int scan_rtc (unsigned long index, unsigned long *dado);
 
 int write_rtc(unsigned long index, unsigned long dado);
 
-#endif /* __TEST6_H */
 
 
 
@@ -42,7 +43,7 @@ int write_rtc(unsigned long index, unsigned long dado);
 
 
 
-*/
+
 
 
 

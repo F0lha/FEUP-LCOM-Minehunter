@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "Menu.h"
 #include "ModPortaSerie.h"
 #include "ModGrafico.h"
 #include "Jogo.h"
@@ -10,7 +11,7 @@
 #include "ModTeclado.h"
 #include "ModTimer.h"
 #include "bitmap.h"
-#include "Menu.h"
+#include "ModRTC.h"
 
 
 
@@ -40,8 +41,6 @@ void draw_multi_menu(){
 	deleteBitmap(back_button);
 }
 
-
-
 void multi_menu(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
 
 	int ipc_status;
@@ -61,7 +60,7 @@ void multi_menu(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
-						update_screen(0,0);
+						update_screen(0,0,1);
 					}
 
 					if (global_counter == 60) {
@@ -153,13 +152,10 @@ void multi_menu(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
 	}
 }
 
-
-
-
 int main(int argc, char **argv){
 
 	sys_outb(COM1_ADDR + 2, 0x7);
-
+	load_relogio();
 	load_cronometro();
 	sef_startup();
 	buffer = malloc(videoMemSize * BITS_PER_PIXEL	/8);
@@ -183,10 +179,9 @@ int main(int argc, char **argv){
 				case HARDWARE:
 					if (msg.NOTIFY_ARG & irq_set_timer) {
 						timer_int_handler();
-						if(global_counter % 1 == 0)
-						{
-							update_screen(0,0);
-						}
+						rtc_date();
+
+						update_screen(0,0,1);
 
 						if (global_counter == 60) {
 							global_counter = 0;
@@ -274,6 +269,7 @@ int main(int argc, char **argv){
 /// interrupts
 	vg_exit();
 	delete_cronometro();
+	delete_relogio();
 	stop_interrupts();
 	free(rato);
 	free(buffer);
@@ -281,5 +277,32 @@ int main(int argc, char **argv){
 	printf("acabou\n");
 }
 
+void load_relogio(){
+	Zero = loadBitmap("home/lcom/Projecto/res/images/Zero.bmp");
+	One = loadBitmap("home/lcom/Projecto/res/images/One.bmp");
+	Two = loadBitmap("home/lcom/Projecto/res/images/Two.bmp");
+	Three = loadBitmap("home/lcom/Projecto/res/images/Three.bmp");
+	Four = loadBitmap("home/lcom/Projecto/res/images/Four.bmp");
+	Five = loadBitmap("home/lcom/Projecto/res/images/Five.bmp");
+	Six = loadBitmap("home/lcom/Projecto/res/images/Six.bmp");
+	Seven = loadBitmap("home/lcom/Projecto/res/images/Seven.bmp");
+	Eight = loadBitmap("home/lcom/Projecto/res/images/Eight.bmp");
+	Nine = loadBitmap("home/lcom/Projecto/res/images/Nine.bmp");
+	Points = loadBitmap("home/lcom/Projecto/res/images/2Points.bmp");
+}
+
+void delete_relogio(){
+	deleteBitmap(Zero);
+	deleteBitmap(One);
+	deleteBitmap(Two);
+	deleteBitmap(Three);
+	deleteBitmap(Four);
+	deleteBitmap(Five);
+	deleteBitmap(Six);
+	deleteBitmap(Seven);
+	deleteBitmap(Eight);
+	deleteBitmap(Nine);
+	deleteBitmap(Points);
+}
 
 
