@@ -14,14 +14,70 @@
 ///
 
 void print_table(Mine** table){
+	int coordx = 32, coordy = 186;
 	int i,j;
+	Bitmap* Bomba = loadBitmap("home/lcom/Projecto/res/images/Bomba.bmp");
+	Bitmap* Vazio = loadBitmap("home/lcom/Projecto/res/images/Vazio.bmp");
+	Bitmap* E1 = loadBitmap("home/lcom/Projecto/res/images/Quadrado1.bmp");
+	Bitmap* E2 = loadBitmap("home/lcom/Projecto/res/images/Quadrado2.bmp");
+	Bitmap* E3 = loadBitmap("home/lcom/Projecto/res/images/Quadrado3.bmp");
+	Bitmap* E4 = loadBitmap("home/lcom/Projecto/res/images/Quadrado4.bmp");
+	Bitmap* E5 = loadBitmap("home/lcom/Projecto/res/images/Quadrado5.bmp");
+	Bitmap* E6 = loadBitmap("home/lcom/Projecto/res/images/Quadrado6.bmp");
+	Bitmap* E7 = loadBitmap("home/lcom/Projecto/res/images/Quadrado7.bmp");
+	Bitmap* E8 = loadBitmap("home/lcom/Projecto/res/images/Quadrado8.bmp");
+
+
 	for(i=0;i<30;i++)
 	{
 		for(j=0;j<16;j++)
 		{
+			switch(table[i][j].valor)
+			{
+			case 0:
+				drawBitmap(Vazio,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case 1:
+				drawBitmap(E1,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case 2:
+				drawBitmap(E2,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case 3:
+				drawBitmap(E3,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case 4:
+				drawBitmap(E4,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case 5:
+				drawBitmap(E5,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case 6:
+				drawBitmap(E6,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case 7:
+				drawBitmap(E7,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case 8:
+				drawBitmap(E8,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			case -1:
+				drawBitmap(Bomba,coordx + i*32,coordy + j*32,ALIGN_LEFT,buffer);
+				break;
+			}
 
 		}
 	}
+	deleteBitmap(E1);
+	deleteBitmap(E2);
+	deleteBitmap(E3);
+	deleteBitmap(E4);
+	deleteBitmap(E5);
+	deleteBitmap(E6);
+	deleteBitmap(E7);
+	deleteBitmap(E8);
+	deleteBitmap(Bomba);
+	deleteBitmap(Vazio);
 }
 
 ///
@@ -130,11 +186,11 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 								}
 								else if(click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1) == -1)
 								{
-									post_game_state(difficulty,-1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse);
+									post_game_state(difficulty,-1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse,table);
 									breaker = 0;
 								}else if(por_carregar == 0)
 								{
-									post_game_state(difficulty,1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse);
+									post_game_state(difficulty,1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse,table);
 									breaker = 0;
 								}
 							}
@@ -417,7 +473,7 @@ void stop_interrupts(){
 	timer_unsubscribe_int();
 }
 
-int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
+int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,Mine** table){
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte;
 	int ipc_status, loops = 0;
 	message msg;
@@ -426,13 +482,14 @@ int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_se
 	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
 	if(win == -1)
 	{
-		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Lost.bmp");
+		fundo = loadBitmap("home/lcom/Projecto/res/images/You_Lost_Single.bmp");
 	}
 	else{
 		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Won.bmp");
 	}
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
+	print_table(table);
 	deleteBitmap(fundo);
 	deleteBitmap(back_button);
 	while (breaker) {
@@ -1105,7 +1162,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								getChar(addr,&resposta);
 								x2 = resposta;
 								x = (x2 << 8) | x1;
-								if(x1 == 's' && x2 == 's')
+								if(x1 == 'e' && x2 == 'e')
 								{
 									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
@@ -1147,10 +1204,10 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						char resposta;
 						if(getCharOne(addr,&resposta) != 1)
 						{
-							if(resposta = 's')
+							if(resposta = 'e')
 							{
 								getCharOne(addr,&resposta);
-								if(resposta = 's')
+								if(resposta = 'e')
 								{
 									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
@@ -1199,8 +1256,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						else ;
 						if (scan_code==BREAK_CODE_ESC)
 						{
-							sendChar(addr,'s');
-							sendChar(addr,'s');
+							sendChar(addr,'e');
+							sendChar(addr,'e');
 							end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 							breaker = 0;
 						}
