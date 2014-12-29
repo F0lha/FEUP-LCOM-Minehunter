@@ -24,6 +24,7 @@ Bitmap* Cron_9;
 Bitmap* Player1_table;
 Bitmap* Player2_table;
 
+void print_table(Mine** table);
 
 Mine** create_table(int difficulty);
 
@@ -39,7 +40,7 @@ int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *p
 
 Mine** fill_table(Mine** table,int difficulty,int k, int j,int single,char *seed,int use); /// use é para usar a seed para criar
 
-int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
+int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,Mine** table);
 
 int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
 
