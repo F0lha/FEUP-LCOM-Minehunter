@@ -138,7 +138,7 @@ void updateMouse(){
 			rato->x = 1024;
 		else rato->x +=  (int)temp;
 	}
-	if(!(rato->packets[0] >>  5 & 0x01))
+	if(!(rato->packets[0] >> 5 & 0x01))
 	{
 		int16_t temp = 0;
 		temp |= rato->packets[2];

@@ -8,6 +8,8 @@
 #include "bitmap.h"
 #include "pixmap.h"
 #include "vbe.h"
+#include "ModRTC.h"
+#include "Menu.h"
 
 
 
@@ -24,9 +26,150 @@ int draw_flag(int x, int y){
 	}
 }
 
-
-void update_screen(int cor,int turn){
+void update_screen(int cor,int turn,int relog){
 	drawRato(cor);
+	if(relog == 1)
+	{
+		int hor1 = (hour / 10) % 10;
+		int hor2 = hour%10;
+		int minut1 = (min / 10) % 10;
+		int minut2 = min%10;
+		////
+		printf("%d\n",minut2);
+		switch(minut2)
+		{
+		case 0:
+			drawBitmap(Zero,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 1:
+			drawBitmap(One,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 2:
+			drawBitmap(Two,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 3:
+			drawBitmap(Three,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 4:
+			drawBitmap(Four,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 5:
+			drawBitmap(Five,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 6:
+			drawBitmap(Six,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 7:
+			drawBitmap(Seven,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 8:
+			drawBitmap(Eight,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 9:
+			drawBitmap(Nine,994,0,ALIGN_LEFT,bufferRato);
+			break;
+		}
+		switch(minut1)
+		{
+		case 0:
+			drawBitmap(Zero,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 1:
+			drawBitmap(One,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 2:
+			drawBitmap(Two,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 3:
+			drawBitmap(Three,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 4:
+			drawBitmap(Four,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 5:
+			drawBitmap(Five,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 6:
+			drawBitmap(Six,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 7:
+			drawBitmap(Seven,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 8:
+			drawBitmap(Eight,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 9:
+			drawBitmap(Nine,964,0,ALIGN_LEFT,bufferRato);
+			break;
+		}
+		drawBitmap(Points,944,0,ALIGN_LEFT,bufferRato);
+		switch(hor2)
+		{
+		case 0:
+			drawBitmap(Zero,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 1:
+			drawBitmap(One,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 2:
+			drawBitmap(Two,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 3:
+			drawBitmap(Three,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 4:
+			drawBitmap(Four,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 5:
+			drawBitmap(Five,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 6:
+			drawBitmap(Six,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 7:
+			drawBitmap(Seven,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 8:
+			drawBitmap(Eight,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 9:
+			drawBitmap(Nine,914,0,ALIGN_LEFT,bufferRato);
+			break;
+		}
+		switch(hor1)
+		{
+		case 0:
+			drawBitmap(Zero,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 1:
+			drawBitmap(One,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 2:
+			drawBitmap(Two,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 3:
+			drawBitmap(Three,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 4:
+			drawBitmap(Four,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 5:
+			drawBitmap(Five,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 6:
+			drawBitmap(Six,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 7:
+			drawBitmap(Seven,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 8:
+			drawBitmap(Eight,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		case 9:
+			drawBitmap(Nine,884,0,ALIGN_LEFT,bufferRato);
+			break;
+		}
+	}
 	if(turn != 0)
 	{
 		Bitmap* seta;
@@ -160,7 +303,6 @@ void vg_set_pixel_buffer(unsigned int x,unsigned int y, unsigned long color){
 	ptr += HRES*y;
 	*ptr = color;
 }
-
 
 int vg_exit() {
   struct reg86u reg86;

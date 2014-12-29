@@ -4,9 +4,9 @@
 #include <machine/int86.h>
 #include <stdlib.h>
 #include <stdio.h>
-//#include "ModRTC.h"
+#include "ModRTC.h"
 
-/*
+
 
 
 unsigned long regA;
@@ -31,50 +31,49 @@ int write_rtc(unsigned long index, unsigned long dado){
 
 void disable(){
 
-        long unsigned int reg_b = scan_rtc(REG_B_RTC,&reg_b);
+        long unsigned int reg_b = scan_rtc(RTC_REG_B,&reg_b);
         reg_b |= BIT(7);
-        write_rtc(REG_B_RTC, reg_b);
+        write_rtc(RTC_REG_B, reg_b);
 
 }
 
 
 void enable(){
-        long unsigned int reg_b = scan_rtc(REG_B_RTC,&reg_b);
+        long unsigned int reg_b = scan_rtc(RTC_REG_B,&reg_b);
         reg_b &= ~BIT(7);
-        write_rtc(REG_B_RTC, reg_b);
+        write_rtc(RTC_REG_B, reg_b);
 }
 
 void wait_valid_rtc(void) {
         unsigned long regA = 0;
         do {
                 disable();
-                sys_outb(RTC_ADDR_REG, REG_A_RTC);
-                sys_inb(DATA_REG_RTC, &regA);
+                sys_outb(RTC_ADDR_REG, RTC_REG_A);
+                sys_inb(RTC_DATA_REG, &regA);
                 enable();
         } while ( regA & RTC_UIP);
 }
 
 unsigned char bcd_to_binary(unsigned char bcdvalue)
 {
-        char buffer[32];
-        sprintf(buffer, "%x", bcdvalue);
-        sscanf(buffer, "%d", &bcdvalue);
+        char buff[32];
+        sprintf(buff, "%x", bcdvalue);
+        sscanf(buff, "%d", &bcdvalue);
         return bcdvalue;
 }
 unsigned char binary_to_bcd(unsigned char binaryvalue)
 {
-        char buffer[32];
-        sprintf(buffer, "%d", binaryvalue);
-        sscanf(buffer, "%x", &binaryvalue);
+        char buff[32];
+        sprintf(buff, "%d", binaryvalue);
+        sscanf(buff, "%x", &binaryvalue);
         return binaryvalue;
 }
 
 int rtc_date(){
-        date data;
 
         disable();
 
-        scan_rtc(REG_A_RTC, &regA);
+        scan_rtc(RTC_REG_A, &regA);
         if(regA & RTC_UIP){
                 wait_valid_rtc();
         }
@@ -90,7 +89,7 @@ int rtc_date(){
 
 
 
-        scan_rtc(REG_B_RTC, &regB);
+        scan_rtc(RTC_REG_B, &regB);
 
 
         if(!(regB & RTC_DATA_MODE)) {
@@ -112,4 +111,3 @@ int rtc_date(){
         enable();
         return 0;
 }
-*/
