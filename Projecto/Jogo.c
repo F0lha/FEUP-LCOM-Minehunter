@@ -11,8 +11,20 @@
 #include "ModTimer.h"
 #include "bitmap.h"
 
+///
 
+void print_table(Mine** table){
+	int i,j;
+	for(i=0;i<30;i++)
+	{
+		for(j=0;j<16;j++)
+		{
 
+		}
+	}
+}
+
+///
 
 int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse) {
 	Bitmap* bitmap_table;
