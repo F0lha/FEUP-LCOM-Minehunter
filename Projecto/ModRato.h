@@ -32,24 +32,15 @@
 typedef struct{
 	int x,y;
 
-	int deslX,deslY;
-
-
-	char packets[3];
+	unsigned long packets[3];
 
     int leftButtonDown;
-
-    int middleButtonDown;
 
     int rightButtonDown;
 
     int leftButtonReleased;
 
     int rightButtonReleased;
-
-    int middleButtonReleased;
-
-    int hasBeenUpdated;
 
 }Rato;
 

@@ -32,6 +32,10 @@ void create_interrupts(int *irq_set_timer,int *irq_set_keyboard,int *irq_set_mou
 
 void stop_interrupts();
 
+int post_game_state_multi(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,int jogador);
+
+int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
+
 int right_click_screen(Mine*** table, int x, int y, int difficulty);
 
 void click_vazio(Mine*** table, int k, int j, int difficulty,int *por_carregar,int single);
@@ -40,7 +44,7 @@ int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *p
 
 Mine** fill_table(Mine** table,int difficulty,int k, int j,int single,char *seed,int use); /// use é para usar a seed para criar
 
-int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,Mine** table);
+int post_game_state(int difficulty,int win,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,Mine** table);
 
 int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
 

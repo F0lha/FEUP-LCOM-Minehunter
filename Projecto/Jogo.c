@@ -86,9 +86,13 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 	Bitmap* bitmap_table;
 	Bitmap* fundo_jogo;
 	Bitmap* smiley;
+	Bitmap* smile;
+	Bitmap* smileyO;
 	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
 	fundo_jogo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Jogo.bmp");
 	smiley = loadBitmap("home/lcom/Projecto/res/images/Smile.bmp");
+	smileyO = loadBitmap("home/lcom/Projecto/res/images/SmileyO.bmp");
+	smile = smiley;
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
@@ -101,10 +105,8 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 	Mine** table = create_table(difficulty);
 	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
-	drawBitmap(smiley,486,68,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
 	deleteBitmap(bitmap_table);
-	deleteBitmap(smiley);
 	while (breaker) {
 		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
 			printf("driver_receive failed with: %d");
@@ -118,6 +120,7 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
+						drawBitmap(smile,486,68,ALIGN_LEFT,buffer);
 						update_screen(0,0,0);
 					}
 					if(cronometro_parado)
@@ -177,6 +180,7 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 
 							if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
 							{
+								smile = smileyO;
 								rato->leftButtonDown = 1;
 								rato->leftButtonReleased = 0;
 								if(rato->x >=486 && rato->x<=538 && rato->y >=68 && rato->y <= 120)
@@ -186,16 +190,17 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 								}
 								else if(click_screen(&table,rato->x,rato->y,difficulty,&filled,&por_carregar,1) == -1)
 								{
-									post_game_state(difficulty,-1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse,table);
+									post_game_state(difficulty,-1,irq_set_timer,irq_set_keyboard,irq_set_mouse,table);
 									breaker = 0;
 								}else if(por_carregar == 0)
 								{
-									post_game_state(difficulty,1,0,irq_set_timer,irq_set_keyboard,irq_set_mouse,table);
+									post_game_state(difficulty,1,irq_set_timer,irq_set_keyboard,irq_set_mouse,table);
 									breaker = 0;
 								}
 							}
 							else if(!(rato->packets[0]&BIT(0)))
 							{
+								smile = smiley;
 								rato->leftButtonDown = 0;
 								rato->leftButtonReleased = 1;
 							}
@@ -222,6 +227,8 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 		}
 
 	}
+	deleteBitmap(smiley);
+	deleteBitmap(smileyO);
 	free(table);
 	if(repeat)
 		jogo_single_player(difficulty,irq_set_timer,irq_set_keyboard,irq_set_mouse);
@@ -473,7 +480,7 @@ void stop_interrupts(){
 	timer_unsubscribe_int();
 }
 
-int post_game_state(int difficulty,int win,int time,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,Mine** table){
+int post_game_state(int difficulty,int win,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,Mine** table){
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte;
 	int ipc_status, loops = 0;
 	message msg;
@@ -705,13 +712,13 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 									else pontuacao2++;
 									cronometro = 30;
 								}
-								if(pontuacao1 >= 26)
+								if(pontuacao1 >= 5)
 								{
-									//estado final jogador 1
+									post_game_state_multi(difficulty,irq_set_timer,irq_set_keyboard,irq_set_mouse,1);
 									breaker = 0;
 								}
-								else if(pontuacao2 >= 26){
-									//estado final jogador 2
+								else if(pontuacao2 >= 5){
+									post_game_state_multi(difficulty,irq_set_timer,irq_set_keyboard,irq_set_mouse,2);
 									breaker = 0;
 								}
 
@@ -745,6 +752,113 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 
 	}
 	free(table);
+}
+
+int post_game_state_multi(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,int jogador){
+	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte;
+	int ipc_status, loops = 0;
+	message msg;
+	Bitmap* fundo;
+	Bitmap* back_button;
+	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	if(jogador == 1)
+	{
+		fundo = loadBitmap("home/lcom/Projecto/res/images/Player1_Won.bmp");
+	}
+	else{
+		fundo = loadBitmap("home/lcom/Projecto/res/images/Player2_Won.bmp");
+	}
+	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
+	deleteBitmap(fundo);
+	deleteBitmap(back_button);
+	while (breaker) {
+		if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+			printf("driver_receive failed with: %d");
+			continue;
+		}
+		//printf("msg.notifyArg: 0x%X\n", msg.NOTIFY_ARG);
+		if (is_ipc_notify(ipc_status)) {
+			switch (_ENDPOINT_P(msg.m_source)) {
+			case HARDWARE:
+				if (msg.NOTIFY_ARG & irq_set_timer) {
+					timer_int_handler();
+					if(global_counter % 1 == 0)
+					{
+						update_screen(0,0,0);
+					}
+
+					if (global_counter == 60) {
+						global_counter = 0;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_set_keyboard)
+				{
+					kbd_int_handler();
+					if(scan_code==TWO_BYTE_CODE){two_bytes = 1;}
+					else if(scan_code>>7){
+						if(two_bytes) ;
+						else ;
+						if (scan_code==BREAK_CODE_ESC)
+							breaker = 0;
+					}
+					else
+					{
+						if (two_bytes){
+							two_bytes=0;
+						}
+						else ;
+					}
+				}
+				if (msg.NOTIFY_ARG & irq_set_mouse)
+				{
+
+					rato = getRato();
+					mouse_byte = mouse_int_handler();
+					if (contador == 0) {
+						if (!first_byte(mouse_byte)) {
+							contador = 0;
+							continue;
+						}
+					}
+					rato->packets[contador] = mouse_byte;
+					if (contador == 2) {
+						contador = 0;
+						{
+							updateMouse();
+
+							if(rato->packets[0]&BIT(0) && rato->leftButtonDown == 0)
+							{
+								rato->leftButtonDown = 1;
+								rato->leftButtonReleased = 0;
+								if(rato->x >=0 && rato->x < 50 && rato->y >=0 && rato->y < 50)
+									breaker = 0;
+							}
+							else if(!(rato->packets[0]&BIT(0)))
+							{
+								rato->leftButtonDown = 0;
+								rato->leftButtonReleased = 1;
+							}
+							if(rato->packets[0]&BIT(1) && rato->rightButtonDown == 0)
+							{
+								rato->rightButtonDown = 1;
+								rato->rightButtonReleased = 0;
+							}
+							else if(!(rato->packets[0]&BIT(1)))
+							{
+								rato->rightButtonDown = 0;
+								rato->rightButtonReleased = 1;
+							}
+
+						}
+						continue;
+					}
+					contador++;
+
+				}
+			}
+		}
+	}
 }
 
 void update_cronometro(int tempo){
@@ -1104,10 +1218,6 @@ void update_multi_cronometro(int tempo, int jogador,int jogador1,int jogador2){
 	}
 }
 
-
-///ainda nao completo
-
-
 int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse, int host) {
 	Bitmap* bitmap_table;
 	Bitmap* fundo_jogo;
@@ -1353,7 +1463,6 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	}
 	free(table);
 }
-
 
 void draw_connection_state(){
 	Bitmap* fundo;
