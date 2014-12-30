@@ -11,8 +11,6 @@
 #include "ModTimer.h"
 #include "bitmap.h"
 
-///
-
 void print_table(Mine** table){
 	int coordx = 32, coordy = 186;
 	int i,j;
@@ -79,8 +77,6 @@ void print_table(Mine** table){
 	deleteBitmap(Bomba);
 	deleteBitmap(Vazio);
 }
-
-///
 
 int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse) {
 	Bitmap* bitmap_table;
@@ -712,12 +708,12 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 									else pontuacao2++;
 									cronometro = 30;
 								}
-								if(pontuacao1 >= 5)
+								if(pontuacao1 >= 51)
 								{
 									post_game_state_multi(difficulty,irq_set_timer,irq_set_keyboard,irq_set_mouse,1);
 									breaker = 0;
 								}
-								else if(pontuacao2 >= 5){
+								else if(pontuacao2 >= 51){
 									post_game_state_multi(difficulty,irq_set_timer,irq_set_keyboard,irq_set_mouse,2);
 									breaker = 0;
 								}
@@ -1226,7 +1222,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
-	int filled = 1,por_carregar,cronometro = 30,jogador,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1,pont_max = 5;///jogo
+	int filled = 1,por_carregar,cronometro = 30,jogador,pontuacao1 = 0,pontuacao2 = 0,bombas_por_carregar,cronometro_parado = 1,pont_max = 51;///jogo
 	if(difficulty == 2)
 	{
 		por_carregar = 380;
