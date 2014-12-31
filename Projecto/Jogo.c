@@ -1551,8 +1551,11 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 					else if(scan_code>>7){
 						if(two_bytes) ;
 						else ;
-						if (scan_code==BREAK_CODE_ESC)
+						if (scan_code==BREAK_CODE_ESC){
+							char seed;
+							while(getCharOne(addr,&seed) != 1){};
 							return 0;
+						}
 					}
 					else
 					{
