@@ -1356,8 +1356,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 					if(cronometro == 0 && cronometro_parado == 0)
 					{
 						if(jogador == 1)
-							jogador = 2;
-						else jogador = 1;
+							turn = 2;
+						else turn = 1;
 						cronometro = 30;
 					}
 				}
