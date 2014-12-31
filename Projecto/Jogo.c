@@ -1319,17 +1319,16 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						char resposta;
 						if(getCharOne(addr,&resposta) != 1)
 						{
-							if(resposta = 'e')
+							if(resposta == 'e')
 							{
 								getCharOne(addr,&resposta);
-								if(resposta = 'e')
+								if(resposta == 'e')
 								{
 									end_scree_multi_porta(irq_set_timer,irq_set_keyboard,irq_set_mouse,0,jogador);
 									breaker = 0;
 								}
 							}
 						}
-
 					}
 					if(cronometro_parado)
 					{
@@ -1620,10 +1619,9 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 		sendChar(addr,seed);
 	}
 	else{
-		getChar(addr,&seed);
+		while(getCharOne(addr,&seed) != 1){};
 		*table = fill_table(*table,difficulty,0,0,0,&seed,1);
 	}
-	while(getCharOne(addr,&seed) != 1){}
 	return 1;
 }
 
