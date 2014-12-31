@@ -1552,12 +1552,13 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 						if(two_bytes) ;
 						else ;
 						if (scan_code==BREAK_CODE_ESC){
-							char seed;
+							/*char seed;
 							getCharOne(addr,&seed);
 							while(seed == 'c'){
 								getCharOne(addr,&seed);
 							};
 							sendChar(addr,seed);
+							*/
 							return 0;
 						}
 					}
