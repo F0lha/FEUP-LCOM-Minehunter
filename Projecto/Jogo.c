@@ -1627,7 +1627,7 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 		sendChar(addr,seed);
 	}
 	else{
-		getCharOne(addr,&seed);
+		getChar(addr,&seed);
 		*table = fill_table(*table,difficulty,0,0,0,&seed,1);
 	}
 	while(getCharOne(addr,&seed) != 1){};
