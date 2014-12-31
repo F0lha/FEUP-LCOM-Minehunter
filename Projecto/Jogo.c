@@ -587,6 +587,10 @@ int post_game_state(int difficulty,int win,int irq_set_timer,int irq_set_keyboar
 int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse) {
 	Bitmap* bitmap_table;
 	Bitmap* fundo_jogo;
+	Bitmap* Player1_table;
+	Bitmap* Player2_table;
+	Player1_table = loadBitmap("home/lcom/Projecto/res/images/Player1_table.bmp");
+	Player2_table = loadBitmap("home/lcom/Projecto/res/images/Player2_table.bmp");
 	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
 	fundo_jogo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Jogo.bmp");
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
@@ -606,6 +610,8 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 	table = fill_table(table,difficulty,0,0,0,&lixo,0);
 	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(Player1_table,32,50,ALIGN_LEFT,buffer);
+	drawBitmap(Player2_table,880,50,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
 	deleteBitmap(bitmap_table);
 	while (breaker) {
@@ -748,6 +754,8 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 
 	}
 	free(table);
+	deleteBitmap(Player1_table);
+	deleteBitmap(Player2_table);
 }
 
 int post_game_state_multi(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse,int jogador){
@@ -972,8 +980,7 @@ void delete_cronometro(){
 	deleteBitmap(Cron_7);
 	deleteBitmap(Cron_8);
 	deleteBitmap(Cron_9);
-	deleteBitmap(Player1_table);
-	deleteBitmap(Player2_table);
+
 }
 
 void load_cronometro(){
@@ -987,15 +994,12 @@ void load_cronometro(){
 	Cron_7 = loadBitmap("home/lcom/Projecto/res/images/Cron_7.bmp");
 	Cron_8 = loadBitmap("home/lcom/Projecto/res/images/Cron_8.bmp");
 	Cron_9 = loadBitmap("home/lcom/Projecto/res/images/Cron_9.bmp");
-	Player1_table = loadBitmap("home/lcom/Projecto/res/images/Player1_table.bmp");
-	Player2_table = loadBitmap("home/lcom/Projecto/res/images/Player2_table.bmp");
 }
 
 void update_multi_cronometro(int tempo, int jogador,int jogador1,int jogador2){
 	int dezenas = (tempo / 10) % 10;
 	int unidades = tempo % 10;
-	drawBitmap(Player1_table,32,50,ALIGN_LEFT,buffer);
-	drawBitmap(Player2_table,880,50,ALIGN_LEFT,buffer);
+
 	if(jogador == 1)
 	{
 		switch(dezenas)
@@ -1217,6 +1221,10 @@ void update_multi_cronometro(int tempo, int jogador,int jogador1,int jogador2){
 int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse, int host) {
 	Bitmap* bitmap_table;
 	Bitmap* fundo_jogo;
+	Bitmap* Player1_table;
+	Bitmap* Player2_table;
+	Player1_table = loadBitmap("home/lcom/Projecto/res/images/Player1_table.bmp");
+	Player2_table = loadBitmap("home/lcom/Projecto/res/images/Player2_table.bmp");
 	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
 	fundo_jogo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Jogo.bmp");
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
@@ -1240,6 +1248,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	breaker = connection_state(&table,difficulty,irq_set_timer, irq_set_keyboard, irq_set_mouse, host);
 	drawBitmap(fundo_jogo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(bitmap_table,0,0,ALIGN_LEFT,buffer);
+	drawBitmap(Player1_table,32,50,ALIGN_LEFT,buffer);
+	drawBitmap(Player2_table,880,50,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo_jogo);
 	deleteBitmap(bitmap_table);
 	while (breaker) {
@@ -1286,7 +1296,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								{
 									turn = jogador;
 									cronometro = 30;
-								}else if(carregado == -1)
+								}
+								else if(carregado == -1)
 								{
 									bombas_por_carregar--;
 									if(turn == 1)
@@ -1302,8 +1313,6 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 								}
 								skip:
 								;
-							//}
-							//////
 						}
 					}
 					else{
@@ -1327,7 +1336,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 						if(difficulty == 2 && por_carregar != 380)
 						{
 							cronometro_parado = 0;
-							cronometro = 31;
+							cronometro = 30;
 						}
 						///acrescentar outras dificuldades
 					}
@@ -1335,8 +1344,7 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 					{
 						if(difficulty == 2 && por_carregar == 380)
 						{
-							cronometro = 31;
-						}
+							cronometro = 30;						}
 					}
 					if (global_counter == 60) {
 						cronometro--;
@@ -1413,7 +1421,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 											turn = 2;
 										else turn = 1;
 										cronometro = 30;
-									}else if(carregado == -1)
+									}
+									else if(carregado == -1)
 									{
 										bombas_por_carregar--;
 										if(turn == 1)
@@ -1457,6 +1466,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 		}
 
 	}
+	deleteBitmap(Player1_table);
+	deleteBitmap(Player2_table);
 	free(table);
 }
 
