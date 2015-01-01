@@ -92,6 +92,7 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
+	int paused = 0;
 	int filled = 0,por_carregar,repeat = 0,tempo = 0,cronometro_parado = 1;///jogo
 	if(difficulty == 2)
 		por_carregar = 380;
@@ -113,12 +114,12 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 			switch (_ENDPOINT_P(msg.m_source)) {
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set_timer) {
-					timer_int_handler();
 					if(global_counter % 1 == 0)
 					{
 						drawBitmap(smile,486,68,ALIGN_LEFT,buffer);
 						update_screen(0,0,0);
 					}
+					timer_int_handler();
 					if(cronometro_parado)
 					{
 						if(difficulty == 2 && por_carregar != 380)
@@ -147,9 +148,11 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 					else if(scan_code>>7){
 						if(two_bytes) ;
 						else ;
-						if (scan_code==BREAK_CODE_ESC)
+						if (scan_code ==BREAK_CODE_ESC)
 							breaker = 0;
 					}
+
+
 					else
 					{
 						if (two_bytes){
@@ -157,6 +160,7 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 						}
 						else ;
 					}
+
 				}
 				if (msg.NOTIFY_ARG & irq_set_mouse)
 				{
