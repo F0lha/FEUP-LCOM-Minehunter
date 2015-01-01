@@ -58,6 +58,7 @@ void multi_menu(int irq_set_timer,int irq_set_keyboard,int irq_set_mouse){
 			case HARDWARE:
 				if (msg.NOTIFY_ARG & irq_set_timer) {
 					timer_int_handler();
+					rtc_date();
 					if(global_counter % 1 == 0)
 					{
 						update_screen(0,0,1);
