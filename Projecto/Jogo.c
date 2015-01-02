@@ -496,7 +496,7 @@ int post_game_state(int difficulty,int win,int irq_set_timer,int irq_set_keyboar
 	}
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
-	print_table(table);
+	if (win == 0) print_table(table);
 	deleteBitmap(fundo);
 	deleteBitmap(back_button);
 	while (breaker) {
