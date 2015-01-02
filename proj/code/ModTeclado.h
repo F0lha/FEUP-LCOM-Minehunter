@@ -23,9 +23,13 @@
 unsigned long scan_code;
 
 
-
+///@brief scans the buffer to get the scan code
 void kbd_int_handler();
+///@brief unsubscribes the keyboard interrupts
+///@return success
 int kbd_unsubscribe_int();
+///@brief subscribes the keyboard interrupts
+///@return success
 int kbd_subscribe_int(void);
 
 
