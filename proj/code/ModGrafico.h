@@ -20,6 +20,7 @@
 static uint16_t* video_mem;
 uint16_t *buffer;
 uint16_t *bufferRato;
+#define PATH "home/lcom/proj/code/res/images/"
 
 #define BITS_PER_PIXEL	  16
 

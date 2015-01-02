@@ -14,16 +14,16 @@
 void print_table(Mine** table){
 	int coordx = 32, coordy = 186;
 	int i,j;
-	Bitmap* Bomba = loadBitmap("home/lcom/Projecto/res/images/Bomba.bmp");
-	Bitmap* Vazio = loadBitmap("home/lcom/Projecto/res/images/Vazio.bmp");
-	Bitmap* E1 = loadBitmap("home/lcom/Projecto/res/images/Quadrado1.bmp");
-	Bitmap* E2 = loadBitmap("home/lcom/Projecto/res/images/Quadrado2.bmp");
-	Bitmap* E3 = loadBitmap("home/lcom/Projecto/res/images/Quadrado3.bmp");
-	Bitmap* E4 = loadBitmap("home/lcom/Projecto/res/images/Quadrado4.bmp");
-	Bitmap* E5 = loadBitmap("home/lcom/Projecto/res/images/Quadrado5.bmp");
-	Bitmap* E6 = loadBitmap("home/lcom/Projecto/res/images/Quadrado6.bmp");
-	Bitmap* E7 = loadBitmap("home/lcom/Projecto/res/images/Quadrado7.bmp");
-	Bitmap* E8 = loadBitmap("home/lcom/Projecto/res/images/Quadrado8.bmp");
+	Bitmap* Bomba = loadBitmap(PATH"Bomba.bmp");
+	Bitmap* Vazio = loadBitmap(PATH"Vazio.bmp");
+	Bitmap* E1 = loadBitmap(PATH"Quadrado1.bmp");
+	Bitmap* E2 = loadBitmap(PATH"Quadrado2.bmp");
+	Bitmap* E3 = loadBitmap(PATH"Quadrado3.bmp");
+	Bitmap* E4 = loadBitmap(PATH"Quadrado4.bmp");
+	Bitmap* E5 = loadBitmap(PATH"Quadrado5.bmp");
+	Bitmap* E6 = loadBitmap(PATH"Quadrado6.bmp");
+	Bitmap* E7 = loadBitmap(PATH"Quadrado7.bmp");
+	Bitmap* E8 = loadBitmap(PATH"Quadrado8.bmp");
 
 
 	for(i=0;i<30;i++)
@@ -84,10 +84,10 @@ int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int
 	Bitmap* smiley;
 	Bitmap* smile;
 	Bitmap* smileyO;
-	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
-	fundo_jogo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Jogo.bmp");
-	smiley = loadBitmap("home/lcom/Projecto/res/images/Smile.bmp");
-	smileyO = loadBitmap("home/lcom/Projecto/res/images/SmileyO.bmp");
+	bitmap_table = loadBitmap(PATH"Tabela_Expert.bmp");
+	fundo_jogo = loadBitmap(PATH"Fundo_Jogo.bmp");
+	smiley = loadBitmap(PATH"Smile.bmp");
+	smileyO = loadBitmap(PATH"SmileyO.bmp");
 	smile = smiley;
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
@@ -335,40 +335,40 @@ int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *p
 					if(valor == 0)
 						click_vazio(table, ((x-32)/32), ((y-186)/32), difficulty,por_carregar,single);
 					if(valor == 0)
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Vazio.bmp");
+						quadrado = loadBitmap(PATH"Vazio.bmp");
 					else if(valor == -1)
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Bomba.bmp");
+						quadrado = loadBitmap(PATH"Bomba.bmp");
 					else if(valor == 1)
 					{
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado1.bmp");
+						quadrado = loadBitmap(PATH"Quadrado1.bmp");
 					}
 					else if(valor == 2)
 					{
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado2.bmp");
+						quadrado = loadBitmap(PATH"Quadrado2.bmp");
 					}
 					else if(valor == 3)
 					{
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado3.bmp");
+						quadrado = loadBitmap(PATH"Quadrado3.bmp");
 					}
 					else if(valor == 4)
 					{
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado4.bmp");
+						quadrado = loadBitmap(PATH"Quadrado4.bmp");
 					}
 					else if(valor == 5)
 					{
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado5.bmp");
+						quadrado = loadBitmap(PATH"Quadrado5.bmp");
 					}
 					else if(valor == 6)
 					{
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado6.bmp");
+						quadrado = loadBitmap(PATH"Quadrado6.bmp");
 					}
 					else if(valor == 7)
 					{
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado7.bmp");
+						quadrado = loadBitmap(PATH"Quadrado7.bmp");
 					}
 					else
 					{
-						quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado8.bmp");
+						quadrado = loadBitmap(PATH"Quadrado8.bmp");
 					}
 					drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
 					deleteBitmap(quadrado);
@@ -388,13 +388,13 @@ int right_click_screen(Mine*** table, int x, int y, int difficulty){
 			{
 				if((*table)[(x-32)/32][(y-186)/32].carregado == 0){
 					(*table)[(x-32)/32][(y-186)/32].carregado = 2;
-					quadrado = loadBitmap("home/lcom/Projecto/res/images/Bandeira.bmp");
+					quadrado = loadBitmap(PATH"Bandeira.bmp");
 					drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
 				}
 				else if((*table)[(x-32)/32][(y-186)/32].carregado == 2)
 				{
 					(*table)[(x-32)/32][(y-186)/32].carregado = 0;
-					quadrado = loadBitmap("home/lcom/Projecto/res/images/Quadrado_Tapado.bmp");
+					quadrado = loadBitmap(PATH"Quadrado_Tapado.bmp");
 					drawBitmap(quadrado,(((x-32)/32)*32)+32,(((y-186)/32)*32)+186,ALIGN_LEFT,buffer);
 				}
 
@@ -486,13 +486,13 @@ int post_game_state(int difficulty,int win,int irq_set_timer,int irq_set_keyboar
 	message msg;
 	Bitmap* fundo;
 	Bitmap* back_button;
-	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	back_button = loadBitmap(PATH"Back_Button.bmp");
 	if(win == -1)
 	{
-		fundo = loadBitmap("home/lcom/Projecto/res/images/You_Lost_Single.bmp");
+		fundo = loadBitmap(PATH"You_Lost_Single.bmp");
 	}
 	else{
-		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Won.bmp");
+		fundo = loadBitmap(PATH"Fundo_Won.bmp");
 	}
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
@@ -593,10 +593,10 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 	Bitmap* fundo_jogo;
 	Bitmap* Player1_table;
 	Bitmap* Player2_table;
-	Player1_table = loadBitmap("home/lcom/Projecto/res/images/Player1_table.bmp");
-	Player2_table = loadBitmap("home/lcom/Projecto/res/images/Player2_table.bmp");
-	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
-	fundo_jogo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Jogo.bmp");
+	Player1_table = loadBitmap(PATH"Player1_table.bmp");
+	Player2_table = loadBitmap(PATH"Player2_table.bmp");
+	bitmap_table = loadBitmap(PATH"Tabela_Expert.bmp");
+	fundo_jogo = loadBitmap(PATH"Fundo_Jogo.bmp");
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
@@ -768,13 +768,13 @@ int post_game_state_multi(int difficulty,int irq_set_timer,int irq_set_keyboard,
 	message msg;
 	Bitmap* fundo;
 	Bitmap* back_button;
-	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	back_button = loadBitmap(PATH"Back_Button.bmp");
 	if(jogador == 1)
 	{
-		fundo = loadBitmap("home/lcom/Projecto/res/images/Player1_Won.bmp");
+		fundo = loadBitmap(PATH"Player1_Won.bmp");
 	}
 	else{
-		fundo = loadBitmap("home/lcom/Projecto/res/images/Player2_Won.bmp");
+		fundo = loadBitmap(PATH"Player2_Won.bmp");
 	}
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
@@ -988,16 +988,16 @@ void delete_cronometro(){
 }
 
 void load_cronometro(){
-	Cron_0 = loadBitmap("home/lcom/Projecto/res/images/Cron_0.bmp");
-	Cron_1 = loadBitmap("home/lcom/Projecto/res/images/Cron_1.bmp");
-	Cron_2 = loadBitmap("home/lcom/Projecto/res/images/Cron_2.bmp");
-	Cron_3 = loadBitmap("home/lcom/Projecto/res/images/Cron_3.bmp");
-	Cron_4 = loadBitmap("home/lcom/Projecto/res/images/Cron_4.bmp");
-	Cron_5 = loadBitmap("home/lcom/Projecto/res/images/Cron_5.bmp");
-	Cron_6 = loadBitmap("home/lcom/Projecto/res/images/Cron_6.bmp");
-	Cron_7 = loadBitmap("home/lcom/Projecto/res/images/Cron_7.bmp");
-	Cron_8 = loadBitmap("home/lcom/Projecto/res/images/Cron_8.bmp");
-	Cron_9 = loadBitmap("home/lcom/Projecto/res/images/Cron_9.bmp");
+	Cron_0 = loadBitmap(PATH"Cron_0.bmp");
+	Cron_1 = loadBitmap(PATH"Cron_1.bmp");
+	Cron_2 = loadBitmap(PATH"Cron_2.bmp");
+	Cron_3 = loadBitmap(PATH"Cron_3.bmp");
+	Cron_4 = loadBitmap(PATH"Cron_4.bmp");
+	Cron_5 = loadBitmap(PATH"Cron_5.bmp");
+	Cron_6 = loadBitmap(PATH"Cron_6.bmp");
+	Cron_7 = loadBitmap(PATH"Cron_7.bmp");
+	Cron_8 = loadBitmap(PATH"Cron_8.bmp");
+	Cron_9 = loadBitmap(PATH"Cron_9.bmp");
 }
 
 void update_multi_cronometro(int tempo, int jogador,int jogador1,int jogador2){
@@ -1227,10 +1227,10 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 	Bitmap* fundo_jogo;
 	Bitmap* Player1_table;
 	Bitmap* Player2_table;
-	Player1_table = loadBitmap("home/lcom/Projecto/res/images/Player1_table.bmp");
-	Player2_table = loadBitmap("home/lcom/Projecto/res/images/Player2_table.bmp");
-	bitmap_table = loadBitmap("home/lcom/Projecto/res/images/Tabela_Expert.bmp");
-	fundo_jogo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Jogo.bmp");
+	Player1_table = loadBitmap(PATH"Player1_table.bmp");
+	Player2_table = loadBitmap(PATH"Player2_table.bmp");
+	bitmap_table = loadBitmap(PATH"Tabela_Expert.bmp");
+	fundo_jogo = loadBitmap(PATH"Fundo_Jogo.bmp");
 	int contador = 0,breaker = 1,two_bytes = 0, mouse_byte; /// mouse e ciclo while
 	int ipc_status, loops = 0;///cenas das interrupcoes
 	message msg;
@@ -1477,8 +1477,8 @@ int jogo_multi_player_porta(int difficulty,int irq_set_timer,int irq_set_keyboar
 void draw_connection_state(){
 	Bitmap* fundo;
 	Bitmap* back_button;
-	fundo = loadBitmap("home/lcom/Projecto/res/images/Connecting.bmp");
-	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	fundo = loadBitmap(PATH"Connecting.bmp");
+	back_button = loadBitmap(PATH"Back_Button.bmp");
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo);
@@ -1637,14 +1637,14 @@ void draw_end_scree_multi_porta(int turn,int jogador){
 	Bitmap* fundo;
 	Bitmap* back_button;
 	if(turn == 0)
-		fundo = loadBitmap("home/lcom/Projecto/res/images/Disconnected.bmp");
+		fundo = loadBitmap(PATH"Disconnected.bmp");
 	else if(turn == jogador){
-		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Won.bmp");
+		fundo = loadBitmap(PATH"Fundo_Won.bmp");
 	}
 	else{
-		fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Lost.bmp");
+		fundo = loadBitmap(PATH"Fundo_Lost.bmp");
 	}
-	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	back_button = loadBitmap(PATH"Back_Button.bmp");
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo);

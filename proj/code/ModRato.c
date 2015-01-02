@@ -105,10 +105,10 @@ void drawRato(int cor){
 	trocarRato_buffer();
 	Bitmap* rato_bmp;
 	if(cor == 0)
-		rato_bmp = loadBitmap("home/lcom/Projecto/res/images/Cursor.bmp");
+		rato_bmp = loadBitmap(PATH"Cursor.bmp");
 	else if(cor == 1)
-		rato_bmp= loadBitmap("home/lcom/Projecto/res/images/Cursor_1.bmp");
-	else rato_bmp= loadBitmap("home/lcom/Projecto/res/images/Cursor_2.bmp");
+		rato_bmp= loadBitmap(PATH"Cursor_1.bmp");
+	else rato_bmp= loadBitmap(PATH"Cursor_2.bmp");
 	drawBitmap(rato_bmp,rato->x,rato->y,ALIGN_LEFT,bufferRato);
 	deleteBitmap(rato_bmp);
 }

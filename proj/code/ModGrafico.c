@@ -175,11 +175,11 @@ void update_screen(int cor,int turn,int relog){
 		Bitmap* seta;
 		if(turn == 1)
 		{
-			seta = loadBitmap("home/lcom/Projecto/res/images/Arrow.bmp");
+			seta = loadBitmap(PATH"Arrow.bmp");
 			drawBitmap(seta,144,50,ALIGN_LEFT,bufferRato);
 		}
 		else{
-			seta = loadBitmap("home/lcom/Projecto/res/images/Arrow_inv.bmp");
+			seta = loadBitmap(PATH"Arrow_inv.bmp");
 			drawBitmap(seta,734,50,ALIGN_LEFT,bufferRato);
 		}
 		deleteBitmap(seta);
