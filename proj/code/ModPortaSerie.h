@@ -26,10 +26,31 @@ int hook_id;
 #define RR				0
 #define THRE			BIT(5)
 
+///@brief changes the bit of DLAB
+///@param base_addr
+///@param bit
 void changeDLAB(unsigned short base_addr,int bit);
-
-
-
+///@brief gets the character(c) by doing a while loop if not yet available
+///@param base_addr
+///@param c
+///@return sucess
+int getChar(unsigned short base_addr, unsigned char *c);
+///@brief gets the character(c) if available if not ends
+///@param base_addr
+///@param c
+///@return sucess
+int getCharOne(unsigned short base_addr, unsigned char *c);
+///@brief sends a character(c)
+///@param base_addr
+///@param c
+///@return sucess
+int sendChar(unsigned short base_addr,char c);
+///@brief
+///@param base_addr
+///@param bits of the word
+///@param stop bits for stoping
+///@param parity type of parity
+///@param rate
 void setPorta(unsigned short base_addr, unsigned long bits, unsigned long stop, long parity, unsigned long rate);
 
 
