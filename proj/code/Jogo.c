@@ -496,7 +496,7 @@ int post_game_state(int difficulty,int win,int irq_set_timer,int irq_set_keyboar
 	}
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
-	if (win == 0) print_table(table);
+	if (win == -1) print_table(table);
 	deleteBitmap(fundo);
 	deleteBitmap(back_button);
 	while (breaker) {
@@ -1557,7 +1557,7 @@ int connection_state(Mine*** table,int difficulty,int irq_set_timer,int irq_set_
 						else ;
 						if (scan_code==BREAK_CODE_ESC){
 							char seed;
-							getCharOne(addr,seed);
+							getCharOne(addr,&seed);
 							return 0;
 						}
 					}

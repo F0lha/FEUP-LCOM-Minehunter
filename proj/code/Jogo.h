@@ -61,16 +61,16 @@ int jogo_multi_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int 
 
 ///@brief actions taken when right button of mouse clicks on the table
 ///@param table
-///@param x width mouse limit
-///@param y height mouse limit
+///@param x
+///@param y
 ///@param difficulty
 ///@return success
 int right_click_screen(Mine*** table, int x, int y, int difficulty);
 
 ///@brief actions taken when the mouse clicks outside the tabke limits
 ///@param table
-///@param k width mouse limit
-///@param j height mouse limit
+///@param k horizontal square k - 1
+///@param j vertical square j - 1
 ///@param difficulty
 ///@param por_carregar
 ///@param single
@@ -79,7 +79,8 @@ void click_vazio(Mine*** table, int k, int j, int difficulty,int *por_carregar,i
 ///@brief actions taken when left button of mouse clicks on the table
 ///@param table
 ///@param x
-///@param y ///@param difficulty
+///@param y
+///@param difficulty
 ///@param filled 1 if yes 0 if not
 ///@param por_carregar 1 if yes 0 if not
 ///@param single
@@ -89,8 +90,8 @@ int click_screen(Mine*** table, int x, int y, int difficulty, int *filled,int *p
 ///@brief fills game table with bombs and numbers
 ///@param table bidimensional array
 ///@param difficulty
-///@param k_mouse mouse width limit
-///@param j_mouse mouse height limit
+///@param k horizontal square k - 1
+///@param j vertical square j - 1
 ///@param single
 ///@param seed
 ///@param use
@@ -116,7 +117,7 @@ int post_game_state(int difficulty,int win,int irq_set_timer,int irq_set_keyboar
 ///@return success
 int jogo_single_player(int difficulty,int irq_set_timer,int irq_set_keyboard,int irq_set_mouse);
 
-///@brief updates the game timer
+///@brief updates the game timer and draws it
 ///@param tempo
 void update_cronometro(int tempo);
 
@@ -126,7 +127,7 @@ void load_cronometro();
 ///@brief deletes the bitmaps used for the timer
 void delete_cronometro();
 
-///@brief updates the timer on the multi player game
+///@brief updates the timer on the multi player game and draws it
 ///@param tempo
 ///@param jogador
 ///@param jogador1
