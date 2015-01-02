@@ -34,8 +34,17 @@ int scan_rtc (unsigned long index, unsigned long *dado);
 
 int write_rtc(unsigned long index, unsigned long dado);
 
+void disable();
 
+void enable();
 
+void wait_valid_rtc(void);
+
+unsigned char bcd_to_binary(unsigned char bcdvalue);
+
+unsigned char binary_to_bcd(unsigned char binaryvalue);
+
+int rtc_date();
 
 
 
