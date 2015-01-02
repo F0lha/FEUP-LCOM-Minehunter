@@ -19,11 +19,11 @@ void draw_main_menu(){
 	Bitmap* fundo;
 	Bitmap* back_button;
 	Bitmap* opcoes;
-	fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_Main.bmp");
-	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	fundo = loadBitmap(PATH"Fundo_Main.bmp");
+	back_button = loadBitmap(PATH"Back_Button.bmp");
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
-	opcoes = loadBitmap("home/lcom/Projecto/res/images/Main_menu.bmp");
+	opcoes = loadBitmap(PATH"Main_menu.bmp");
 	drawBitmap(opcoes,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo);
 	deleteBitmap(opcoes);
@@ -33,8 +33,8 @@ void draw_main_menu(){
 void draw_multi_menu(){
 	Bitmap* fundo;
 	Bitmap* back_button;
-	fundo = loadBitmap("home/lcom/Projecto/res/images/Fundo_menu_multi.bmp");
-	back_button = loadBitmap("home/lcom/Projecto/res/images/Back_Button.bmp");
+	fundo = loadBitmap(PATH"Fundo_menu_multi.bmp");
+	back_button = loadBitmap(PATH"Back_Button.bmp");
 	drawBitmap(fundo,0,0,ALIGN_LEFT,buffer);
 	drawBitmap(back_button,0,0,ALIGN_LEFT,buffer);
 	deleteBitmap(fundo);
@@ -279,17 +279,17 @@ int main(int argc, char **argv){
 }
 
 void load_relogio(){
-	Zero = loadBitmap("home/lcom/Projecto/res/images/Zero.bmp");
-	One = loadBitmap("home/lcom/Projecto/res/images/One.bmp");
-	Two = loadBitmap("home/lcom/Projecto/res/images/Two.bmp");
-	Three = loadBitmap("home/lcom/Projecto/res/images/Three.bmp");
-	Four = loadBitmap("home/lcom/Projecto/res/images/Four.bmp");
-	Five = loadBitmap("home/lcom/Projecto/res/images/Five.bmp");
-	Six = loadBitmap("home/lcom/Projecto/res/images/Six.bmp");
-	Seven = loadBitmap("home/lcom/Projecto/res/images/Seven.bmp");
-	Eight = loadBitmap("home/lcom/Projecto/res/images/Eight.bmp");
-	Nine = loadBitmap("home/lcom/Projecto/res/images/Nine.bmp");
-	Points = loadBitmap("home/lcom/Projecto/res/images/2Points.bmp");
+	Zero = loadBitmap(PATH"Zero.bmp");
+	One = loadBitmap(PATH"One.bmp");
+	Two = loadBitmap(PATH"Two.bmp");
+	Three = loadBitmap(PATH"Three.bmp");
+	Four = loadBitmap(PATH"Four.bmp");
+	Five = loadBitmap(PATH"Five.bmp");
+	Six = loadBitmap(PATH"Six.bmp");
+	Seven = loadBitmap(PATH"Seven.bmp");
+	Eight = loadBitmap(PATH"Eight.bmp");
+	Nine = loadBitmap(PATH"Nine.bmp");
+	Points = loadBitmap(PATH"2Points.bmp");
 }
 
 void delete_relogio(){
