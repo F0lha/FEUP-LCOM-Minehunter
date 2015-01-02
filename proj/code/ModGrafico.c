@@ -16,15 +16,7 @@
 
 
 
-int draw_flag(int x, int y){
-	int i, j, k, l;
-	char *mapFlag = read_xpm(retXPM("pic1"),&k,&l);
-	for (j = y; j < y + l; j++) {
-		for (i = x; i < x + k; i++) {
-			vg_set_pixel(i, j,  mapFlag[(j-y)*k + i-x]);
-		}
-	}
-}
+
 
 void update_screen(int cor,int turn,int relog){
 	drawRato(cor);

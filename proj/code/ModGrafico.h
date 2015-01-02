@@ -31,34 +31,45 @@ static unsigned bits_per_pixel; /* Number of VRAM bits per pixel */
 
 static char *phys_mem;
 
+///@brief updates the screen as the timer increments and the arrow pointing to the player playing atm
+///@param cor colour of the mouse arrow
+///@param turn 1 if player1 value if player2
+///@param relog if 1 draws the bitmaps related to the timer
 void update_screen(int cor,int turn,int relog);
 
-int draw_flag(int x, int y);
-
-int draw_table ();
-
-int draw_string (char* str, double scale, unsigned long x, unsigned long y, unsigned long color);
-
+///@brief Returns to default Minix 3 text mode (0x03: 25 x 80, 16 colors)
+///@return 0 upon success, non-zero upon failure
 int vg_exit(void);
 
+///@brief Initializes the video module in graphics mode
+///@param mode 16-bit VBE mode to set
+///@return Virtual address VRAM was mapped to. NULL, upon failure
 void *vg_init(unsigned short mode);
 
-char *read_xpm(char *map[], int *wd, int *ht);
-
+///@brief sets a pixel with color in the video mem
+///@param x width coordenate
+///@param y height coordenate
+///@param color color of the pixel
 void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color);
 
-char** retXPM(char *xpm);
 
-
-
+///@brief exchanges from the mouse buffer to the buffer
 void trocarRato_buffer();
 
+///@brief exchanges from the video mem buffer to the mouse buffer
 void trocarVideo_Mem_Rato();
 
+///@brief sets a pixel with color in the mouse buffer
+///@param x
+///@param y
+///@param color
 void vg_set_pixel_bufferRato(unsigned int x,unsigned int y, unsigned long color);
 
+///@brief sets a pixel with color in the buffer
+///@param x
+///@param y
+///@param color
 void vg_set_pixel_buffer(unsigned int x,unsigned int y, unsigned long color);
 
-void darker_screen();
 
 #endif

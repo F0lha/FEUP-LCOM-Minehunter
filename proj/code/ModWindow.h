@@ -4,10 +4,7 @@
 #include "Jogo.h"
 
 
-int draw_Table(Mine** table, int difficulty);
 
-
-int draw_square(int x, int y, Mine t);
 
 
 
