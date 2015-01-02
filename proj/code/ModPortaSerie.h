@@ -45,7 +45,7 @@ int getCharOne(unsigned short base_addr, unsigned char *c);
 ///@param c
 ///@return sucess
 int sendChar(unsigned short base_addr,char c);
-///@brief
+///@brief Configures UART
 ///@param base_addr
 ///@param bits of the word
 ///@param stop bits for stoping
