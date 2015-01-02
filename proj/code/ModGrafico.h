@@ -53,10 +53,10 @@ void *vg_init(unsigned short mode);
 void vg_set_pixel(unsigned int x,unsigned int y, unsigned long color);
 
 
-///@brief exchanges from the mouse buffer to the buffer
+///@brief exchanges from the buffer to the mouse buffer
 void trocarRato_buffer();
 
-///@brief exchanges from the video mem buffer to the mouse buffer
+///@brief exchanges from the mouse buffer to video mem
 void trocarVideo_Mem_Rato();
 
 ///@brief sets a pixel with color in the mouse buffer
