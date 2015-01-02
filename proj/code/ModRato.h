@@ -46,29 +46,41 @@ typedef struct{
 
 static Rato* rato = 0;
 
-
+///@brief checks if there is already a mouse, if yes return its addr , if not creates a new Rato
+///return pointer to mouse
 Rato* getRato();
 
+///@brief creates a new Rato struct
+///@return pointer to the new Rato struct
 Rato* newRato();
 
+///@brief enables the interrupts of the mouse
+///@return Returns bit order in interrupt mask; negative value on failure
 int mouse_subscribe_int();
 
+///@brief disables the interrupts of the mouse
+///@return Return 0 upon success and non-zero otherwise
 int mouse_unsubscribe_int();
 
+///@brief deals with mouse interrupts
+///@return 0 upon success, non-zero upon failure
 int mouse_int_handler();
 
+///@brief updates the mouse status
 void updateMouse();
 
+///@brief confirms if the first packets really is the first packet
+///@param mouse_byte
+///@return 1 upon success , 0 upon failure
 int first_byte(unsigned long mouse_byte);
 
+///@brief prints mouse according to color
+///@param cor
 void drawRato(int cor);
 
+///@brief disables mouse's stream mode and initializes mouse's data packets
+///@return success
 int enable_packets();
-
-
-
-
-
 
 
 #endif
