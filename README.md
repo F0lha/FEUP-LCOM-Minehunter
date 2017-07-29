@@ -1,4 +1,4 @@
-# LCOM-MINEHUNTER #
+# FEUP-LCOM-Minehunter #
 
 This project was developed for the unit course Computer Laboratory (LCOM) of the Integrated Masters in Informatics and Computing Engineering of the Faculty of Engineering of the University of Porto.
 It consists on a basic minesweeper clone for the singleplayer version and a flags clone for the multiplayer.
